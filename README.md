@@ -17,6 +17,4 @@ vschess/sound 音效文件夹<br />
 vschess/style 棋子、棋盘文件夹<br />
 
 # 相关网站
-官网：https://www.xiaxiangqi.com/ 正在开发，暂时没啥。<br />
-个人网站：https://margin.top/ 正在开发，暂时没啥。（一直在做播放器，也就没时间弄网站了。<br />
 象棋巫师：https://www.xqbase.com 程序内部使用了由象棋巫师提供的 ECCO 开局分类编号算法，在此表示衷心感谢。
