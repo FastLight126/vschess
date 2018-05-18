@@ -1,0 +1,197 @@
+// 移动一枚棋子
+fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackIllegal){
+	// 动画过程中，直接跳过
+	if (this.animating) {
+		return this;
+	}
+
+	if (typeof animationTime === "function") {
+		callbackIllegal = callback;
+		callback = animationTime;
+		animationTime = 0;
+	}
+
+	from = vs.limit(from, 0, 89);
+	to   = vs.limit(to  , 0, 89);
+	animationTime = vs.limit(animationTime, 0, Infinity);
+
+	var From = vs.b2i[vs.turn[this.getTurn()][from]];
+	var To   = vs.b2i[vs.turn[this.getTurn()][to  ]];
+	var Move = From + To;
+
+	// 着法不合法，不移动棋子
+	if (!~this.legalMoveList.indexOf(Move)) {
+		typeof callbackIllegal === "function" && callbackIllegal();
+		return this;
+	}
+
+	// 动画过渡，即动画时间大于 100，100毫秒以下效果很差，直接屏蔽
+	if (animationTime >= 100) {
+		var _this = this;
+		this.animating = true;
+		this.clearSelect();
+		this.clearSelect(-1);
+		this.clearPiece(from);
+		this.clearPiece(-1);
+		this.setSelectByPieceIndex(from);
+		this.setSelectByPieceIndex(-1);
+
+		// IE+jQuery 模式下，使用 jQuery 的动画效果
+		if (window.ActiveXObject && typeof jQuery !== "undefined") {
+			var _playSound = true;
+			var finishHandlerRunned = false;
+
+			var finishHandler = function(){
+				_this.setMoveDefaultAtNode(Move) && _this.rebuildSituation().refreshMoveSelectListNode();
+				_this.setBoardByOffset(1);
+				_this.setSelectByStep();
+				_this.animatePiece.hide();
+				_playSound && _this.playSoundBySituation();
+				_this.animating = false;
+				finishHandlerRunned = true;
+				typeof callback === "function" && callback();
+			};
+
+			var sIndex = vs.b2s[vs.turn[this.getTurn()][from]];
+			var piece  = this.situationList[this.getCurrentStep()][sIndex];
+
+			this.animatePiece.addClass("vschess-piece-" + vs.n2f[piece]).css({
+				top : this.piece.eq(from).position().top,
+				left: this.piece.eq(from).position().left
+			}).show().animate({
+				top : this.piece.eq(to).position().top,
+				left: this.piece.eq(to).position().left
+			}, animationTime, finishHandler);
+
+			this.stopAnimate = function(playSound){
+				typeof playSound !== "undefined" && (_playSound = playSound);
+				_this.animatePiece.stop(true, true);
+			};
+
+			setTimeout(function(){ finishHandlerRunned || finishHandler(); }, animationTime + 500);
+		}
+
+		// 其他浏览器或 Zepto 模式下，使用原生 CSS3 动画效果
+		else {
+			var finishHandlerRunned = false;
+
+			var finishHandler = function(playSound){
+				var _playSound = true;
+				typeof playSound !== "undefined" && (_playSound = playSound);
+
+				_this.setMoveDefaultAtNode(Move) && _this.rebuildSituation().refreshMoveSelectListNode();
+				_this.setBoardByOffset(1);
+				_this.setSelectByStep();
+				_this.animatePiece.hide().css({ "-webkit-transition": "0ms", "-moz-transition": "0ms", "-ms-transition": "0ms", "-o-transition": "0ms", "transition": "0ms" });
+				_playSound && _this.playSoundBySituation();
+				_this.animating = false;
+
+				setTimeout(function(){
+					_this.animatePiece.hide().css({
+						"-webkit-transform": "translate3d(0px, 0px, 0px)",
+						   "-moz-transform": "translate3d(0px, 0px, 0px)",
+							"-ms-transform": "translate3d(0px, 0px, 0px)",
+						     "-o-transform": "translate3d(0px, 0px, 0px)",
+						        "transform": "translate3d(0px, 0px, 0px)"
+					});
+				}, vs.threadTimeout);
+
+				var Evt = _this.animatePiece[0];
+				Evt.removeEventListener("webkitTransitionEnd", finishHandler);
+				Evt.removeEventListener(   "mozTransitionEnd", finishHandler);
+				Evt.removeEventListener(    "msTransitionEnd", finishHandler);
+				Evt.removeEventListener(     "oTransitionEnd", finishHandler);
+				Evt.removeEventListener(      "transitionend", finishHandler);
+
+				finishHandlerRunned = true;
+				typeof callback == "function" && callback();
+			};
+
+			var deltaX = this.piece.eq(to).position().left - this.piece.eq(from).position().left;
+			var deltaY = this.piece.eq(to).position().top  - this.piece.eq(from).position().top;
+			var sIndex = vs.b2s[vs.turn[this.getTurn()][from]];
+			var piece  = this.situationList[this.getCurrentStep()][sIndex];
+
+			var Evt = this.animatePiece.addClass("vschess-piece-" + vs.n2f[piece]).css({
+				top : this.piece.eq(from).position().top,
+				left: this.piece.eq(from).position().left,
+				"-webkit-transition": animationTime + "ms",
+				   "-moz-transition": animationTime + "ms",
+					"-ms-transition": animationTime + "ms",
+				     "-o-transition": animationTime + "ms",
+				        "transition": animationTime + "ms"
+			}).show()[0];
+
+			Evt.addEventListener("webkitTransitionEnd", finishHandler);
+			Evt.addEventListener(   "mozTransitionEnd", finishHandler);
+			Evt.addEventListener(    "msTransitionEnd", finishHandler);
+			Evt.addEventListener(     "oTransitionEnd", finishHandler);
+			Evt.addEventListener(      "transitionend", finishHandler);
+
+			setTimeout(function(){
+				_this.animatePiece.css({
+					"-webkit-transform": "translate3d(" + deltaX + "px, " + deltaY + "px, 0px)",
+					   "-moz-transform": "translate3d(" + deltaX + "px, " + deltaY + "px, 0px)",
+						"-ms-transform": "translate3d(" + deltaX + "px, " + deltaY + "px, 0px)",
+					     "-o-transform": "translate3d(" + deltaX + "px, " + deltaY + "px, 0px)",
+					        "transform": "translate3d(" + deltaX + "px, " + deltaY + "px, 0px)"
+				});
+			}, vs.threadTimeout);
+
+			this.stopAnimate = finishHandler;
+			setTimeout(function(){ finishHandlerRunned || finishHandler(); }, animationTime + 500);
+		}
+	}
+
+	// 无动画过渡，即动画时间为 0
+	else {
+		this.stopAnimate = function(){};
+		this.setMoveDefaultAtNode(Move) && this.rebuildSituation().refreshMoveSelectListNode();
+		this.setBoardByOffset(1);
+		this.setSelectByStep();
+		this.playSoundBySituation();
+		typeof callback === "function" && callback();
+	}
+
+	return this;
+};
+
+// 根据节点 ICCS 移动一枚棋子
+fn.movePieceByNode = function(move, animationTime, callback, callbackIllegal){
+	var from = vs.turn[this.getTurn()][vs.i2b[move.substring(0, 2)]];
+	var to   = vs.turn[this.getTurn()][vs.i2b[move.substring(2, 4)]];
+	return this.movePieceByPieceIndex(from, to, animationTime, callback, callbackIllegal);
+};
+
+// 根据中文着法移动一枚棋子
+fn.movePieceByChinese = function(move, animationTime, callback, callbackIllegal){
+	return this.movePieceByNode(vs.Chinese2Node(move, this.getCurrentFen()).move, animationTime, callback, callbackIllegal);
+};
+
+// 根据 WXF 着法移动一枚棋子
+fn.movePieceByWXF = function(move, animationTime, callback, callbackIllegal){
+	return this.movePieceByNode(vs.WXF2Node(move, this.getCurrentFen()).move, animationTime, callback, callbackIllegal);
+};
+
+// 以动画方式过渡到下一个局面
+fn.animateToNext = function(animationTime, callback){
+	if (this.animating || this.getCurrentStep() >= this.lastSituationIndex()) {
+		return this;
+	}
+
+	var from = vs.turn[this.getTurn()][vs.i2b[this.getMoveByStep(this.getCurrentStep() + 1).substring(0, 2)]];
+	var to   = vs.turn[this.getTurn()][vs.i2b[this.getMoveByStep(this.getCurrentStep() + 1).substring(2, 4)]];
+	this.movePieceByPieceIndex(from, to, vs.limit(animationTime, 0, Infinity), callback);
+	return this;
+};
+
+// 设置动画时间
+fn.setAnimationTime = function(animationTime){
+	this._.animationTime = vs.limit(animationTime, 0, Infinity);
+	return this;
+};
+
+// 取得动画时间
+fn.getAnimationTime = function(animationTime){
+	return this._.animationTime >= this._.playGap * 100 ? this._.playGap * 50 : this._.animationTime;
+};

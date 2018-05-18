@@ -1,0 +1,24 @@
+.vschess-loaded { display:block; position:relative; }
+.vschess-loaded * { margin:0; padding:0; list-style:none; outline:none; }
+.vschess-board, .vschess-board-edit { position:relative; }
+.vschess-piece { float:left; position:relative; z-index:0; }
+.vschess-piece-disabled { float:left; position:relative; z-index:0; visibility:hidden; }
+.vschess-piece span, .vschess-piece-animate span { display:block; position:relative; }
+.vschess-piece-S { cursor:pointer; }
+.vschess-piece-s { cursor:pointer; }
+.vschess-piece-R { cursor:pointer; }
+.vschess-piece-N { cursor:pointer; }
+.vschess-piece-B { cursor:pointer; }
+.vschess-piece-A { cursor:pointer; }
+.vschess-piece-K { cursor:pointer; }
+.vschess-piece-C { cursor:pointer; }
+.vschess-piece-P { cursor:pointer; }
+.vschess-piece-r { cursor:pointer; }
+.vschess-piece-n { cursor:pointer; }
+.vschess-piece-b { cursor:pointer; }
+.vschess-piece-a { cursor:pointer; }
+.vschess-piece-k { cursor:pointer; }
+.vschess-piece-c { cursor:pointer; }
+.vschess-piece-p { cursor:pointer; }
+.vschess-piece-animate { position:absolute; z-index:1; top:0px; left:0px; display:none; }
+.vschess-info-editor-item-value-result { display:none; }
