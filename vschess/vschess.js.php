@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Shanghai');
 header('Content-type: application/x-javascript; charset=utf-8');
 include 'develop/class.JavaScriptPacker.php';
 
-$version = '2.0.0';
+$version = '2.0.1';
 $developList = scandir('develop/module');
 unset($developList[0], $developList[1]);
 $module[] = 'main.js';

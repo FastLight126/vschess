@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style>
+* { margin: 0px; padding: 0px; font-family: "微软雅黑", "宋体", Tahoma, "Arial Unicode MS"; font-size: 10pt; }
+a { text-decoration: none; }
+img { border-top-style: none; border-right-style: none; border-bottom-style: none; border-left-style: none; }
+ul { list-style-type: none; }
+body { padding: 50px; }
+div.vschess { float: left; margin-right: 20px; margin-bottom: 20px; }
+</style>
+<script type="text/javascript" src="jquery/jquery.js"></script>
+<!--<script type="text/javascript" src="jquery/zepto.js"></script>-->
+<script type="text/javascript" src="vschess/vschess.js.php"></script>
+<style>
+div.vschess-layout-default { width:380px; height:420px; overflow:hidden; }
+div.vschess-layout-default .vschess-board { top:2px; }
+div.vschess-layout-default .vschess-title { display:none; }
+div.vschess-layout-default .vschess-column-index { display:none; }
+</style>
+<title>中国象棋</title>
+</head>
+<body>
+<div class="vschess"></div>
+<script type="text/javascript">
+var chess = new vschess.load(".vschess", {
+	clickResponse: 3, // 棋子单击事件是否响应状态，0(0x00) 双方不响应，1(0x01) 仅黑方响应，2(0x10) 仅红方响应，3(0x11) 双方响应
+	afterClickAnimate: function(){
+		var moveList = this.getMoveList();
+		var lastMove = moveList[moveList.length - 1];
+		var lastEat  = 0;
+
+		for (var i = chess.eatStatus.length - 1; i >= 0; --i) {
+			if (chess.eatStatus[i]) {
+				lastEat = i;
+				break;
+			}
+		}
+
+		var lastEatFen = chess.getFenList()[lastEat];
+		var eatAfterMove = moveList.slice(lastEat + 1);
+		//console.log(lastEatFen, eatAfterMove);
+		wait(lastEatFen, eatAfterMove);
+	}
+});
+
+function wait(fen, list){
+	$.ajax({
+		url: "https://www.xiaxiangqi.com/api/cloud/bestmove",
+		data: { fen: fen, move: list.join(" ") },
+		type: "post",
+		success: function(response){
+			if (response.code === 0) {
+				chess.movePieceByNode(response.data.best, 200);
+			}
+			else if (response.code === 1001 || response.code === 1002) {
+				setTimeout(function(){ wait(fen, list); }, 1000);
+			}
+		}
+	});
+}
+
+// 假设对方走棋马八进七，对应 ICCS 为 h9g7，此时就应该执行一次 recieveMove("h9g7")，然后就又轮到红方走棋了
+//function recieveMove(move){
+//	chess.movePieceByNode(move, 200);
+//}
+</script>
+</body>
+</html>

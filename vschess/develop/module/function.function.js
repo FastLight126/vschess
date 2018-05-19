@@ -130,9 +130,11 @@ vs.roundMove = function(move){
 
 // 翻转 WXF 着法，不可用于特殊兵
 vs.turnWXF = function(oldMove){
+	// isMBA: is Middle Before After
 	var moveSplit = oldMove.split(""), isMBA = ~"+-.".indexOf(moveSplit[1]);
 
-	if (~"NBA".indexOf(moveSplit[0]) || moveSplit[2] == ".") {
+	// NBA: 不是你想象中的 NBA，而是马相仕（马象士）
+	if (~"NBA".indexOf(moveSplit[0]) || moveSplit[2] === ".") {
 		if (isMBA) {
 			return oldMove.substring(0, 3) + (10 - moveSplit[3]);
 		}
@@ -258,7 +260,7 @@ vs.fieldNameToCamel = function(fieldName){
 vs.guid = function(){
 	var guid = "";
 
-	for (var i=0;i<32;++i) {
+	for (var i = 0; i < 32; ++i) {
 		guid += Math.floor(Math.random() * 16).toString(16);
 		~[7, 11, 15, 19].indexOf(i) && (guid += "-");
 	}

@@ -1,15 +1,15 @@
 // 检查 Zepto 或 jQuery 环境
-	if (typeof Zepto != "undefined") {
+if (typeof Zepto !== "undefined") {
 	var $ = Zepto;
 }
-else if (typeof jQuery != "undefined") {
+else if (typeof jQuery !== "undefined") {
 	var $ = jQuery;
 }
 else {
 	// 未引入 Zepto 或 jQuery，程序将自动加载 Zepto 或 jQuery
 	var currentElement = document.documentElement;
 
-	while (currentElement.tagName.toLowerCase() != "script") {
+	while (currentElement.tagName.toLowerCase() !== "script") {
 		currentElement = currentElement.lastChild;
 	}
 
@@ -371,14 +371,23 @@ var vschess = {
 	editModuleList: ["editEndButton", "editCancelButton", "editTips", "editTextarea", "editTextareaPlaceholder", "editPieceArea", "editBoard", "recommendClass", "recommendList", "editEditStartText", "editEditStartRound", "editEditStartPlayer"],
 
 	// 粘贴棋谱组件列表
-	editNodeModuleList: ["editNodeEndButton", "editNodeCancelButton", "editNodeTextarea", "editNodeTextareaPlaceholder"]
+	editNodeModuleList: ["editNodeEndButton", "editNodeCancelButton", "editNodeTextarea", "editNodeTextareaPlaceholder"],
+
+	// 状态参数语义化
+	code: {
+		// 棋子单击事件是否响应状态，0(0x00) 双方不响应，1(0x01) 仅黑方响应，2(0x10) 仅红方响应，3(0x11) 双方响应
+		clickResponse: { none: 0, black: 1, red: 2, both: 3 },
+
+		// 棋盘方向，0(0x00) 不翻转，1(0x01) 左右翻转，2(0x10) 上下，3(0x11) 对角旋转（左右+上下）
+		turn: { none: 0, mirror: 1, reverse: 2, round: 3 }
+	}
 };
 
 // 自身路径
 vs.selfPath = (function(){
 	var currentElement = document.documentElement;
 
-	while (currentElement.tagName.toLowerCase() != "script") {
+	while (currentElement.tagName.toLowerCase() !== "script") {
 		currentElement = currentElement.lastChild;
 	}
 
@@ -424,10 +433,11 @@ vs.defaultOptions = {
 	parseType: "auto",
 
 	// 默认棋盘方向
-	turn: 0,
+	turn: vs.code.turn.none,
 
 	// 默认棋子单击事件是否响应状态，0(0x00) 双方不响应，1(0x01) 仅黑方响应，2(0x10) 仅红方响应，3(0x11) 双方响应
-	clickResponse: 3,
+	// 亦可以使用 vschess.code.clickResponse：none 双方不响应，black 仅黑方响应，red 仅红方响应，both 双方响应
+	clickResponse: vs.code.clickResponse.both,
 
 	// 默认走子动画时间，单位毫秒
 	animationTime: 200,

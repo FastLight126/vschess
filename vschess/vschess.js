@@ -1,5 +1,5 @@
 /*
- * 微思象棋播放器 V2.0.0
+ * 微思象棋播放器 V2.0.1
  * https://www.xiaxiangqi.com/
  *
  * Copyright @ 2009-2018 Margin.Top 版权所有
@@ -11,24 +11,24 @@
  * ECCO 开局分类编号系统算法由象棋巫师友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年5月18日
- * Fri, 18 May 2018 23:21:38 +0800
+ * 最后修改日期：北京时间 2018年5月19日
+ * Sat, 19 May 2018 13:56:28 +0800
  */
 
 (function(){
 
 // 检查 Zepto 或 jQuery 环境
-	if (typeof Zepto != "undefined") {
+if (typeof Zepto !== "undefined") {
 	var $ = Zepto;
 }
-else if (typeof jQuery != "undefined") {
+else if (typeof jQuery !== "undefined") {
 	var $ = jQuery;
 }
 else {
 	// 未引入 Zepto 或 jQuery，程序将自动加载 Zepto 或 jQuery
 	var currentElement = document.documentElement;
 
-	while (currentElement.tagName.toLowerCase() != "script") {
+	while (currentElement.tagName.toLowerCase() !== "script") {
 		currentElement = currentElement.lastChild;
 	}
 
@@ -42,7 +42,7 @@ else {
 // 主程序
 var vschess = {
 	// 当前版本号
-	version: "2.0.0",
+	version: "2.0.1",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -390,14 +390,23 @@ var vschess = {
 	editModuleList: ["editEndButton", "editCancelButton", "editTips", "editTextarea", "editTextareaPlaceholder", "editPieceArea", "editBoard", "recommendClass", "recommendList", "editEditStartText", "editEditStartRound", "editEditStartPlayer"],
 
 	// 粘贴棋谱组件列表
-	editNodeModuleList: ["editNodeEndButton", "editNodeCancelButton", "editNodeTextarea", "editNodeTextareaPlaceholder"]
+	editNodeModuleList: ["editNodeEndButton", "editNodeCancelButton", "editNodeTextarea", "editNodeTextareaPlaceholder"],
+
+	// 状态参数语义化
+	code: {
+		// 棋子单击事件是否响应状态，0(0x00) 双方不响应，1(0x01) 仅黑方响应，2(0x10) 仅红方响应，3(0x11) 双方响应
+		clickResponse: { none: 0, black: 1, red: 2, both: 3 },
+
+		// 棋盘方向，0(0x00) 不翻转，1(0x01) 左右翻转，2(0x10) 上下，3(0x11) 对角旋转（左右+上下）
+		turn: { none: 0, mirror: 1, reverse: 2, round: 3 }
+	}
 };
 
 // 自身路径
 vschess.selfPath = (function(){
 	var currentElement = document.documentElement;
 
-	while (currentElement.tagName.toLowerCase() != "script") {
+	while (currentElement.tagName.toLowerCase() !== "script") {
 		currentElement = currentElement.lastChild;
 	}
 
@@ -443,10 +452,11 @@ vschess.defaultOptions = {
 	parseType: "auto",
 
 	// 默认棋盘方向
-	turn: 0,
+	turn: vschess.code.turn.none,
 
 	// 默认棋子单击事件是否响应状态，0(0x00) 双方不响应，1(0x01) 仅黑方响应，2(0x10) 仅红方响应，3(0x11) 双方响应
-	clickResponse: 3,
+	// 亦可以使用 vschess.code.clickResponse：none 双方不响应，black 仅黑方响应，red 仅红方响应，both 双方响应
+	clickResponse: vschess.code.clickResponse.both,
 
 	// 默认走子动画时间，单位毫秒
 	animationTime: 200,
@@ -571,189 +581,6 @@ vschess.IE6Compatible_setPieceTransparent = function(options){
 	sheet.addRule(".vschess-style-" + options.style + " .vschess-piece-p span", cssRule.replace("#", vschess.defaultPath + 'style/' + options.style + "/bp.png"));
 
 	return this;
-};
-
-// 将军检查器
-vschess.checkThreat = function(situation){
-	situation = situation.slice(0);
-	var kingIndex = 199;
-	var player = situation[0];
-	var enermy = 3 - player;
-
-	// 寻找帅、将
-	if (player == 1) {
-		for (var i=0;i<9;++i) {
-			if (situation[vschess.castleR[i]] == 21) {
-				kingIndex = vschess.castleR[i];
-				break;
-			}
-		}
-	}
-	else {
-		for (var i=0;i<9;++i) {
-			if (situation[vschess.castleB[i]] == 37) {
-				kingIndex = vschess.castleB[i];
-				break;
-			}
-		}
-	}
-
-	// 车、将、帅
-	for (var i=kingIndex+1;situation[i];++i) {
-		if (situation[i] > 1) {
-			if ((situation[i] & 15) == 1 && situation[i] >> 4 == enermy) {
-				return true;
-			}
-
-			break;
-		}
-	}
-
-	for (var i=kingIndex-1;situation[i];--i) {
-		if (situation[i] > 1) {
-			if ((situation[i] & 15) == 1 && situation[i] >> 4 == enermy) {
-				return true;
-			}
-
-			break;
-		}
-	}
-
-	for (var i=kingIndex+16;situation[i];i+=16) {
-		if (situation[i] > 1) {
-			if (((situation[i] & 15) == 1 || (situation[i] & 15) == 5) && situation[i] >> 4 == enermy) {
-				return true;
-			}
-
-			break;
-		}
-	}
-
-	for (var i=kingIndex-16;situation[i];i-=16) {
-		if (situation[i] > 1) {
-			if (((situation[i] & 15) == 1 || (situation[i] & 15) == 5) && situation[i] >> 4 == enermy) {
-				return true;
-			}
-
-			break;
-		}
-	}
-
-	// 马
-	for (var i=0;i<4;++i) {
-		if (situation[kingIndex + vschess.advisorDelta[i]] == 1) {
-			var piece = situation[kingIndex + vschess.knightCheckDelta[i][0]];
-
-			if ((piece & 15) == 2 && piece >> 4 == enermy) {
-				return true;
-			}
-
-			var piece = situation[kingIndex + vschess.knightCheckDelta[i][1]];
-
-			if ((piece & 15) == 2 && piece >> 4 == enermy) {
-				return true;
-			}
-		}
-	}
-
-	// 炮
-	var barbette = false;
-
-	for (var i=kingIndex+1;situation[i];++i) {
-		if (barbette) {
-			if (situation[i] > 1) {
-				if ((situation[i] & 15) == 6 && situation[i] >> 4 == enermy) {
-					return true;
-				}
-
-				break;
-			}
-		}
-		else {
-			if (situation[i] > 1) {
-				barbette = true;
-			}
-		}
-	}
-
-	var barbette = false;
-
-	for (var i=kingIndex-1;situation[i];--i) {
-		if (barbette) {
-			if (situation[i] > 1) {
-				if ((situation[i] & 15) == 6 && situation[i] >> 4 == enermy) {
-					return true;
-				}
-
-				break;
-			}
-		}
-		else {
-			if (situation[i] > 1) {
-				barbette = true;
-			}
-		}
-	}
-
-	var barbette = false;
-
-	for (var i=kingIndex+16;situation[i];i+=16) {
-		if (barbette) {
-			if (situation[i] > 1) {
-				if ((situation[i] & 15) == 6 && situation[i] >> 4 == enermy) {
-					return true;
-				}
-
-				break;
-			}
-		}
-		else {
-			if (situation[i] > 1) {
-				barbette = true;
-			}
-		}
-	}
-
-	var barbette = false;
-
-	for (var i=kingIndex-16;situation[i];i-=16) {
-		if (barbette) {
-			if (situation[i] > 1) {
-				if ((situation[i] & 15) == 6 && situation[i] >> 4 == enermy) {
-					return true;
-				}
-
-				break;
-			}
-		}
-		else {
-			if (situation[i] > 1) {
-				barbette = true;
-			}
-		}
-	}
-
-	// 兵、卒
-	if ((situation[kingIndex + 1] & 15) == 7 && situation[kingIndex + 1] >> 4 == enermy) {
-		return true;
-	}
-
-	if ((situation[kingIndex - 1] & 15) == 7 && situation[kingIndex - 1] >> 4 == enermy) {
-		return true;
-	}
-
-	if (player == 1) {
-		if ((situation[kingIndex - 16] & 15) == 7 && situation[kingIndex - 16] >> 4 == 2) {
-			return true;
-		}
-	}
-	else {
-		if ((situation[kingIndex + 16] & 15) == 7 && situation[kingIndex + 16] >> 4 == 1) {
-			return true;
-		}
-	}
-
-	return false;
 };
 
 // 从原始数据中抽取棋局信息
@@ -1364,9 +1191,11 @@ vschess.roundMove = function(move){
 
 // 翻转 WXF 着法，不可用于特殊兵
 vschess.turnWXF = function(oldMove){
+	// isMBA: is Middle Before After
 	var moveSplit = oldMove.split(""), isMBA = ~"+-.".indexOf(moveSplit[1]);
 
-	if (~"NBA".indexOf(moveSplit[0]) || moveSplit[2] == ".") {
+	// NBA: 不是你想象中的 NBA，而是马相仕（马象士）
+	if (~"NBA".indexOf(moveSplit[0]) || moveSplit[2] === ".") {
 		if (isMBA) {
 			return oldMove.substring(0, 3) + (10 - moveSplit[3]);
 		}
@@ -1492,7 +1321,7 @@ vschess.fieldNameToCamel = function(fieldName){
 vschess.guid = function(){
 	var guid = "";
 
-	for (var i=0;i<32;++i) {
+	for (var i = 0; i < 32; ++i) {
 		guid += Math.floor(Math.random() * 16).toString(16);
 		~[7, 11, 15, 19].indexOf(i) && (guid += "-");
 	}
@@ -1744,6 +1573,100 @@ vschess.init = function(options){
 	return this;
 };
 
+// 将军检查器
+vschess.checkThreat = function(situation){
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	situation = situation.slice(0);
+	var kingIndex = 0;
+	var player = situation[0];
+	var enermy = 3 - player;
+
+	// 寻找帅、将
+	if (player === 1) {
+		for (var i = 0; !kingIndex && i < 9; ++i) {
+			situation[vschess.castleR[i]] === 21 && (kingIndex = vschess.castleR[i]);
+		}
+	}
+	else {
+		for (var i = 0; !kingIndex && i < 9; ++i) {
+			situation[vschess.castleB[i]] === 37 && (kingIndex = vschess.castleB[i]);
+		}
+	}
+
+	// 车、将、帅
+	for (var k = 0; k < 4; ++k) {
+		for (var i = kingIndex + vschess.kingDelta[k]; situation[i]; i += vschess.kingDelta[k]) {
+			if (situation[i] > 1) {
+				if (((situation[i] & 15) === 1 || (situation[i] & 15) === 5) && situation[i] >> 4 === enermy) {
+					return true;
+				}
+	
+				break;
+			}
+		}
+	}
+
+	// 马
+	for (var i = 0; i < 4; ++i) {
+		if (situation[kingIndex + vschess.advisorDelta[i]] == 1) {
+			var piece = situation[kingIndex + vschess.knightCheckDelta[i][0]];
+
+			if ((piece & 15) === 2 && piece >> 4 === enermy) {
+				return true;
+			}
+
+			var piece = situation[kingIndex + vschess.knightCheckDelta[i][1]];
+
+			if ((piece & 15) === 2 && piece >> 4 === enermy) {
+				return true;
+			}
+		}
+	}
+
+	// 炮
+	for (var k = 0; k < 4; ++k) {
+		var barbette = false;
+	
+		for (var i = kingIndex + vschess.kingDelta[k]; situation[i]; i += vschess.kingDelta[k]) {
+			if (barbette) {
+				if (situation[i] > 1) {
+					if ((situation[i] & 15) === 6 && situation[i] >> 4 === enermy) {
+						return true;
+					}
+	
+					break;
+				}
+			}
+			else {
+				situation[i] > 1 && (barbette = true);
+			}
+		}
+	}
+
+	// 兵、卒
+	if ((situation[kingIndex + 1] & 15) === 7 && situation[kingIndex + 1] >> 4 === enermy) {
+		return true;
+	}
+
+	if ((situation[kingIndex - 1] & 15) === 7 && situation[kingIndex - 1] >> 4 === enermy) {
+		return true;
+	}
+
+	if (player === 1) {
+		if ((situation[kingIndex - 16] & 15) === 7 && situation[kingIndex - 16] >> 4 === 2) {
+			return true;
+		}
+	}
+	else {
+		if ((situation[kingIndex + 16] & 15) === 7 && situation[kingIndex + 16] >> 4 === 1) {
+			return true;
+		}
+	}
+
+	return false;
+};
+
 // 着法生成器（索引模式）
 vschess.legalList = function(situation){
 	var RegExp = vschess.RegExp();
@@ -1831,7 +1754,8 @@ vschess.legalList = function(situation){
 		// 帅、将
 		else if (piece === 5) {
 			for (var k = 0; k < 4; ++k) {
-				vschess.castle[i + vschess.kingDelta[k]] && situation[i + vschess.kingDelta[k]] >> 4 !== player && checkPush([i, i + vschess.kingDelta[k]]);
+				var targetIndex = i + vschess.kingDelta[k];
+				vschess.castle[targetIndex] && situation[targetIndex] >> 4 !== player && checkPush([i, targetIndex]);
 			}
 		}
 
@@ -6519,7 +6443,7 @@ vschess.load.prototype.toString = function(){
 
 // 程序转换为字符串信息
 vschess.toString = function(){
-	return "\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V2.0.0 https://www.xiaxiangqi.com/ Copyright \u00a9 2009-2018 Margin.Top \u7248\u6743\u6240\u6709";
+	return "\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V2.0.1 https://www.xiaxiangqi.com/ Copyright \u00a9 2009-2018 Margin.Top \u7248\u6743\u6240\u6709";
 };
 
 // 将 vschess 提升为全局变量，这样外部脚本就可以调用了
