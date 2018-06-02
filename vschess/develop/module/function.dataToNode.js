@@ -134,43 +134,46 @@ vs.dataToNode_PGN = function(chessData){
 		default    : dataSplitByMove = chessData.split(RegExp.Chinese); break;
 	}
 
-	for (var i=0,j=0;i<dataSplitByMove.length;++i) {
+	for (var i = 0, j = 0; i < dataSplitByMove.length; ++i) {
 		~dataSplitByMove[i].indexOf("COMMENT") && (commentListByStep[i] = commentList[j++]);
 	}
 
 	// 抽取起始 Fen 串
-	var match, startFen;
+	var match, startFen, noFenData;//, RegExp = vs.RegExp();
 
 	if (match = RegExp.FenLong.exec(originalChessData)) {
-		startFen = match[0];
+		startFen  = match[0];
+		noFenData = chessData.replace(RegExp.FenShort, "");
 	}
 	else if (match = RegExp.FenShort.exec(originalChessData)) {
 		startFen = match[0] + " - - 0 1";
+		noFenData = chessData.replace(RegExp.FenShort, "");
 	}
 	else {
 		startFen = vs.defaultFen;
+		noFenData = chessData;
 	}
 
 	// 抽取着法
 	var moveList = [];
 
-	if (format == "node") {
-		while (match=RegExp.Node.exec(chessData)) {
+	if (format === "node") {
+		while (match = RegExp.Node.exec(noFenData)) {
 			moveList.push(vs.Node2ICCS_NoFen(match[0]));
 		}
 	}
-	else if (format == "iccs") {
-		while (match=RegExp.ICCS.exec(chessData)) {
+	else if (format === "iccs") {
+		while (match = RegExp.ICCS.exec(noFenData)) {
 			moveList.push(match[0]);
 		}
 	}
-	else if (format == "wxf") {
-		while (match=RegExp.WXF.exec(chessData)) {
+	else if (format === "wxf") {
+		while (match = RegExp.WXF.exec(noFenData)) {
 			moveList.push(match[0]);
 		}
 	}
 	else {
-		while (match=RegExp.Chinese.exec(chessData)) {
+		while (match = RegExp.Chinese.exec(noFenData)) {
 			moveList.push(match[0]);
 		}
 	}
@@ -201,19 +204,19 @@ vs.dataToNode_PGN = function(chessData){
 
 // 将东萍象棋 Dhtml 格式转换为棋谱节点树
 vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
-	var DhtmlXQ_Comment = {};
-	var DhtmlXQ_Change = {};
-	var DhtmlXQ_Start = "";
+	var DhtmlXQ_Comment  = {};
+	var DhtmlXQ_Change   = {};
+	var DhtmlXQ_Start    = "";
 	var DhtmlXQ_MoveList = "";
 	var DhtmlXQ_EachLine = chessData.split("\n");
 
-	for (var i=0;i<DhtmlXQ_EachLine.length;++i) {
+	for (var i = 0; i < DhtmlXQ_EachLine.length; ++i) {
 		var l = DhtmlXQ_EachLine[i];
 
 		if (~l.indexOf("[DhtmlXQ_comment")) {
-			var start		= l.indexOf("]");
-			var end 		= l.indexOf("[/DhtmlXQ_comment");
-			var commentId	= l.substring(16, start);
+			var start	  = l.indexOf("]");
+			var end 	  = l.indexOf("[/DhtmlXQ_comment");
+			var commentId = l.substring(16, start);
 			~commentId.indexOf("_") || (commentId = "0_" + commentId);
 			DhtmlXQ_Comment[commentId] = l.substring(start + 1, end).replace(/\|\|/g, "\n");
 		}
@@ -224,9 +227,9 @@ vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 			DhtmlXQ_MoveList = l.substring(l.indexOf("[DhtmlXQ_movelist") + 18, l.indexOf("[/DhtmlXQ_movelist"));
 		}
 		else if (~l.indexOf("[DhtmlXQ_move_")) {
-			var start		= l.indexOf("]");
-			var end 		= l.indexOf("[/DhtmlXQ_move_");
-			var changeId	= l.substring(14, start);
+			var start	 = l.indexOf("]");
+			var end 	 = l.indexOf("[/DhtmlXQ_move_");
+			var changeId = l.substring(14, start);
 			DhtmlXQ_Change[changeId] = l.substring(start + 1, end);
 		}
 	}
@@ -236,40 +239,16 @@ vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 		var DhtmlXQ_ToFen = new Array(91).join("*").split(""), DhtmlXQ_ToFenFinal = [];
 		var DhtmlXQ_ToFenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp".split("");
 
-		for (var i=0;i<32;++i) {
+		for (var i = 0; i < 32; ++i) {
 			var move = DhtmlXQ_Start.substring(i * 2, i * 2 + 2).split("");
 			DhtmlXQ_ToFen[+move[0] + move[1] * 9] = DhtmlXQ_ToFenPiece[i];
 		}
 
-		for (var i=0;i<90;++i) {
-			DhtmlXQ_ToFenFinal.push(DhtmlXQ_ToFen[i]);
-			i % 9 == 8 && i < 89 && DhtmlXQ_ToFenFinal.push("/");
-		}
-
-		DhtmlXQ_ToFenFinal = DhtmlXQ_ToFenFinal.join("")
-			.replace(/\*\*\*\*\*\*\*\*\*/g, "9")
-			.replace(/\*\*\*\*\*\*\*\*/g, "8")
-			.replace(/\*\*\*\*\*\*\*/g, "7")
-			.replace(/\*\*\*\*\*\*/g, "6")
-			.replace(/\*\*\*\*\*/g, "5")
-			.replace(/\*\*\*\*/g, "4")
-			.replace(/\*\*\*/g, "3")
-			.replace(/\*\*/g, "2")
-			.replace(/\*/g, "1");
+		DhtmlXQ_ToFenFinal = vs.arrayToFen(DhtmlXQ_ToFen);
 	}
 	else {
 		var DhtmlXQ_ToFenFinal = vs.defaultFen.split(" ")[0];
-		var DhtmlXQ_ToFen = DhtmlXQ_ToFenFinal
-			.replace(/1/g, "*")
-			.replace(/2/g, "**")
-			.replace(/3/g, "***")
-			.replace(/4/g, "****")
-			.replace(/5/g, "*****")
-			.replace(/6/g, "******")
-			.replace(/7/g, "*******")
-			.replace(/8/g, "********")
-			.replace(/9/g, "*********")
-			.replace(/\//g, "").split("");
+		var DhtmlXQ_ToFen = vs.fenToArray(DhtmlXQ_ToFenFinal);
 	}
 
 	if (DhtmlXQ_MoveList) {
@@ -343,9 +322,9 @@ vs.dataToNode_ShiJia = function(chessData, onlyFen) {
 	if (match) {
 		var chessman  = "*PPPPPCCNNRRBBAAKpppppccnnrrbbaak".split("");
 		var situation = vs.fenToSituation(vs.blankFen);
-		situation[0] = (match[33] == "B" || match[33] == "b") + 1;
+		situation[0]  = match[33].toUpperCase() === "B" ? 2 : 1;
 
-		for (var i=1;i<=32;++i) {
+		for (var i = 1; i <= 32; ++i) {
 			situation[match[i] - 1] = vs.f2n[chessman[i]];
 		}
 

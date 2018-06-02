@@ -299,3 +299,66 @@ vs.strpad = function(str, length, pad, direction){
 		return str;
 	}
 };
+
+// 判断字符串是否为数字
+vs.isNumber = function(str){
+	return !isNaN(+str);
+};
+
+// 拆分 Fen 串
+vs.fenToArray = function(fen){
+	return fen.split(" ")[0]
+		.replace(/1/g, "*")
+		.replace(/2/g, "**")
+		.replace(/3/g, "***")
+		.replace(/4/g, "****")
+		.replace(/5/g, "*****")
+		.replace(/6/g, "******")
+		.replace(/7/g, "*******")
+		.replace(/8/g, "********")
+		.replace(/9/g, "*********")
+		.replace(/\//g,"").split("");
+};
+
+// 合并 Fen 串
+vs.arrayToFen = function(array){
+	var tempArr = [];
+
+	for (var i = 0; i < 90; ++i) {
+		tempArr.push(array[i]);
+		i % 9 === 8 && i < 89 && tempArr.push("/");
+	}
+
+	return tempArr.join("")
+		.replace(/\*\*\*\*\*\*\*\*\*/g, "9")
+		.replace(/\*\*\*\*\*\*\*\*/g, "8")
+		.replace(/\*\*\*\*\*\*\*/g, "7")
+		.replace(/\*\*\*\*\*\*/g, "6")
+		.replace(/\*\*\*\*\*/g, "5")
+		.replace(/\*\*\*\*/g, "4")
+		.replace(/\*\*\*/g, "3")
+		.replace(/\*\*/g, "2")
+		.replace(/\*/g, "1");
+};
+
+// 取得指定弧度值旋转 CSS 样式
+vs.degToRotateCSS = function(deg){
+	if (window.ActiveXObject) {
+		var css = "filter:progid:DXImageTransform.Microsoft.Matrix(SizingMethod=sMethod,M11=#M11,M12=#M12,M21=#M21,M22=#M22)";
+		var rad =  Math.PI * deg / 180;
+		var M11 =  Math.cos(deg);
+		var M12 = -Math.sin(deg);
+		var M21 =  Math.sin(deg);
+		var M22 =  Math.cos(deg);
+		return css.replace("#M11", M11).replace("#M12", M12).replace("#M21", M21).replace("#M22", M22);
+	}
+	else {
+		var css = "";
+		css +=         "transform:rotate(" + deg + "deg);";
+		css +=      "-o-transform:rotate(" + deg + "deg);";
+		css +=     "-ms-transform:rotate(" + deg + "deg);";
+		css +=    "-moz-transform:rotate(" + deg + "deg);";
+		css += "-webkit-transform:rotate(" + deg + "deg);";
+		return css;
+	}
+};

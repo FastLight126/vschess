@@ -105,6 +105,7 @@ fn.initArguments = function(){
 	this.setSound			(this.options.sound				);
 	this.setVolume			(this.options.volume			);
 	this.setPlayGap			(this.options.playGap			);
+	this.setPieceRotate		(this.options.pieceRotate		);
 	return this;
 };
 

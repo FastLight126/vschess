@@ -16,6 +16,7 @@ fn.pieceClick = function(){
 			else {
 				// 合法着法，移动棋子
 				if (_this.getLegalByPieceIndex(_this.getCurrentSelect(), index)) {
+					_this.callback_beforeClickAnimate();
 					_this.movePieceByPieceIndex(_this.getCurrentSelect(), index, _this.getAnimationTime(), function(){ _this.callback_afterClickAnimate(); });
 				}
 

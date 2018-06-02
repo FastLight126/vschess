@@ -250,7 +250,7 @@ var vschess = {
 	tabList: "comment info export edit config".split(" "),
 
 	// 钩子列表
-	callbackList: "afterClickAnimate loadFinish".split(" "),
+	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece".split(" "),
 
 	// 默认 Fen 串
 	defaultFen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1",
@@ -432,7 +432,8 @@ vs.defaultOptions = {
 	// 选择解析器，默认为自动选择
 	parseType: "auto",
 
-	// 默认棋盘方向
+	// 默认棋盘方向，0(0x00) 不翻转，1(0x01) 左右翻转，2(0x10) 上下翻转，3(0x11) 对角旋转
+	// 亦可以使用 vschess.code.turn：none 不翻转，mirror 左右翻转，reverse 上下翻转，round 对角旋转
 	turn: vs.code.turn.none,
 
 	// 默认棋子单击事件是否响应状态，0(0x00) 双方不响应，1(0x01) 仅黑方响应，2(0x10) 仅红方响应，3(0x11) 双方响应
@@ -466,6 +467,9 @@ vs.defaultOptions = {
 
 	// 保存提示
 	saveTips: false,
+
+	// 棋子随机旋转
+	pieceRotate: false,
 
 	// 起始局面提示信息
 	startTips: [

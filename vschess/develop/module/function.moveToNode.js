@@ -4,7 +4,7 @@ vs.Chinese2Node = function(move, fen){
 	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
 
 	if (!RegExp.Chinese.test(move)) {
-		return { move: "none", fen: vs.defaultFen };
+		return { move: "none", movedFen: vs.defaultFen };
 	}
 
 	var cStr = "车車俥马馬傌相象仕士帅帥将將炮包砲兵卒前进進后後退平中一二三四五六七八九壹贰叁肆伍陆柒捌玖１２３４５６７８９123456789";
@@ -20,7 +20,7 @@ vs.WXF2Node = function(move, fen){
 	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
 
 	if (!RegExp.WXF.test(move)) {
-		return { move: "none", fen: vs.defaultFen };
+		return { move: "none", movedFen: vs.defaultFen };
 	}
 
 	move = move
@@ -46,13 +46,13 @@ vs.WXF2Node = function(move, fen){
 	// 前
 	if (moveSplit[0] === "+") {
 		// 特殊兵卒东萍表示法
-		if (!isNaN(+moveSplit[1])) {
+		if (vs.isNumber(moveSplit[1])) {
 			for (var i = 60 - moveSplit[1]; i < 204 && !from; i += 16) {
 				situation[i] === P && (from = i);
 			}
 		}
 		// 兵卒
-		else if (~"Pp".indexOf(moveSplit[1])) {
+		else if (moveSplit[1].toUpperCase() === "P") {
 			for (i = 51; i < 60 && !from; ++i) {
 				for (var j = i, pList = []; j < 204; j += 16) {
 					situation[j] === P && pList.push(j);
@@ -71,13 +71,13 @@ vs.WXF2Node = function(move, fen){
 	// 后
 	else if (moveSplit[0] === "-") {
 		// 特殊兵卒东萍表示法
-		if (!isNaN(+moveSplit[1])) {
+		if (vs.isNumber(moveSplit[1])) {
 			for (var i = 204 - moveSplit[1]; i > 50 && !from; i -= 16) {
 				situation[i] === P && (from = i);
 			}
 		}
 		// 兵卒
-		else if (~"Pp".indexOf(moveSplit[1])) {
+		else if (moveSplit[1].toUpperCase() === "P") {
 			for (i = 51; i < 60 && !from; ++i) {
 				for (var j = i, pList = []; j < 204; j += 16) {
 					situation[j] === P && pList.push(j);
@@ -194,7 +194,7 @@ vs.WXF2Node = function(move, fen){
 		}
 	}
 	else {
-		return { move: "none", fen: vs.defaultFen };
+		return { move: "none", movedFen: vs.defaultFen };
 	}
 };
 
@@ -204,7 +204,7 @@ vs.ICCS2Node = function(move, fen){
 	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
 
 	if (!RegExp.ICCS.test(move)) {
-		return { move: "none", fen: vs.defaultFen };
+		return { move: "none", movedFen: vs.defaultFen };
 	}
 
 	var situation = vs.fenToSituation(fen);

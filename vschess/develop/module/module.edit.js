@@ -532,11 +532,12 @@ fn.createNodeEndButton = function(){
 			return false;
 		}
 
-		_this.setBoardByStep(0);
-		_this.node = vs.dataToNode(_this.editNodeTextarea.val());
-		_this.rebuildSituation().refreshMoveSelectListNode().setBoardByStep(0);
+		var chessData = _this.editNodeTextarea.val();
 		_this.editNodeTextarea.val("");
-		_this.chessInfo = vs.dataToInfo(_this.editNodeTextarea.val(), "auto");
+		_this.setBoardByStep(0);
+		_this.node = vs.dataToNode(chessData);
+		_this.rebuildSituation().refreshMoveSelectListNode().setBoardByStep(0);
+		_this.chessInfo = vs.dataToInfo(chessData, "auto");
 		_this.insertInfoByCurrent();
 		_this.refreshInfoEditor();
 		_this.rebuildExportAll();

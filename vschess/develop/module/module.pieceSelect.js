@@ -38,11 +38,13 @@ fn.toggleSelectByPieceIndex = function(index){
 
 	if (this.piece.eq(index).hasClass("vschess-piece-s")) {
 		this.clearSelect();
+		this.callback_unSelectPiece();
 	}
 	else {
 		this.clearSelect();
 		this.setSelectByPieceIndex(index);
 		this.getMoveTips() && this.setLegalTargetByStartIndex(index);
+		this.callback_selectPiece();
 	}
 
 	return this;

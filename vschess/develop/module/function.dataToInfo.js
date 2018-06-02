@@ -1,17 +1,19 @@
 // 从原始数据中抽取棋局信息
 vs.dataToInfo = function(chessData, parseType){
+	var replaceQuote = chessData.replace(/\'/g, '"');
+
 	// 标准节点树格式，即鹏飞象棋 PFC 格式
-	if (parseType === "auto" && ~chessData.indexOf("n version") || parseType === "pfc") {
+	if (parseType === "auto" && ~replaceQuote.indexOf("n version") || parseType === "pfc") {
 		return vs.dataToInfo_PFC(chessData);
 	}
 
 	// 东萍象棋 DhtmlXQ 格式
-	if (parseType === "auto" && ~chessData.indexOf("[DhtmlXQ") || parseType === "DhtmlXQ") {
+	if (parseType === "auto" && ~replaceQuote.indexOf("[DhtmlXQ") || parseType === "DhtmlXQ") {
 		return vs.dataToInfo_DhtmlXQ(chessData);
 	}
 
 	// 标准 PGN 格式
-	if (parseType === "auto" && ~chessData.indexOf('[Game "Chinese Chess"]') || parseType === "pgn") {
+	if (parseType === "auto" && ~replaceQuote.indexOf('[Game "Chinese Chess"]') || parseType === "pgn") {
 		return vs.dataToInfo_PGN(chessData);
 	}
 
@@ -21,9 +23,9 @@ vs.dataToInfo = function(chessData, parseType){
 
 // 从鹏飞象棋 PFC 格式中抽取棋局信息
 vs.dataToInfo_PFC = function(chessData){
-	chessData  = chessData.replace("<!--", "").replace("-->", "").replace(/<\?xml(.*)\?>/, "");
-	chessData  = chessData.replace(/<n/ig, "<div").replace(/\/>/ig, "></div>").replace(/<\/n>/ig, "</div>");
-	var node   = $($.trim(chessData)), result = {};
+	chessData = chessData.replace("<!--", "").replace("-->", "").replace(/<\?xml(.*)\?>/, "");
+	chessData = chessData.replace(/<n/ig, "<div").replace(/\/>/ig, "></div>").replace(/<\/n>/ig, "</div>");
+	var node  = $($.trim(chessData)), result = {};
 
 	for (var i in vs.info.name) {
 		node.attr(i) && (result[i] = node.attr(i));
@@ -37,11 +39,11 @@ vs.dataToInfo_PGN = function(chessData){
 	var result = {};
 
 	for (var i in vs.info.name) {
-		var startTag = '[' + (vs.info.pgn[i] || vs.fieldNameToCamel(i)) + ' "';
+		var startTag = "[" + (vs.info.pgn[i] || vs.fieldNameToCamel(i));
 		var startPos = chessData.indexOf(startTag);
 
 		if (~startPos) {
-			var value = chessData.substring(startPos + startTag.length, chessData.indexOf('"]', startPos));
+			var value = chessData.substring(startPos + startTag.length + 2, chessData.indexOf("]", startPos) - 1);
 			value && (result[i] = value);
 		}
 	}

@@ -2,32 +2,32 @@
 vs.addCSS = function(options, type, href){
 	var link = document.createElement("link");
 	var head = document.getElementsByTagName("head");
-	typeof vs. styleLoadedCallback[options.style ] == "undefined" && (vs. styleLoadedCallback[options.style ] = []);
-	typeof vs.layoutLoadedCallback[options.layout] == "undefined" && (vs.layoutLoadedCallback[options.layout] = []);
+	typeof vs. styleLoadedCallback[options.style ] === "undefined" && (vs. styleLoadedCallback[options.style ] = []);
+	typeof vs.layoutLoadedCallback[options.layout] === "undefined" && (vs.layoutLoadedCallback[options.layout] = []);
 	link.setAttribute("rel", "stylesheet");
 	link.setAttribute("type", "text/css");
 	link.setAttribute("href", href);
 
 	link.onload = function(){
-		if (type == "global") {
-			for (var i=0;i<vs.globalLoadedCallback.length;++i) {
-				typeof vs.globalLoadedCallback[i] == "function" && vs.globalLoadedCallback[i]();
+		if (type === "global") {
+			for (var i = 0; i < vs.globalLoadedCallback.length; ++i) {
+				typeof vs.globalLoadedCallback[i] === "function" && vs.globalLoadedCallback[i]();
 			}
 
 			vs.globalLoaded = true;
 		}
 
-		if (type == "style") {
-			for (var i=0;i<vs.styleLoadedCallback[options.style].length;++i) {
-				typeof vs.styleLoadedCallback[options.style][i] == "function" && vs.styleLoadedCallback[options.style][i]();
+		if (type === "style") {
+			for (var i = 0; i < vs.styleLoadedCallback[options.style].length; ++i) {
+				typeof vs.styleLoadedCallback[options.style][i] === "function" && vs.styleLoadedCallback[options.style][i]();
 			}
 
 			vs.styleLoaded[options.style] = true;
 		}
 
-		if (type == "layout") {
-			for (var i=0;i<vs.layoutLoadedCallback[options.layout].length;++i) {
-				typeof vs.layoutLoadedCallback[options.layout][i] == "function" && vs.layoutLoadedCallback[options.layout][i]();
+		if (type === "layout") {
+			for (var i = 0; i < vs.layoutLoadedCallback[options.layout].length; ++i) {
+				typeof vs.layoutLoadedCallback[options.layout][i] === "function" && vs.layoutLoadedCallback[options.layout][i]();
 			}
 
 			vs.layoutLoaded[options.layout] = true;
@@ -41,7 +41,7 @@ vs.addCSS = function(options, type, href){
 // 初始化程序，加载样式
 vs.init = function(options){
 	// 全局样式，统一 Web Audio API
-	if (typeof vs.inited == "undefined") {
+	if (!vs.inited) {
 		vs.AudioContext = window.AudioContext || window.webkitAudioContext;
 		vs.AudioContext = vs.AudioContext ? new vs.AudioContext() : false;
 		vs.addCSS(options, 'global', options.globalCSS);
@@ -49,20 +49,20 @@ vs.init = function(options){
 	}
 
 	// 风格样式
-	if (typeof vs.styleInit[options.style] == "undefined") {
+	if (!vs.styleInit[options.style]) {
 		vs.addCSS(options, 'style', vs.defaultPath + 'style/' + options.style + "/style.css");
 		vs.IE6Compatible_setPieceTransparent(options);
 		vs.styleInit[options.style] = true;
 	}
 
 	// 布局样式
-	if (typeof vs.layoutInit[options.layout] == "undefined") {
+	if (!vs.layoutInit[options.layout]) {
 		vs.addCSS(options, 'layout', vs.defaultPath + 'layout/' + options.layout + "/layout.css");
 		vs.layoutInit[options.layout] = true;
 	}
 
 	// 音效组件
-	if (typeof vs.soundInit[options.soundStyle] == "undefined") {
+	if (!vs.soundInit[options.soundStyle]) {
 		$.each(vs.soundList, function(index, name){
 			var soundName = options.soundStyle + "-" + name;
 			var soundId   = "vschess-sound-" + soundName;

@@ -1,6 +1,6 @@
 // 将军检查器
 vs.checkThreat = function(situation){
-	var RegExp = vschess.RegExp();
+	var RegExp = vs.RegExp();
 	RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
 	situation = situation.slice(0);
 	var kingIndex = 0;
@@ -34,7 +34,7 @@ vs.checkThreat = function(situation){
 
 	// 马
 	for (var i = 0; i < 4; ++i) {
-		if (situation[kingIndex + vs.advisorDelta[i]] == 1) {
+		if (situation[kingIndex + vs.advisorDelta[i]] === 1) {
 			var piece = situation[kingIndex + vs.knightCheckDelta[i][0]];
 
 			if ((piece & 15) === 2 && piece >> 4 === enermy) {
@@ -94,20 +94,17 @@ vs.checkThreat = function(situation){
 
 // 着法生成器（索引模式）
 vs.legalList = function(situation){
-	var RegExp = vschess.RegExp();
+	var RegExp = vs.RegExp();
 	RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
-	situation = situation.slice(0);
 	var legalList = [];
 	var player = situation[0];
 	var enermy = 3 - player;
 
 	function checkPush(step) {
-		var targetOld = situation[step[1]];
-		situation[step[1]] = situation[step[0]];
-		situation[step[0]] = 1;
-		vs.checkThreat(situation) || legalList.push(step);
-		situation[step[0]] = situation[step[1]];
-		situation[step[1]] = targetOld;
+		var s = situation.slice(0);
+		s[step[1]] = s[step[0]];
+		s[step[0]] = 1;
+		vs.checkThreat(s) || legalList.push(step);
 	}
 
 	// 棋盘搜索边界
@@ -228,50 +225,33 @@ vs.legalList = function(situation){
 
 // 着法生成器（坐标模式）
 vs.legalMoveList = function(situation){
-	var RegExp = vschess.RegExp();
+	var RegExp = vs.RegExp();
 	RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
 	var legalList = vs.legalList(situation), result = [];
 
-	for (var i=0;i<legalList.length;++i) {
+	for (var i = 0; i < legalList.length; ++i) {
 		result.push(vs.s2i[legalList[i][0]] + vs.s2i[legalList[i][1]]);
 	}
 
 	return result;
 };
 
-// Fen 串合法性检查，返回错误列表
+// Fen 串合法性检查，返回错误列表，列表长度为 0 表示没有错误
 vs.checkFen = function(fen){
-	var fenSplit = fen.split(" "), errorList = [];
-	var R = 0, N = 0, B = 0, A = 0, K = 0, C = 0, P = 0;
-	var r = 0, n = 0, b = 0, a = 0, k = 0, c = 0, p = 0;
+	var RegExp = vs.RegExp();
+
+	if (!RegExp.FenShort.test(fen)) {
+		return ["Fen 串不合法"];
+	}
+
+	var errorList = [], board = vs.fenToArray(fen);
+	var total = { R: 0, N: 0, B: 0, A: 0, K: 0, C: 0, P: 0, r: 0, n: 0, b: 0, a: 0, k: 0, c: 0, p: 0, "*": 0 };
 
 	function push(error){
 		~errorList.indexOf(error) || errorList.push(error);
 	}
 
-	var board = fenSplit[0]
-		.replace(/1/g, "*")
-		.replace(/2/g, "**")
-		.replace(/3/g, "***")
-		.replace(/4/g, "****")
-		.replace(/5/g, "*****")
-		.replace(/6/g, "******")
-		.replace(/7/g, "*******")
-		.replace(/8/g, "********")
-		.replace(/9/g, "*********")
-		.replace(/\//g,"").split("");
-
 	for (var i = 0; i < 90; ++i) {
-		switch (board[i]) {
-			case "R": ++R; break; case "r": ++r; break;
-			case "N": ++N; break; case "n": ++n; break;
-			case "B": ++B; break; case "b": ++b; break;
-			case "A": ++A; break; case "a": ++a; break;
-			case "K": ++K; break; case "k": ++k; break;
-			case "C": ++C; break; case "c": ++c; break;
-			case "P": ++P; break; case "p": ++p; break;
-		}
-
 		board[i] === "K" && !~[ 66, 67, 68, 75, 76, 77, 84, 85, 86 ].indexOf(i    )  && push("红方帅的位置不符合规则");
 		board[i] === "k" && !~[  3,  4,  5, 12, 13, 14, 21, 22, 23 ].indexOf(i    )  && push("黑方将的位置不符合规则");
 		board[i] === "B" && !~[     47, 51, 63, 67, 71, 83, 87     ].indexOf(i    )  && push("红方相的位置不符合规则");
@@ -280,6 +260,8 @@ vs.checkFen = function(fen){
 		board[i] === "a" && !~[          3,  5, 13, 21, 23         ].indexOf(i    )  && push("黑方士的位置不符合规则");
 		board[i] === "P" && (i >= 63 || i >= 45 && !~[0, 2, 4, 6, 8].indexOf(i % 9)) && push("红方兵的位置不符合规则");
 		board[i] === "p" && (i <  27 || i <  45 && !~[0, 2, 4, 6, 8].indexOf(i % 9)) && push("黑方卒的位置不符合规则");
+
+		++total[board[i]];
 
 		if (board[i] === "K") {
 			for (var j = i - 9; j > 0; j -= 9) {
@@ -303,22 +285,22 @@ vs.checkFen = function(fen){
 	board[33] === "p" && board[42] === "p" && push("黑方７路出现未过河的重叠卒");
 	board[35] === "p" && board[44] === "p" && push("黑方９路出现未过河的重叠卒");
 
-	R > 2 && push("红方出现了" + R + "个车，多了" + (R - 2) + "个");
-	r > 2 && push("黑方出现了" + r + "个车，多了" + (r - 2) + "个");
-	N > 2 && push("红方出现了" + N + "个马，多了" + (N - 2) + "个");
-	n > 2 && push("黑方出现了" + n + "个马，多了" + (n - 2) + "个");
-	B > 2 && push("红方出现了" + B + "个相，多了" + (B - 2) + "个");
-	b > 2 && push("黑方出现了" + b + "个象，多了" + (b - 2) + "个");
-	A > 2 && push("红方出现了" + A + "个仕，多了" + (A - 2) + "个");
-	a > 2 && push("黑方出现了" + a + "个士，多了" + (a - 2) + "个");
-	C > 2 && push("红方出现了" + C + "个炮，多了" + (C - 2) + "个");
-	c > 2 && push("黑方出现了" + c + "个炮，多了" + (c - 2) + "个");
-	P > 5 && push("红方出现了" + P + "个兵，多了" + (P - 5) + "个");
-	p > 5 && push("黑方出现了" + p + "个卒，多了" + (p - 5) + "个");
-	K > 1 && push("红方出现了" + K + "个帅，多了" + (K - 1) + "个");
-	k > 1 && push("黑方出现了" + k + "个将，多了" + (k - 1) + "个");
-	K < 1 && push("红方必须有一个帅");
-	k < 1 && push("黑方必须有一个将");
+	total.R > 2 && push("红方出现了" + total.R + "个车，多了" + (total.R - 2) + "个");
+	total.r > 2 && push("黑方出现了" + total.r + "个车，多了" + (total.r - 2) + "个");
+	total.N > 2 && push("红方出现了" + total.N + "个马，多了" + (total.N - 2) + "个");
+	total.n > 2 && push("黑方出现了" + total.n + "个马，多了" + (total.n - 2) + "个");
+	total.B > 2 && push("红方出现了" + total.B + "个相，多了" + (total.B - 2) + "个");
+	total.b > 2 && push("黑方出现了" + total.b + "个象，多了" + (total.b - 2) + "个");
+	total.A > 2 && push("红方出现了" + total.A + "个仕，多了" + (total.A - 2) + "个");
+	total.a > 2 && push("黑方出现了" + total.a + "个士，多了" + (total.a - 2) + "个");
+	total.C > 2 && push("红方出现了" + total.C + "个炮，多了" + (total.C - 2) + "个");
+	total.c > 2 && push("黑方出现了" + total.c + "个炮，多了" + (total.c - 2) + "个");
+	total.P > 5 && push("红方出现了" + total.P + "个兵，多了" + (total.P - 5) + "个");
+	total.p > 5 && push("黑方出现了" + total.p + "个卒，多了" + (total.p - 5) + "个");
+	total.K > 1 && push("红方出现了" + total.K + "个帅，多了" + (total.K - 1) + "个");
+	total.k > 1 && push("黑方出现了" + total.k + "个将，多了" + (total.k - 1) + "个");
+	total.K < 1 && push("红方必须有一个帅");
+	total.k < 1 && push("黑方必须有一个将");
 
 	return errorList;
 };
