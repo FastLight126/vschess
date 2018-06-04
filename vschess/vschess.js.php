@@ -96,4 +96,4 @@ function mb_str_split($str) {
 
 	return $arr;
 }
-?>
+

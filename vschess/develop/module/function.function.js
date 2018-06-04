@@ -43,20 +43,9 @@ vs.fenToSituation = function(fen){
 	var fenSplit  = fen.split(" ");
 	var situation = vs.situation.slice(0);
 	var currentPiece = 0;
+	var pieceEach = vs.fenToArray(fen);
 	situation[0] = fenSplit[1] === "b" ? 2 : 1;
 	situation[1] = vs.limit(fenSplit[5], 1, Infinity);
-
-	var pieceEach = fenSplit[0]
-		.replace(/1/g, "*")
-		.replace(/2/g, "**")
-		.replace(/3/g, "***")
-		.replace(/4/g, "****")
-		.replace(/5/g, "*****")
-		.replace(/6/g, "******")
-		.replace(/7/g, "*******")
-		.replace(/8/g, "********")
-		.replace(/9/g, "*********")
-		.replace(/\//g,"").split("");
 
 	for (var i = 51; i < 204; ++i) {
 		situation[i] && (situation[i] = vs.f2n[pieceEach[currentPiece++]]);
@@ -70,21 +59,10 @@ vs.situationToFen = function(situation){
 	var fen = [];
 
 	for (var i = 51; i < 204; ++i) {
-		situation[i]    && fen.push(vs.n2f[situation[i]]);
-		(i & 15) === 15 && fen.push("/");
+		situation[i] && fen.push(vs.n2f[situation[i]]);
 	}
 
-	fen = fen.join("")
-		.replace(/\*\*\*\*\*\*\*\*\*/g, "9")
-		.replace(/\*\*\*\*\*\*\*\*/g, "8")
-		.replace(/\*\*\*\*\*\*\*/g, "7")
-		.replace(/\*\*\*\*\*\*/g, "6")
-		.replace(/\*\*\*\*\*/g, "5")
-		.replace(/\*\*\*\*/g, "4")
-		.replace(/\*\*\*/g, "3")
-		.replace(/\*\*/g, "2")
-		.replace(/\*/g, "1");
-
+	fen = vs.arrayToFen(fen);
 	return fen + (situation[0] === 1 ? " w - - 0 " : " b - - 0 ") + situation[1];
 };
 
@@ -308,6 +286,10 @@ vs.isNumber = function(str){
 // 拆分 Fen 串
 vs.fenToArray = function(fen){
 	return fen.split(" ")[0]
+		.replace(/H/g, "N")
+		.replace(/E/g, "B")
+		.replace(/h/g, "n")
+		.replace(/e/g, "b")
 		.replace(/1/g, "*")
 		.replace(/2/g, "**")
 		.replace(/3/g, "***")
