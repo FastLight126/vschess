@@ -211,8 +211,8 @@ vs.ICCS2Node = function(move, fen){
 	var step = move.toLowerCase().split("-");
 	situation[vs.i2s[step[1]]] = situation[vs.i2s[step[0]]];
 	situation[vs.i2s[step[0]]] = 1;
-	situation[0]  = 3    - situation[0];
-	situation[0] == 1 && ++situation[1];
+	situation[0]   = 3    - situation[0];
+	situation[0] === 1 && ++situation[1];
 	return { move: step[0] + step[1], movedFen: vs.situationToFen(situation) };
 };
 
