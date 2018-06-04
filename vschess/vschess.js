@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋巫师友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月3日
- * Sun, 03 Jun 2018 04:22:17 +0800
+ * 最后修改日期：北京时间 2018年6月5日
+ * Tue, 05 Jun 2018 03:40:23 +0800
  */
 
 (function(){
@@ -1089,20 +1089,9 @@ vschess.fenToSituation = function(fen){
 	var fenSplit  = fen.split(" ");
 	var situation = vschess.situation.slice(0);
 	var currentPiece = 0;
+	var pieceEach = vschess.fenToArray(fen);
 	situation[0] = fenSplit[1] === "b" ? 2 : 1;
 	situation[1] = vschess.limit(fenSplit[5], 1, Infinity);
-
-	var pieceEach = fenSplit[0]
-		.replace(/1/g, "*")
-		.replace(/2/g, "**")
-		.replace(/3/g, "***")
-		.replace(/4/g, "****")
-		.replace(/5/g, "*****")
-		.replace(/6/g, "******")
-		.replace(/7/g, "*******")
-		.replace(/8/g, "********")
-		.replace(/9/g, "*********")
-		.replace(/\//g,"").split("");
 
 	for (var i = 51; i < 204; ++i) {
 		situation[i] && (situation[i] = vschess.f2n[pieceEach[currentPiece++]]);
@@ -1116,21 +1105,10 @@ vschess.situationToFen = function(situation){
 	var fen = [];
 
 	for (var i = 51; i < 204; ++i) {
-		situation[i]    && fen.push(vschess.n2f[situation[i]]);
-		(i & 15) === 15 && fen.push("/");
+		situation[i] && fen.push(vschess.n2f[situation[i]]);
 	}
 
-	fen = fen.join("")
-		.replace(/\*\*\*\*\*\*\*\*\*/g, "9")
-		.replace(/\*\*\*\*\*\*\*\*/g, "8")
-		.replace(/\*\*\*\*\*\*\*/g, "7")
-		.replace(/\*\*\*\*\*\*/g, "6")
-		.replace(/\*\*\*\*\*/g, "5")
-		.replace(/\*\*\*\*/g, "4")
-		.replace(/\*\*\*/g, "3")
-		.replace(/\*\*/g, "2")
-		.replace(/\*/g, "1");
-
+	fen = vschess.arrayToFen(fen);
 	return fen + (situation[0] === 1 ? " w - - 0 " : " b - - 0 ") + situation[1];
 };
 
@@ -1354,6 +1332,10 @@ vschess.isNumber = function(str){
 // 拆分 Fen 串
 vschess.fenToArray = function(fen){
 	return fen.split(" ")[0]
+		.replace(/H/g, "N")
+		.replace(/E/g, "B")
+		.replace(/h/g, "n")
+		.replace(/e/g, "b")
 		.replace(/1/g, "*")
 		.replace(/2/g, "**")
 		.replace(/3/g, "***")
@@ -2313,8 +2295,8 @@ vschess.ICCS2Node = function(move, fen){
 	var step = move.toLowerCase().split("-");
 	situation[vschess.i2s[step[1]]] = situation[vschess.i2s[step[0]]];
 	situation[vschess.i2s[step[0]]] = 1;
-	situation[0]  = 3    - situation[0];
-	situation[0] == 1 && ++situation[1];
+	situation[0]   = 3    - situation[0];
+	situation[0] === 1 && ++situation[1];
 	return { move: step[0] + step[1], movedFen: vschess.situationToFen(situation) };
 };
 
@@ -4223,7 +4205,7 @@ vschess.load.prototype.pause = function(playSound){
 // 格式控制器
 vschess.load.prototype.createFormatBar = function(){
 	var _this = this;
-	this.formatBar = $('<div class="vschess-format-bar"></div>');
+	this.formatBar = $('<form method="post" action="' + this.options.cloudApi.savebook + '" class="vschess-format-bar"></form>');
 
 	switch (this.getMoveFormat()) {
 		case "wxf"		: var formarButton = "WXF"	; break;
@@ -4232,13 +4214,15 @@ vschess.load.prototype.createFormatBar = function(){
 	}
 
 	this.formatBarButton = {
-		copy	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-copy" value="\u590d \u5236" />'),
-		format	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-format" value="\u683c \u5f0f" />'),
-		help	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-help" value="\u5e2e \u52a9" />'),
-		config	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-config" value="\u9009 \u9879" />'),
-		chinese	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-chinese" value="\u4e2d \u6587" />'),
-		wxf		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
-		iccs	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />')
+		copy		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-copy" value="\u590d \u5236" />'),
+		format		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-format" value="\u683c \u5f0f" />'),
+		help		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-help" value="\u5e2e \u52a9" />'),
+		save		: $('<input type="submit" class="vschess-format-bar-button vschess-format-bar-save" value="\u4fdd \u5b58" />'),
+		chinese		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-chinese" value="\u4e2d \u6587" />'),
+		wxf			: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
+		iccs		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
+		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" />'),
+		saveInput	: $('<input type="hidden" name="data" />')
 	};
 
 	this.formatBarButton.format.bind(this.options.click, function(){
@@ -4251,10 +4235,12 @@ vschess.load.prototype.createFormatBar = function(){
 		_this.showHelpArea();
 	});
 
-
-	this.formatBarButton.config.bind(this.options.click, function(){
-		_this.showTab("config");
+	this.formatBar.bind("submit", function(){
+		_this.rebuildExportDhtmlXQ();
+		_this.formatBarButton.saveInput.val(_this.exportData.DhtmlXQ);
+		_this.setSaved(true);
 	});
+
 	this.formatBarButton.chinese.bind(this.options.click, function(){
 		_this.formatBarButton.chinese.removeClass("vschess-format-bar-button-change");
 		_this.formatBarButton.wxf    .removeClass("vschess-format-bar-button-change");

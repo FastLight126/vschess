@@ -52,7 +52,7 @@ fn.pause = function(playSound){
 // 格式控制器
 fn.createFormatBar = function(){
 	var _this = this;
-	this.formatBar = $('<div class="vschess-format-bar"></div>');
+	this.formatBar = $('<form method="post" action="' + this.options.cloudApi.savebook + '" class="vschess-format-bar"></form>');
 
 	switch (this.getMoveFormat()) {
 		case "wxf"		: var formarButton = "WXF"	; break;
@@ -61,13 +61,15 @@ fn.createFormatBar = function(){
 	}
 
 	this.formatBarButton = {
-		copy	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-copy" value="复 制" />'),
-		format	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-format" value="格 式" />'),
-		help	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-help" value="帮 助" />'),
-		config	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-config" value="选 项" />'),
-		chinese	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-chinese" value="中 文" />'),
-		wxf		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
-		iccs	: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />')
+		copy		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-copy" value="复 制" />'),
+		format		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-format" value="格 式" />'),
+		help		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-help" value="帮 助" />'),
+		save		: $('<input type="submit" class="vschess-format-bar-button vschess-format-bar-save" value="保 存" />'),
+		chinese		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-chinese" value="中 文" />'),
+		wxf			: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
+		iccs		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
+		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" />'),
+		saveInput	: $('<input type="hidden" name="data" />')
 	};
 
 	this.formatBarButton.format.bind(this.options.click, function(){
@@ -80,10 +82,12 @@ fn.createFormatBar = function(){
 		_this.showHelpArea();
 	});
 
-
-	this.formatBarButton.config.bind(this.options.click, function(){
-		_this.showTab("config");
+	this.formatBar.bind("submit", function(){
+		_this.rebuildExportDhtmlXQ();
+		_this.formatBarButton.saveInput.val(_this.exportData.DhtmlXQ);
+		_this.setSaved(true);
 	});
+
 	this.formatBarButton.chinese.bind(this.options.click, function(){
 		_this.formatBarButton.chinese.removeClass("vschess-format-bar-button-change");
 		_this.formatBarButton.wxf    .removeClass("vschess-format-bar-button-change");
