@@ -18,10 +18,10 @@ fn.refreshMoveSelectListNode = function(){
 		default    : var moveList = this.getTurnForMove() ? this.moveNameList.ChineseM.slice(0) : this.moveNameList.Chinese.slice(0); break;
 	}
 
-	this.situationList[0][0] == 1 ? moveList.shift() : moveList[0] = "";
+	this.situationList[0][0] === 1 ? moveList.shift() : moveList[0] = "";
 
-	if (this.situationList[0][0] == 1 || this.situationList[0][0] == 2 && moveList.length > 1) {
-		for (var i=0;i<moveList.length;++i) {
+	if (this.situationList[0][0] === 1 || this.situationList[0][0] === 2 && moveList.length > 1) {
+		for (var i = 0; i < moveList.length; ++i) {
 			i % 2 || selectListNode.push('<li class="vschess-move-select-node-round">', startRound++, '.</li>');
 			selectListNode.push('<li class="vschess-move-select-node-', moveList[i] ? "move" : "blank", '">');
 			selectListNode.push(moveList[i], this.commentList[!!moveList[0] + i] && moveList[i] ? "*" : "", '</li>');
@@ -45,7 +45,7 @@ fn.refreshMoveSelectListNodeColor = function(){
 	this.moveSelectListSteps || this.refreshMoveListNode();
 	this.moveSelectListSteps.removeClass("vschess-move-select-node-lose vschess-move-select-node-threat vschess-move-select-node-normal");
 
-	if (vs.legalList(this.situationList[this.getCurrentStep()]).length == 0) {
+	if (vs.legalList(this.situationList[this.getCurrentStep()]).length === 0) {
 		this.moveSelectListSteps.eq(this.getCurrentStep()).addClass("vschess-move-select-node-lose");
 	}
 	else if (vs.checkThreat(this.situationList[this.getCurrentStep()])) {
@@ -85,7 +85,7 @@ fn.refreshChangeSelectListNode = function(){
 		this.changeSelectTitle.text("提示信息");
 		this.changeSelectList.empty();
 
-		for (var i=0;i<this.options.startTips.length;++i) {
+		for (var i = 0; i < this.options.startTips.length; ++i) {
 			this.changeSelectList.append('<li class="vschess-change-select-tips">' + this.options.startTips[i] + '</li>');
 		}
 
@@ -104,13 +104,13 @@ fn.refreshChangeSelectListNode = function(){
 		default    : var converter = vs.Node2Chinese; break;
 	}
 
-	for (var i=0;i<changeList.length;++i) {
-		var changeMove	= this.getTurn() == 0 || this.getTurn() == 3 ? changeList[i].move : vs.turnMove(changeList[i].move);
+	for (var i = 0; i < changeList.length; ++i) {
+		var changeMove	= this.getTurnForMove() ? vs.turnMove(changeList[i].move) : changeList[i].move;
 		var prevFen		= this.getFenByStep(this.getCurrentStep() - 1);
 
 		selectListNode.push('<li class="vschess-change-select-node">');
 		selectListNode.push('<span class="vschess-change-select-node-text vschess-change-select-node-move">');
-		selectListNode.push(converter(changeMove, prevFen).move, changeList[i].comment ? "*" : "", '</span>');
+		selectListNode.push(converter(changeMove, prevFen, this.options).move, changeList[i].comment ? "*" : "", '</span>');
 		selectListNode.push('<span class="vschess-change-select-node-text vschess-change-select-node-up">上移</span>');
 		selectListNode.push('<span class="vschess-change-select-node-text vschess-change-select-node-down">下移</span>');
 		selectListNode.push('<span class="vschess-change-select-node-text vschess-change-select-node-delete">删除</span>');
@@ -126,7 +126,7 @@ fn.refreshChangeSelectListNode = function(){
 	this.changeSelectListChanges.each(function(index){
 		var each = $(this);
 		var move = changeList[index].move;
-		index == currentNodeIndex && each.addClass("vschess-change-select-node-current");
+		index === currentNodeIndex && each.addClass("vschess-change-select-node-current");
 		each.hasClass("vschess-change-select-node-current") && each.hasClass("vschess-change-select-node-first") && each.addClass("vschess-change-select-node-current-and-first");
 		each.hasClass("vschess-change-select-node-current") && each.hasClass("vschess-change-select-node-last" ) && each.addClass("vschess-change-select-node-current-and-last" );
 
@@ -143,12 +143,12 @@ fn.refreshChangeSelectListNode = function(){
 
 			var prevTarget = changeList[index - 1];
 			changeList[index - 1] = changeList[index];
-			changeList[index] = prevTarget;
+			changeList[index    ] = prevTarget;
 
-			if (parentNode.defaultIndex == index) {
+			if (parentNode.defaultIndex === index) {
 				parentNode.defaultIndex = index - 1;
 			}
-			else if (parentNode.defaultIndex == index - 1) {
+			else if (parentNode.defaultIndex === index - 1) {
 				parentNode.defaultIndex = index;
 			}
 
@@ -164,12 +164,12 @@ fn.refreshChangeSelectListNode = function(){
 
 			var prevTarget = changeList[index + 1];
 			changeList[index + 1] = changeList[index];
-			changeList[index] = prevTarget;
+			changeList[index    ] = prevTarget;
 
-			if (parentNode.defaultIndex == index) {
+			if (parentNode.defaultIndex === index) {
 				parentNode.defaultIndex = index + 1;
 			}
-			else if (parentNode.defaultIndex == index + 1) {
+			else if (parentNode.defaultIndex === index + 1) {
 				parentNode.defaultIndex = index;
 			}
 
@@ -183,11 +183,11 @@ fn.refreshChangeSelectListNode = function(){
 				return false;
 			}
 
-			for (var i=index;i<changeList.length;++i) {
+			for (var i = index; i < changeList.length; ++i) {
 				changeList[i] = changeList[i + 1];
 			}
 
-			if (parentNode.defaultIndex == index) {
+			if (parentNode.defaultIndex === index) {
 				parentNode.defaultIndex = 0;
 			}
 			else if (parentNode.defaultIndex > index) {
@@ -205,9 +205,9 @@ fn.refreshChangeSelectListNode = function(){
 
 // 避免当前变招进入滚动区域外
 fn.setChangeLeaveHide = function(){
-	var bottomLine  = this.changeSelectList.height() - this.changeSelectListChanges.first().height();
-	var currentTop  = this.changeSelectListChanges.eq(this.currentNodeList[this.getCurrentStep()]).position().top;
-	var currentScrollTop = this.changeSelectList.scrollTop();
+	var bottomLine           = this.changeSelectList.height() - this.changeSelectListChanges.first().height();
+	var currentTop           = this.changeSelectListChanges.eq(this.currentNodeList[this.getCurrentStep()]).position().top;
+	var currentScrollTop     = this.changeSelectList.scrollTop();
 	currentTop > bottomLine	&& this.changeSelectList.scrollTop(currentScrollTop + currentTop - bottomLine);
 	currentTop < 0			&& this.changeSelectList.scrollTop(currentScrollTop + currentTop			 );
 	return this;
