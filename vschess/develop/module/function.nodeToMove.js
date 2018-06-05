@@ -142,8 +142,8 @@ vs.Node2ICCS = function(move, fen){
 	var situation = vs.fenToSituation(fen);
 	situation[vs.i2s[move.substring(2, 4)]] = situation[vs.i2s[move.substring(0, 2)]];
 	situation[vs.i2s[move.substring(0, 2)]] = 1;
-	situation[0]  = 3  -   situation[0];
-	situation[0] == 1 && ++situation[1];
+	situation[0]   = 3  -   situation[0];
+	situation[0] === 1 && ++situation[1];
 	return { move: move.toUpperCase().substring(0, 2) + "-" + move.toUpperCase().substring(2, 4), movedFen: vs.situationToFen(situation) };
 };
 
@@ -158,7 +158,7 @@ vs.nodeList2moveList = function(moveList, fen, format, options, mirror){
 
 	if (RegExp.FenShort.test(moveList[0])) {
 		moveList = moveList.slice(0);
-		fen = moveList.shift();
+		fen      = moveList.shift( );
 	}
 	else {
 		RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
@@ -173,7 +173,7 @@ vs.nodeList2moveList = function(moveList, fen, format, options, mirror){
 		default    : var converter = vs.Node2Chinese; break;
 	}
 
-	for (var i=0;i<moveList.length;++i) {
+	for (var i = 0; i < moveList.length; ++i) {
 		move = mirror ? vs.turnMove(moveList[i]) : moveList[i];
 		stepData = converter(move, currentFen, options);
 		currentFen = stepData.movedFen;
