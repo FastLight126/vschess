@@ -48,7 +48,7 @@ fn.getTurn = function(){
 
 // 取得棋盘着法翻转状态
 fn.getTurnForMove = function(){
-	return this.getTurn() >> 1 != (this.getTurn() & 1);
+	return this.getTurn() >> 1 !== (this.getTurn() & 1);
 };
 
 // 取得当前局面号
