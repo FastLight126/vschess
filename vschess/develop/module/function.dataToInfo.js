@@ -36,16 +36,29 @@ vs.dataToInfo_PFC = function(chessData){
 
 // 从标准 PGN 格式中抽取棋局信息
 vs.dataToInfo_PGN = function(chessData){
-	var result = {};
+	var result = {}, original = {};
+	var lines = chessData.split("\n");
+
+	for (var i = 0; i < lines.length; ++i) {
+		var l = $.trim(lines[i]);
+		var start = l.    indexOf("[");
+		var end   = l.lastIndexOf("]");
+
+		if (~start && ~end) {
+			var info  = l.substring(start + 1, end);
+			var name  = info.split(/[\s]/)[0];
+			var value = $.trim(info.replace(name, ""));
+			var quotA = value.charAt(0               ) === "'" || value.charAt(0               ) === '"';
+			var quotB = value.charAt(value.length - 1) === "'" || value.charAt(value.length - 1) === '"';
+			quotA && (value = value.substring(1                  ));
+			quotB && (value = value.substring(0, value.length - 1));
+			original[name] = value;
+		}
+	}
 
 	for (var i in vs.info.name) {
-		var startTag = "[" + (vs.info.pgn[i] || vs.fieldNameToCamel(i));
-		var startPos = chessData.indexOf(startTag);
-
-		if (~startPos) {
-			var value = chessData.substring(startPos + startTag.length + 2, chessData.indexOf("]", startPos) - 1);
-			value && (result[i] = value);
-		}
+		var name = vs.info.pgn[i] || vs.fieldNameToCamel(i);
+		original[name] && (result[i] = original[name]);
 	}
 
 	return result;
