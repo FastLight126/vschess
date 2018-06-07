@@ -132,7 +132,7 @@ vs.Node2WXF = function(move, fen){
 		return { move: result, movedFen: vs.situationToFen(situation) };
 	}
 
-	return { move: "None", fen: vs.defaultFen };
+	return { move: "None", movedFen: vs.defaultFen };
 };
 
 // 节点 ICCS 转换为 ICCS 着法
