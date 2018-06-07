@@ -3,13 +3,13 @@ vs.WXF2ECCO = function(wxfList){
 	wxfList = wxfList ? wxfList.slice(0) : [vs.defaultFen];
 
 	if (wxfList[0].length > 4 && wxfList.shift().split(" ", 2).join(" ") !== vs.defaultFen.split(" ", 2).join(" ")) {
-		return { ecco:"A00", opening:"残局", variation:"" };
+		return { ecco: "A00", opening: "残局", variation: "" };
 	}
 
 	wxfList.length > 20 && (wxfList.length = 20);
 
-	if (wxfList.length && ~~wxfList[0].substring(1, 2) > 5) {
-		for (var i=0;i<wxfList.length;++i) {
+	if (wxfList.length && wxfList[0].substring(1, 2) > 5) {
+		for (var i = 0; i < wxfList.length; ++i) {
 			wxfList[i] = vs.turnWXF(wxfList[i]);
 		}
 	}
@@ -18,7 +18,7 @@ vs.WXF2ECCO = function(wxfList){
 	wxfList80.length < 80 && (wxfList80 += new Array(81 - wxfList80.length).join(" "));
 	var index = vs.WXF2ECCOIndex(wxfList80);
 	var ecco  = vs.ECCOIndex2Name(index).split("#");
-	return { ecco:index, opening:ecco[0], variation:ecco[1] || "" };
+	return { ecco: index, opening: ecco[0], variation: ecco[1] || "" };
 };
 
 // WXF 着法字符串转换为 ECCO 开局编号
@@ -50,12 +50,12 @@ vs.WXF2ECCOIndex = function(wxf){
 
 		var RN = R.join(""), BN = B.join("");
 
-		for (var i=0;i<R.length;++i) {
+		for (var i = 0; i < R.length; ++i) {
 			if (!~RN.indexOf(moveList[i][0])) return false;
 			RN = RN.replace(moveList[i][0], "");
 		}
 
-		for (var i=0;i<B.length;++i) {
+		for (var i = 0; i < B.length; ++i) {
 			if (!~BN.indexOf(moveList[i][1])) return false;
 			BN = BN.replace(moveList[i][1], "");
 		}
@@ -69,14 +69,14 @@ vs.WXF2ECCOIndex = function(wxf){
 	function B5x() {
 		var i, bIsB54 = true;
 
-		for (i=1;i<5;++i) {
+		for (i = 1; i < 5; ++i) {
 			switch (moveList[i][0]) {
 				case "N2+3": case "N8+9": case "R1.2": case "P3+1": break;
 				default    : bIsB54 = false; break;
 			}
 		}
 
-		for (i=1;i<4;++i) {
+		for (i = 1; i < 4; ++i) {
 			switch (moveList[i][1]) {
 				case "N8+7": case "C8.6": case "P3+1": break;
 				default    : bIsB54 = false; break;
@@ -92,7 +92,7 @@ vs.WXF2ECCOIndex = function(wxf){
 			return "B54";
 		}
 		else {
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][1]) {
 					case "B7+5": case "B3+5": case "N8+7": case "C8.6": case "P7+1": case "P3+1": break;
 					case "R1.2": return "B53";
@@ -113,10 +113,10 @@ vs.WXF2ECCOIndex = function(wxf){
 			return "B32";
 		}
 		else {
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][1]) {
 					case "N8+7":
-						for (i=1;i<10;++i) {
+						for (i = 1; i < 10; ++i) {
 							switch (moveList[i][0]) {
 								case "N8+9": bRedN9 = true; break;
 								case "N8+7": bRedN7 = true; break;
@@ -131,9 +131,9 @@ vs.WXF2ECCOIndex = function(wxf){
 									if (bRedC6) {
 										if (S("N2+3C8.6R1.2N8+7", SR(2))) {
 											if (bRedN7) {
-												if (moveList[3][0] == "C8.6" && moveList[3][1] == "R1.2") {
-													if (moveList[4][1] == "C2.1") {
-														if (moveList[5][1] == "P7+1")  return "B44";
+												if (moveList[3][0] === "C8.6" && moveList[3][1] === "R1.2") {
+													if (moveList[4][1] === "C2.1") {
+														if (moveList[5][1] === "P7+1")  return "B44";
 														return "B43";
 													}
 
@@ -167,7 +167,7 @@ vs.WXF2ECCOIndex = function(wxf){
 	function C5x() {
 		var i, bIsC52 = true, bIsC55 = true;
 
-		for (i=1;i<5;++i) {
+		for (i = 1; i < 5; ++i) {
 			switch (moveList[i][0]) {
 				case "N2+3": case "R1.2": case "C8.6": break;
 				case "N8+9": bIsC55 = false; break;
@@ -176,7 +176,7 @@ vs.WXF2ECCOIndex = function(wxf){
 			}
 		}
 
-		for (i=1;i<4;++i) {
+		for (i = 1; i < 4; ++i) {
 			switch (moveList[i][1]) {
 				case "N2+3": case "N8+7": case "R9.8": case "P7+1": break;
 				default    : bIsC52 = bIsC55 = false; break;
@@ -185,7 +185,7 @@ vs.WXF2ECCOIndex = function(wxf){
 
 		if (bIsC52) {
 			if (S("R1.2R9.8", SB(5))) {
-				if (moveList[5][1] == "C2+4") return "C53";
+				if (moveList[5][1] === "C2+4") return "C53";
 				return "C52";
 			}
 
@@ -199,7 +199,7 @@ vs.WXF2ECCOIndex = function(wxf){
 			}
 		}
 		else {
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][0]) {
 					case "N2+3": case "R1.2": case "C8.6": case "P3+1": case "P7+1": break;
 					case "R2+6": return "C54";
@@ -215,26 +215,26 @@ vs.WXF2ECCOIndex = function(wxf){
 	function C8x() {
 		var i, bIsC85 = true, bBlackB7 = false;
 
-		for (i=1;i<5;++i) {
+		for (i = 1; i < 5; ++i) {
 			switch (moveList[i][0]) {
 				case "N2+3": case "N8+7": case "C8+2": case "P7+1": break;
 				default    : bIsC85 = false;
 			}
 		}
 
-		for (i=1;i<4;++i) {
+		for (i = 1; i < 4; ++i) {
 			switch (moveList[i][1]) {
 				case "N8+7": case "N2+3": case "R9.8": case "P7+1": break;
 				default    : bIsC85 = false; break;
 			}
 		}
 
-		if (bIsC85 && moveList[4][1] == "N7+8") {
-			if (moveList[5][0] == "N7+6" && moveList[6][0] == "R1+1") return "C86";
+		if (bIsC85 && moveList[4][1] === "N7+8") {
+			if (moveList[5][0] === "N7+6" && moveList[6][0] === "R1+1") return "C86";
 			return "C85";
 		}
 		else {
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][1]) {
 					case "B7+5": bBlackB7 = true; break;
 					case "B3+5": return "C84";
@@ -251,24 +251,24 @@ vs.WXF2ECCOIndex = function(wxf){
 	}
 
 	function C9x() {
-		for (var i=1;i<10;++i) {
+		for (var i = 1; i < 10; ++i) {
 			switch (moveList[i][0]) {
 				case "P3+1":
-					for (i=1;i<10;++i) {
+					for (i = 1; i < 10; ++i) {
 						switch (moveList[i][1]) {
 							case "P3+1":
-								for (i=1;i<10;++i) {
+								for (i = 1; i < 10; ++i) {
 									switch (moveList[i][0]) {
 										case "N8+9":
 											switch (moveList[4][1]) {
 												case "B7+5": case "B3+5":
 													switch (moveList[5][1]) {
-														case "P1+1": if (moveList[6][0] == "C8.7") return "C97"; return "C96";
+														case "P1+1": if (moveList[6][0] === "C8.7") return "C97"; return "C96";
 														case "A6+5": case "A4+5": return "C94";
 														case "P7+1": return "C95";
 														default    : return "C93";
 													}
-												case "P1+1": if (moveList[6][0] == "C8.7") return "C97"; return "C96";
+												case "P1+1": if (moveList[6][0] === "C8.7") return "C97"; return "C96";
 												case "A6+5": case "A4+5": return "C94";
 												case "P7+1": return "C95";
 												default    : return "C93";
@@ -300,11 +300,11 @@ vs.WXF2ECCOIndex = function(wxf){
 		bRedN7 = bRedN9 = bRedR6 = bBlackC8 = bBlackC2 = bBlackP3 = false;
 
 		if (U("C2.5N8+7N2+3R9.8R1.2P7+1R2+6N2+3N8+7P3+1")) {
-			if (moveList[5][0] == "R9+1") {
+			if (moveList[5][0] === "R9+1") {
 				if (S("C2+1R2-2B3+5", SB(6))) {
 					switch (moveList[7][0]) {
-						case "P3+1": if (moveList[8][0] == "P7+1") return "C25"; return "C23";
-						case "P7+1": if (moveList[8][0] == "P7+1") return "C25"; return "C24";
+						case "P3+1": if (moveList[8][0] === "P7+1") return "C25"; return "C23";
+						case "P7+1": if (moveList[8][0] === "P7+1") return "C25"; return "C24";
 						default    : return "C22";
 					}
 				}
@@ -317,8 +317,8 @@ vs.WXF2ECCOIndex = function(wxf){
 		else if (U("C2.5N8+7N2+3R9.8R1.2P7+1R2+6N2+3P7+1")) {
 			switch (moveList[4][1]) {
 				case "N7+6":
-					if (moveList[5][0] == "N8+7") {
-						if (moveList[5][1] == "B3+5") {
+					if (moveList[5][0] === "N8+7") {
+						if (moveList[5][1] === "B3+5") {
 							switch (moveList[6][0]) {
 								case "C8.9": return "C39";
 								case "C8+1": return "C38";
@@ -334,9 +334,9 @@ vs.WXF2ECCOIndex = function(wxf){
 					if (S("R2.3C9-1", SR(6))) {
 						switch (moveList[6][0]) {
 							case "N8+7":
-								if (moveList[6][1] == "A4+5") {
+								if (moveList[6][1] === "A4+5") {
 									switch (moveList[7][0]) {
-										case "C8.9": if (moveList[7][1] == "R1.2" || moveList[8][1] == "R1.2") return "C46"; return "C45";
+										case "C8.9": if (moveList[7][1] === "R1.2" || moveList[8][1] === "R1.2") return "C46"; return "C45";
 										case "N7+6": return "C44";
 										default    : return "C43";
 									}
@@ -361,7 +361,7 @@ vs.WXF2ECCOIndex = function(wxf){
 		else if (U("C2.5N8+7N2+3R9.8R1.2P7+1N8+9N2+3C8.7")) {
 			switch (moveList[4][1]) {
 				case "R1.2":
-					if (moveList[5][0] == "R9.8") {
+					if (moveList[5][0] === "R9.8") {
 						switch (moveList[5][1]) {
 							case "C2+4": return "C66";
 							case "C2+2": return "C65";
@@ -376,7 +376,7 @@ vs.WXF2ECCOIndex = function(wxf){
 			}
 		}
 		else if (U("C2.5N8+7N2+3R9.8R1.2N2+3P3+1P3+1N8+9P1+1C8.7N3+2")) {
-			if (moveList[6][0] == "R9+1") {
+			if (moveList[6][0] === "R9+1") {
 				switch (moveList[6][1]) {
 					case "B7+5":
 						switch (moveList[7][0]) {
@@ -393,10 +393,10 @@ vs.WXF2ECCOIndex = function(wxf){
 			return "C72";
 		}
 		else {
-			for (i=1;i<9;++i) {
+			for (i = 1; i < 9; ++i) {
 				switch (moveList[i][0]) {
 					case "R2+4":
-						for (i=1;i<10;++i) {
+						for (i = 1; i < 10; ++i) {
 							switch (moveList[i][0]) {
 								case "N2+3": case "R1.2": case "R2+4": case "P3+1": case "P7+1": break;
 								case "N8+7": case "N8+9": return "C16";
@@ -404,7 +404,7 @@ vs.WXF2ECCOIndex = function(wxf){
 							}
 						}
 					case "R1+1":
-						for (i=1;i<10;++i) {
+						for (i = 1; i < 10; ++i) {
 							switch (moveList[i][0]) {
 								case "N2+3": case "N8+7": case "R1+1": case "R1.4": case "R1.6": case "P3+1": case "P7+1": break;
 								case "P5+1": return "C14";
@@ -417,10 +417,10 @@ vs.WXF2ECCOIndex = function(wxf){
 
 						return "C10";
 					case "C8.7":
-						for (i=1;i<10;++i) {
+						for (i = 1; i < 10; ++i) {
 							switch (moveList[i][1]) {
 								case "P7+1":
-									for (i=1;i<10;++i) {
+									for (i = 1; i < 10; ++i) {
 										switch (moveList[i][0]) {
 											case "N2+3": case "N8+9": case "R1.2": case "R2+6": case "C8.7": break;
 											case "P7+1": return "C68";
@@ -445,7 +445,7 @@ vs.WXF2ECCOIndex = function(wxf){
 					case "C8.9": return "C99";
 					default:
 						if (bRedR6) {
-							for (i=1;i<10;++i) {
+							for (i = 1; i < 10; ++i) {
 								switch (moveList[i][0]) {
 									case "N2+3": case "R1.2": case "R2+6": case "P3+1": case "P7+1": break;
 									case "N8+9": return "C19";
@@ -457,10 +457,10 @@ vs.WXF2ECCOIndex = function(wxf){
 							return "C17";
 						}
 						else if (bRedN7) {
-							for (i=1;i<10;++i) {
+							for (i = 1; i < 10; ++i) {
 								switch (moveList[i][0]) {
 									case "P5+1":
-										for (i=1;i<10;++i) {
+										for (i = 1; i < 10; ++i) {
 											switch (moveList[i][1]) {
 												case "N2+3": case "N8+7": case "R9.8": case "P7+1": case "P3+1": break;
 												case "C8+4": if (bBlackC2) return "C04"; bBlackC8 = true; break;
@@ -479,7 +479,7 @@ vs.WXF2ECCOIndex = function(wxf){
 							return "C01";
 						}
 						else if (bRedN9) {
-							for (i=1;i<10;++i) {
+							for (i = 1; i < 10; ++i) {
 								switch (moveList[i][0]) {
 									case "N2+3": case "N8+9": case "R1.2": case "P3+1": case "P7+1": break;
 									case "R9+1": return "C06";
@@ -501,7 +501,7 @@ vs.WXF2ECCOIndex = function(wxf){
 	function Bxx() {
 		switch (moveList[1][1]) {
 			case "R9+1":
-				if (moveList[1][0] == "N2+3" && S("R1.2R9.4", SR(3))) {
+				if (moveList[1][0] === "N2+3" && S("R1.2R9.4", SR(3))) {
 					switch (moveList[3][0]) {
 						case "P7+1": return "B14";
 						case "C8+2": return "B13";
@@ -534,7 +534,7 @@ vs.WXF2ECCOIndex = function(wxf){
 		function CxxClassify() {
 			var i, bBlackCx = 0;
 
-			for (i=1;i<10;i++) {
+			for (i = 1; i < 10; i++) {
 				switch(moveList[i][1]) {
 					case "R9.8": case "R8+5": case "P7+1": case "P3+1": break;
 					case "N2+3": if (bBlackCx) return bBlackCx; return 7;
@@ -554,9 +554,9 @@ vs.WXF2ECCOIndex = function(wxf){
 
 		switch (CxxClassify()) {
 			case 1:
-				for (i=1;i<10;++i) {
+				for (i = 1; i < 10; ++i) {
 					switch (moveList[i][0]) {
-						case "B7+9": if (moveList[i - 1][1] == "R8+5") return "B21"; return "B20";
+						case "B7+9": if (moveList[i - 1][1] === "R8+5") return "B21"; return "B20";
 						case "P3+1": if (bRedP7) return "B25"; bRedP3 = true; break;
 						case "P7+1": if (bRedP3) return "B25"; bRedP7 = true; break;
 						case "N2+3": case "N8+7": break;
@@ -582,9 +582,9 @@ vs.WXF2ECCOIndex = function(wxf){
 
 				return "D30";
 			case 4:
-				for (i=1;i<10;++i) {
+				for (i = 1; i < 10; ++i) {
 					switch (moveList[i][0]) {
-						case "P5+1": if (moveList[i - 1][1] == "R8+5" && moveList[i][1] == "C2.5") return "D41"; return "D40";
+						case "P5+1": if (moveList[i - 1][1] === "R8+5" && moveList[i][1] === "C2.5") return "D41"; return "D40";
 						case "P3+1": if (bRedP7) return "D43"; bRedP3 = true; break;
 						case "P7+1": if (bRedP3) return "D43"; bRedP7 = true; break;
 						case "N2+3": case "N8+7": break;
@@ -595,7 +595,7 @@ vs.WXF2ECCOIndex = function(wxf){
 
 				return "D40";
 			case 5:
-				for (i=1;i<10;++i) {
+				for (i = 1; i < 10; ++i) {
 					switch (moveList[i][0]) {
 						case "R2+6": return "D53";
 						case "N2+3": case "N8+7": case "P3+1": case "P7+1": break;
@@ -614,7 +614,7 @@ vs.WXF2ECCOIndex = function(wxf){
 	}
 
 	function D1x() {
-		for (var i=2;i<10;++i) {
+		for (var i = 2; i < 10; ++i) {
 			switch (moveList[i][1]) {
 				case "N2+3": case "P7+1": case "P3+1": break;
 				case "C2.1": return "D15";
@@ -632,7 +632,7 @@ vs.WXF2ECCOIndex = function(wxf){
 	function D2x() {
 		var i, bRedP3 = false, bRedP7 = false;
 
-		for (i=3;i<10;++i) {
+		for (i = 3; i < 10; ++i) {
 			switch (moveList[i][0]) {
 				case "A4+5": case "A6+5": return "D21";
 				case "N8+9": return "D22";
@@ -641,7 +641,7 @@ vs.WXF2ECCOIndex = function(wxf){
 				case "C8.6": return "D25";
 				case "P3+1":
 					if (bRedP7) {
-						for (i=3;i<10;++i) {
+						for (i = 3; i < 10; ++i) {
 							switch (moveList[i][1]) {
 								case "N2+3": case "R9.4": break;
 								case "R1+1": return "D29";
@@ -656,7 +656,7 @@ vs.WXF2ECCOIndex = function(wxf){
 					break;
 				case "P7+1":
 					if (bRedP3) {
-						for (i=3;i<10;++i) {
+						for (i = 3; i < 10; ++i) {
 							switch (moveList[i][1]) {
 								case "N2+3": case "R9.4": break;
 								case "R1+1": return "D29";
@@ -683,10 +683,10 @@ vs.WXF2ECCOIndex = function(wxf){
 				switch (moveList[1][1]) {
 					case "N8+7":
 						switch (moveList[2][0]) {
-							case "R1.2": if (moveList[2][1] == "R9+1") return D2x(); return D1x();
+							case "R1.2": if (moveList[2][1] === "R9+1") return D2x(); return D1x();
 							case "R1+1":
-								if (moveList[2][1] == "R9.8") {
-									if (moveList[3][1] == "R8+4") return "D05";
+								if (moveList[2][1] === "R9.8") {
+									if (moveList[3][1] === "R8+4") return "D05";
 									return "D04";
 								}
 
@@ -703,7 +703,7 @@ vs.WXF2ECCOIndex = function(wxf){
 				}
 			case "R1+1":
 				if (S("R9.8N8+7", SB(2))) {
-					if (moveList[2][1] == "R8+4") return "D05";
+					if (moveList[2][1] === "R8+4") return "D05";
 					return "D04";
 				}
 
@@ -716,7 +716,7 @@ vs.WXF2ECCOIndex = function(wxf){
 		function isA28() {
 			var i, bRedN3 = false, bRedN7 = false;
 
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][0]) {
 					case "N2+3": if (bRedN7) return true; bRedN3 = true; break;
 					case "N8+7": if (bRedN3) return true; bRedN7 = true; break;
@@ -731,7 +731,7 @@ vs.WXF2ECCOIndex = function(wxf){
 		function isA53() {
 			var i, bRedN3 = false, bRedN7 = false;
 
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][0]) {
 					case "N2+3": if (bRedN7) return true; bRedN3 = true; break;
 					case "N8+7": if (bRedN3) return true; bRedN7 = true; break;
@@ -762,7 +762,7 @@ vs.WXF2ECCOIndex = function(wxf){
 							default    : return "A21";
 						}
 					case "C8.4":
-						if (moveList[1][0] == "N2+3") {
+						if (moveList[1][0] === "N2+3") {
 							if (S("N8+7R1.2P7+1", SB(2))) {
 								switch (moveList[3][0]) {
 									case "P7+1": return "A34";
@@ -792,7 +792,7 @@ vs.WXF2ECCOIndex = function(wxf){
 					default    : return "A10";
 				}
 			case "N2+3":
-				if (moveList[0][1] == "P7+1") {
+				if (moveList[0][1] === "P7+1") {
 					switch (moveList[1][0]) {
 						case "P7+1": return "A45";
 						case "C8.5": return "A44";
@@ -821,9 +821,9 @@ vs.WXF2ECCOIndex = function(wxf){
 			case "C2.6":
 				switch (moveList[0][1]) {
 					case "C8.5":
-						if (moveList[1][0] == "N2+3" && moveList[2][0] == "R1.2") {
-							if (moveList[1][1] == "N8+7" && moveList[2][1] == "R9+1") return "A65";
-							if (moveList[1][1] == "R9+1" && moveList[2][1] == "N8+7") return "A65";
+						if (moveList[1][0] === "N2+3" && moveList[2][0] === "R1.2") {
+							if (moveList[1][1] === "N8+7" && moveList[2][1] === "R9+1") return "A65";
+							if (moveList[1][1] === "R9+1" && moveList[2][1] === "N8+7") return "A65";
 							return "A64";
 						}
 
@@ -839,8 +839,8 @@ vs.WXF2ECCOIndex = function(wxf){
 							case "C8.5":
 								switch (moveList[1][1]) {
 									case "B3+5":
-										if (moveList[2][0] == "N2+1") {
-											if (moveList[2][1] == "N8+9") return "E16";
+										if (moveList[2][0] === "N2+1") {
+											if (moveList[2][1] === "N8+9") return "E16";
 											return "E15";
 										}
 
@@ -866,7 +866,7 @@ vs.WXF2ECCOIndex = function(wxf){
 														return "E23";
 													case "P7+1":
 														if (S("N2+1P7+1", SR(4)) || S("R9.8P7+1", SR(4))) {
-															if (moveList[4][0] == "N2+1" || moveList[4][0] == "R9.8") {
+															if (moveList[4][0] === "N2+1" || moveList[4][0] === "R9.8") {
 																switch (moveList[4][1]) {
 																	case "R1+1":
 																		switch (moveList[5][0]) {
@@ -901,7 +901,7 @@ vs.WXF2ECCOIndex = function(wxf){
 					case "N2+3":
 						switch (moveList[1][0]) {
 							case "N2+3":
-								if (moveList[1][1] == "P3+1") {
+								if (moveList[1][1] === "P3+1") {
 									switch (moveList[2][0]) {
 										case "B3+5": case "B7+5": return "E43";
 										case "C2.1": return "E45";
@@ -911,13 +911,13 @@ vs.WXF2ECCOIndex = function(wxf){
 								}
 
 								return "E07";
-							case "P7+1": if (moveList[1][1] == "C8.7") return "E09"; return "E08";
+							case "P7+1": if (moveList[1][1] === "C8.7") return "E09"; return "E08";
 							default    : return "E06";
 						}
 					case "P3+1":
 						switch (moveList[1][0]) {
 							case "N2+3":
-								if (moveList[1][1] == "N2+3") {
+								if (moveList[1][1] === "N2+3") {
 									switch (moveList[2][0]) {
 										case "B3+5": case "B7+5": return "E43";
 										case "C2.1": return "E45";
@@ -935,7 +935,7 @@ vs.WXF2ECCOIndex = function(wxf){
 								}
 							default: return "E40";
 						}
-					case "B7+5": case "B3+5": if (moveList[1][0] == "N2+3") return "E02"; return "E01";
+					case "B7+5": case "B3+5": if (moveList[1][0] === "N2+3") return "E02"; return "E01";
 					case "C8.6": case "C8.4": case "C2.6": case "C2.4": return "E04";
 					case "C8.5": case "C2.5": return "E03";
 					case "C2.7": return "E05";
