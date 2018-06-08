@@ -9,4 +9,4 @@ vs.toString = function(){
 };
 
 // 将 vschess 提升为全局变量，这样外部脚本就可以调用了
-typeof window.vschess == "undefined" && (window.vschess = vschess);
+typeof window.vschess === "undefined" && (window.vschess = vschess);

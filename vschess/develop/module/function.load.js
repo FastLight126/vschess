@@ -78,6 +78,7 @@ fn.createBoard = function(){
 	this.createFormatBar();
 	this.createTab();
 	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
+	this.chessId  = vs.chessList.length;
 
 	vs.chessList.push(this);
 	return this;
