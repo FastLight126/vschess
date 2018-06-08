@@ -5,8 +5,8 @@ fn.createExport = function(){
 	this.exportArea     = $('<form method="post" action="' + this.options.cloudApi.savebook + '" class="vschess-tab-body vschess-tab-body-export"></form>');
 	this.exportTextarea = $('<textarea class="vschess-tab-body-export-textarea" readonly="readonly" name="data"></textarea>').appendTo(this.exportArea);
 	this.exportFormat   = $('<select class="vschess-tab-body-export-format" name="format"></select>').appendTo(this.exportArea);
-	this.exportGenerate = $('<input type="button" class="vschess-tab-body-export-generate" value="生成" />').appendTo(this.exportArea);
-	this.exportDownload = $('<input type="submit" class="vschess-tab-body-export-download vschess-tab-body-export-current" value="保存" />').appendTo(this.exportArea);
+	this.exportGenerate = $('<input type="button" class="vschess-tab-body-export-generate" value="生 成" />').appendTo(this.exportArea);
+	this.exportDownload = $('<input type="submit" class="vschess-tab-body-export-download vschess-tab-body-export-current" value="保 存" />').appendTo(this.exportArea);
 	this.exportData     = {};
 	this.tabArea.children(".vschess-tab-title-export, .vschess-tab-body-export").remove();
 	this.tabArea.append(this.exportTitle);

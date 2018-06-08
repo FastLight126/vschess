@@ -29,7 +29,7 @@ fn.createEdit = function(){
 
 // 显示编辑开始按钮
 fn.showEditStartButton = function(){
-	for (var i=0;i<vs.editStartList.length;++i) {
+	for (var i = 0; i < vs.editStartList.length; ++i) {
 		this[vs.editStartList[i]].addClass("vschess-tab-body-edit-current");
 	}
 
@@ -38,7 +38,7 @@ fn.showEditStartButton = function(){
 
 // 隐藏编辑开始按钮
 fn.hideEditStartButton = function(){
-	for (var i=0;i<vs.editStartList.length;++i) {
+	for (var i = 0; i < vs.editStartList.length; ++i) {
 		this[vs.editStartList[i]].removeClass("vschess-tab-body-edit-current");
 	}
 
@@ -47,7 +47,7 @@ fn.hideEditStartButton = function(){
 
 // 显示编辑局面组件
 fn.showEditModule = function(){
-	for (var i=0;i<vs.editModuleList.length;++i) {
+	for (var i = 0; i < vs.editModuleList.length; ++i) {
 		this[vs.editModuleList[i]].addClass("vschess-tab-body-edit-current");
 	}
 
@@ -56,7 +56,7 @@ fn.showEditModule = function(){
 
 // 隐藏编辑局面组件
 fn.hideEditModule = function(){
-	for (var i=0;i<vs.editModuleList.length;++i) {
+	for (var i = 0; i < vs.editModuleList.length; ++i) {
 		this[vs.editModuleList[i]].removeClass("vschess-tab-body-edit-current");
 	}
 
@@ -65,7 +65,7 @@ fn.hideEditModule = function(){
 
 // 显示粘贴棋谱组件
 fn.showNodeEditModule = function(){
-	for (var i=0;i<vs.editNodeModuleList.length;++i) {
+	for (var i = 0; i < vs.editNodeModuleList.length; ++i) {
 		this[vs.editNodeModuleList[i]].addClass("vschess-tab-body-edit-current");
 	}
 
@@ -74,7 +74,7 @@ fn.showNodeEditModule = function(){
 
 // 隐藏粘贴棋谱组件
 fn.hideNodeEditModule = function(){
-	for (var i=0;i<vs.editNodeModuleList.length;++i) {
+	for (var i = 0; i < vs.editNodeModuleList.length; ++i) {
 		this[vs.editNodeModuleList[i]].removeClass("vschess-tab-body-edit-current");
 	}
 
@@ -127,7 +127,7 @@ fn.createEditEndButton = function(){
 		if (errorList.length > 1) {
 			var errorMsg = ["当前局面出现下列错误：\n"];
 
-			for (var i=0;i<errorList.length;++i) {
+			for (var i = 0; i < errorList.length; ++i) {
 				errorMsg.push(i + 1, ".", errorList[i], i === errorList.length - 1 ? "。\n" : "；\n");
 			}
 
@@ -216,7 +216,7 @@ fn.createEditPieceArea = function(){
 	this.editArea.append(this.editPieceArea);
 	this.editPieceList = {};
 
-	for (var i=0;i<editPieceNameList.length;++i) {
+	for (var i = 0; i < editPieceNameList.length; ++i) {
 		var k = editPieceNameList[i];
 
 		if (k === "*") {
@@ -434,7 +434,7 @@ fn.createRecommendList = function(){
 fn.fillInRecommendClass = function(){
 	this.recommendStartClassItem = [];
 
-	for (var i=0;i<this.recommendStartList.length;++i) {
+	for (var i = 0; i < this.recommendStartList.length; ++i) {
 		var classItem = $(['<option value="', i, '">', this.recommendStartList[i].name, '</option>'].join("")).appendTo(this.recommendClass);
 		this.recommendStartClassItem.push(classItem);
 	}
@@ -448,7 +448,7 @@ fn.fillInRecommendList = function(classId){
 	this.recommendList.empty();
 	var list = this.recommendStartList[classId].fenList;
 
-	for (var i=0;i<list.length;++i) {
+	for (var i = 0; i < list.length; ++i) {
 		var recommendStart = $(['<li class="vschess-recommend-list-fen" data-fen="', list[i].fen, '"><span>', i + 1, '.</span>', list[i].name, '</li>'].join(""));
 		this.recommendList.append(recommendStart);
 
@@ -498,7 +498,7 @@ fn.fillEditBoard = function(ignoreSelect){
 	this.editEditStartPlayer.removeClass("vschess-tab-body-edit-start-player-black");
 	this.editSituation[0] === 2 && this.editEditStartPlayer.addClass("vschess-tab-body-edit-start-player-black");
 
-	for (var i=51;i<204;++i) {
+	for (var i = 51; i < 204; ++i) {
 		this.editSituation[i] > 1 && this.editPiece.eq(vs.s2b[i]).addClass("vschess-piece-" + vs.n2f[this.editSituation[i]]);
 	}
 
@@ -597,9 +597,10 @@ fn.createEditOtherButton = function(){
 	var _this = this;
 
 	// 打开棋谱按钮
-	this.editOpenButton = $('<input type="button" class="vschess-tab-body-edit-open-button" value="打开棋谱" />');
+	var buttonId = "vschess-tab-body-edit-open-button-" + vs.guid();
+	this.editOpenButton = $('<label for="' + buttonId + '" class="vschess-tab-body-edit-open-button">打开棋谱</label>');
 	this.editOpenButton.appendTo(this.editArea);
-	this.editOpenFile = $('<input type="file" class="vschess-tab-body-edit-open-file" />');
+	this.editOpenFile = $('<input type="file" class="vschess-tab-body-edit-open-file" id="' + buttonId + '" />');
 	this.editOpenFile.appendTo(this.editArea);
 
 	this.editOpenFile.bind("change", function(){

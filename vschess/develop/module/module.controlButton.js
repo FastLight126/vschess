@@ -114,13 +114,16 @@ fn.createFormatBar = function(){
 	}
 
 	this.formatBarButton.copy.bind(this.options.click, function(){
-		if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
-			var fen = _this.getCurrentFen();
-			_this.formatBarButton.saveInput.val(fen);
-			_this.formatBarButton.saveInput.focus();
-			_this.formatBarButton.saveInput[0].setSelectionRange(0, fen.length);
-			document.execCommand("copy");
-			_this.copyFenFinish();
+		if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported('copy')) {
+			_this.formatBarButton.saveInput.val(_this.getCurrentFen());
+			_this.formatBarButton.saveInput[0].select();
+
+			if (document.execCommand("copy")) {
+				_this.copyFenFinish();
+			}
+			else {
+				prompt("请按 Ctrl+C 复制：", _this.getCurrentFen());
+			}
 		}
 		else if (window.clipboardData) {
 			if (window.clipboardData.setData("Text", _this.getCurrentFen())) {

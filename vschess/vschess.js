@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋巫师友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月8日
- * Fri, 08 Jun 2018 17:09:59 +0800
+ * 最后修改日期：北京时间 2018年6月9日
+ * Sat, 09 Jun 2018 02:16:16 +0800
  */
 
 (function(){
@@ -384,7 +384,7 @@ var vschess = {
 	},
 
 	// 编辑局面开始按钮列表
-	editStartList: ["editStartButton", "editNodeStartButton", "editBeginButton", "editBlankButton", "editOpenButton", "editOpenFile"],
+	editStartList: ["editStartButton", "editNodeStartButton", "editBeginButton", "editBlankButton", "editOpenButton"],
 
 	// 编辑局面组件列表
 	editModuleList: ["editEndButton", "editCancelButton", "editTips", "editTextarea", "editTextareaPlaceholder", "editPieceArea", "editBoard", "recommendClass", "recommendList", "editEditStartText", "editEditStartRound", "editEditStartPlayer"],
@@ -4281,13 +4281,16 @@ vschess.load.prototype.createFormatBar = function(){
 	}
 
 	this.formatBarButton.copy.bind(this.options.click, function(){
-		if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
-			var fen = _this.getCurrentFen();
-			_this.formatBarButton.saveInput.val(fen);
-			_this.formatBarButton.saveInput.focus();
-			_this.formatBarButton.saveInput[0].setSelectionRange(0, fen.length);
-			document.execCommand("copy");
-			_this.copyFenFinish();
+		if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported('copy')) {
+			_this.formatBarButton.saveInput.val(_this.getCurrentFen());
+			_this.formatBarButton.saveInput[0].select();
+
+			if (document.execCommand("copy")) {
+				_this.copyFenFinish();
+			}
+			else {
+				prompt("\u8bf7\u6309 Ctrl+C \u590d\u5236\uff1a", _this.getCurrentFen());
+			}
 		}
 		else if (window.clipboardData) {
 			if (window.clipboardData.setData("Text", _this.getCurrentFen())) {
@@ -4449,7 +4452,7 @@ vschess.load.prototype.createEdit = function(){
 
 // 显示编辑开始按钮
 vschess.load.prototype.showEditStartButton = function(){
-	for (var i=0;i<vschess.editStartList.length;++i) {
+	for (var i = 0; i < vschess.editStartList.length; ++i) {
 		this[vschess.editStartList[i]].addClass("vschess-tab-body-edit-current");
 	}
 
@@ -4458,7 +4461,7 @@ vschess.load.prototype.showEditStartButton = function(){
 
 // 隐藏编辑开始按钮
 vschess.load.prototype.hideEditStartButton = function(){
-	for (var i=0;i<vschess.editStartList.length;++i) {
+	for (var i = 0; i < vschess.editStartList.length; ++i) {
 		this[vschess.editStartList[i]].removeClass("vschess-tab-body-edit-current");
 	}
 
@@ -4467,7 +4470,7 @@ vschess.load.prototype.hideEditStartButton = function(){
 
 // 显示编辑局面组件
 vschess.load.prototype.showEditModule = function(){
-	for (var i=0;i<vschess.editModuleList.length;++i) {
+	for (var i = 0; i < vschess.editModuleList.length; ++i) {
 		this[vschess.editModuleList[i]].addClass("vschess-tab-body-edit-current");
 	}
 
@@ -4476,7 +4479,7 @@ vschess.load.prototype.showEditModule = function(){
 
 // 隐藏编辑局面组件
 vschess.load.prototype.hideEditModule = function(){
-	for (var i=0;i<vschess.editModuleList.length;++i) {
+	for (var i = 0; i < vschess.editModuleList.length; ++i) {
 		this[vschess.editModuleList[i]].removeClass("vschess-tab-body-edit-current");
 	}
 
@@ -4485,7 +4488,7 @@ vschess.load.prototype.hideEditModule = function(){
 
 // 显示粘贴棋谱组件
 vschess.load.prototype.showNodeEditModule = function(){
-	for (var i=0;i<vschess.editNodeModuleList.length;++i) {
+	for (var i = 0; i < vschess.editNodeModuleList.length; ++i) {
 		this[vschess.editNodeModuleList[i]].addClass("vschess-tab-body-edit-current");
 	}
 
@@ -4494,7 +4497,7 @@ vschess.load.prototype.showNodeEditModule = function(){
 
 // 隐藏粘贴棋谱组件
 vschess.load.prototype.hideNodeEditModule = function(){
-	for (var i=0;i<vschess.editNodeModuleList.length;++i) {
+	for (var i = 0; i < vschess.editNodeModuleList.length; ++i) {
 		this[vschess.editNodeModuleList[i]].removeClass("vschess-tab-body-edit-current");
 	}
 
@@ -4547,7 +4550,7 @@ vschess.load.prototype.createEditEndButton = function(){
 		if (errorList.length > 1) {
 			var errorMsg = ["\u5f53\u524d\u5c40\u9762\u51fa\u73b0\u4e0b\u5217\u9519\u8bef\uff1a\n"];
 
-			for (var i=0;i<errorList.length;++i) {
+			for (var i = 0; i < errorList.length; ++i) {
 				errorMsg.push(i + 1, ".", errorList[i], i === errorList.length - 1 ? "\u3002\n" : "\uff1b\n");
 			}
 
@@ -4636,7 +4639,7 @@ vschess.load.prototype.createEditPieceArea = function(){
 	this.editArea.append(this.editPieceArea);
 	this.editPieceList = {};
 
-	for (var i=0;i<editPieceNameList.length;++i) {
+	for (var i = 0; i < editPieceNameList.length; ++i) {
 		var k = editPieceNameList[i];
 
 		if (k === "*") {
@@ -4854,7 +4857,7 @@ vschess.load.prototype.createRecommendList = function(){
 vschess.load.prototype.fillInRecommendClass = function(){
 	this.recommendStartClassItem = [];
 
-	for (var i=0;i<this.recommendStartList.length;++i) {
+	for (var i = 0; i < this.recommendStartList.length; ++i) {
 		var classItem = $(['<option value="', i, '">', this.recommendStartList[i].name, '</option>'].join("")).appendTo(this.recommendClass);
 		this.recommendStartClassItem.push(classItem);
 	}
@@ -4868,7 +4871,7 @@ vschess.load.prototype.fillInRecommendList = function(classId){
 	this.recommendList.empty();
 	var list = this.recommendStartList[classId].fenList;
 
-	for (var i=0;i<list.length;++i) {
+	for (var i = 0; i < list.length; ++i) {
 		var recommendStart = $(['<li class="vschess-recommend-list-fen" data-fen="', list[i].fen, '"><span>', i + 1, '.</span>', list[i].name, '</li>'].join(""));
 		this.recommendList.append(recommendStart);
 
@@ -4918,7 +4921,7 @@ vschess.load.prototype.fillEditBoard = function(ignoreSelect){
 	this.editEditStartPlayer.removeClass("vschess-tab-body-edit-start-player-black");
 	this.editSituation[0] === 2 && this.editEditStartPlayer.addClass("vschess-tab-body-edit-start-player-black");
 
-	for (var i=51;i<204;++i) {
+	for (var i = 51; i < 204; ++i) {
 		this.editSituation[i] > 1 && this.editPiece.eq(vschess.s2b[i]).addClass("vschess-piece-" + vschess.n2f[this.editSituation[i]]);
 	}
 
@@ -5017,9 +5020,10 @@ vschess.load.prototype.createEditOtherButton = function(){
 	var _this = this;
 
 	// 打开棋谱按钮
-	this.editOpenButton = $('<input type="button" class="vschess-tab-body-edit-open-button" value="\u6253\u5f00\u68cb\u8c31" />');
+	var buttonId = "vschess-tab-body-edit-open-button-" + vschess.guid();
+	this.editOpenButton = $('<label for="' + buttonId + '" class="vschess-tab-body-edit-open-button">\u6253\u5f00\u68cb\u8c31</label>');
 	this.editOpenButton.appendTo(this.editArea);
-	this.editOpenFile = $('<input type="file" class="vschess-tab-body-edit-open-file" />');
+	this.editOpenFile = $('<input type="file" class="vschess-tab-body-edit-open-file" id="' + buttonId + '" />');
 	this.editOpenFile.appendTo(this.editArea);
 
 	this.editOpenFile.bind("change", function(){
@@ -5184,8 +5188,8 @@ vschess.load.prototype.createExport = function(){
 	this.exportArea     = $('<form method="post" action="' + this.options.cloudApi.savebook + '" class="vschess-tab-body vschess-tab-body-export"></form>');
 	this.exportTextarea = $('<textarea class="vschess-tab-body-export-textarea" readonly="readonly" name="data"></textarea>').appendTo(this.exportArea);
 	this.exportFormat   = $('<select class="vschess-tab-body-export-format" name="format"></select>').appendTo(this.exportArea);
-	this.exportGenerate = $('<input type="button" class="vschess-tab-body-export-generate" value="\u751f\u6210" />').appendTo(this.exportArea);
-	this.exportDownload = $('<input type="submit" class="vschess-tab-body-export-download vschess-tab-body-export-current" value="\u4fdd\u5b58" />').appendTo(this.exportArea);
+	this.exportGenerate = $('<input type="button" class="vschess-tab-body-export-generate" value="\u751f \u6210" />').appendTo(this.exportArea);
+	this.exportDownload = $('<input type="submit" class="vschess-tab-body-export-download vschess-tab-body-export-current" value="\u4fdd \u5b58" />').appendTo(this.exportArea);
 	this.exportData     = {};
 	this.tabArea.children(".vschess-tab-title-export, .vschess-tab-body-export").remove();
 	this.tabArea.append(this.exportTitle);
@@ -5379,7 +5383,7 @@ vschess.load.prototype.createHelp = function(){
 	this.helpArea = $('<div class="vschess-help-area"></div>');
 	this.helpArea.html(this.options.help);
 	this.DOM.append(this.helpArea);
-	this.helpAreaClose = $('<input type="button" class="vschess-help-close" value="\u5173\u95ed" />');
+	this.helpAreaClose = $('<input type="button" class="vschess-help-close" value="\u5173 \u95ed" />');
 	this.helpAreaClose.bind(this.options.click, function(){ _this.hideHelpArea(); });
 	this.helpArea.append(this.helpAreaClose);
 	return this;
@@ -5500,15 +5504,15 @@ vschess.load.prototype.createInfoEditor = function(){
 		}
 
 		if (~vschess.autoInfo.indexOf(i)) {
-			this.infoEditorItemAuto[i] = $('<input type="button" class="vschess-info-editor-item-auto vschess-info-editor-item-auto-' + i + '" value="\u8bc6\u522b" alt="\u6839\u636e\u5f53\u524d\u5206\u652f\u81ea\u52a8\u8bc6\u522b' + vschess.info.name[i] + '" title="\u6839\u636e\u5f53\u524d\u5206\u652f\u81ea\u52a8\u8bc6\u522b' + vschess.info.name[i] + '" />');
+			this.infoEditorItemAuto[i] = $('<input type="button" class="vschess-info-editor-item-auto vschess-info-editor-item-auto-' + i + '" value="\u8bc6 \u522b" alt="\u6839\u636e\u5f53\u524d\u5206\u652f\u81ea\u52a8\u8bc6\u522b' + vschess.info.name[i] + '" title="\u6839\u636e\u5f53\u524d\u5206\u652f\u81ea\u52a8\u8bc6\u522b' + vschess.info.name[i] + '" />');
 			this.infoEditorItem[i].append(this.infoEditorItemAuto[i]);
 		}
 	}
 
 	this.setInfoEditorItemValueResult(this.infoEditorItemValue.result.val());
-	this.infoEditorOK     = $('<input type="button" class="vschess-info-editor-ok"     value="\u786e\u5b9a" />');
-	this.infoEditorEmpty  = $('<input type="button" class="vschess-info-editor-empty"  value="\u6e05\u7a7a" />');
-	this.infoEditorCancel = $('<input type="button" class="vschess-info-editor-cancel" value="\u53d6\u6d88" />');
+	this.infoEditorOK     = $('<input type="button" class="vschess-info-editor-ok"     value="\u786e \u5b9a" />');
+	this.infoEditorEmpty  = $('<input type="button" class="vschess-info-editor-empty"  value="\u6e05 \u7a7a" />');
+	this.infoEditorCancel = $('<input type="button" class="vschess-info-editor-cancel" value="\u53d6 \u6d88" />');
 
 	this.infoEditorOK.bind(this.options.click, function(){
 		_this.chessInfo = _this.getInfoFromEditor();

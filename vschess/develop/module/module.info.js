@@ -101,15 +101,15 @@ fn.createInfoEditor = function(){
 		}
 
 		if (~vs.autoInfo.indexOf(i)) {
-			this.infoEditorItemAuto[i] = $('<input type="button" class="vschess-info-editor-item-auto vschess-info-editor-item-auto-' + i + '" value="识别" alt="根据当前分支自动识别' + vs.info.name[i] + '" title="根据当前分支自动识别' + vs.info.name[i] + '" />');
+			this.infoEditorItemAuto[i] = $('<input type="button" class="vschess-info-editor-item-auto vschess-info-editor-item-auto-' + i + '" value="识 别" alt="根据当前分支自动识别' + vs.info.name[i] + '" title="根据当前分支自动识别' + vs.info.name[i] + '" />');
 			this.infoEditorItem[i].append(this.infoEditorItemAuto[i]);
 		}
 	}
 
 	this.setInfoEditorItemValueResult(this.infoEditorItemValue.result.val());
-	this.infoEditorOK     = $('<input type="button" class="vschess-info-editor-ok"     value="确定" />');
-	this.infoEditorEmpty  = $('<input type="button" class="vschess-info-editor-empty"  value="清空" />');
-	this.infoEditorCancel = $('<input type="button" class="vschess-info-editor-cancel" value="取消" />');
+	this.infoEditorOK     = $('<input type="button" class="vschess-info-editor-ok"     value="确 定" />');
+	this.infoEditorEmpty  = $('<input type="button" class="vschess-info-editor-empty"  value="清 空" />');
+	this.infoEditorCancel = $('<input type="button" class="vschess-info-editor-cancel" value="取 消" />');
 
 	this.infoEditorOK.bind(this.options.click, function(){
 		_this.chessInfo = _this.getInfoFromEditor();
