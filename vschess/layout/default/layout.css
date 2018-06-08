@@ -155,3 +155,5 @@
 .vschess-layout-default .vschess-help-area h1 { font-size:16px; margin:20px 20px 0; }
 .vschess-layout-default .vschess-help-area h2 { font-size:12px; margin:10px 20px 0; font-weight:normal; }
 .vschess-layout-default .vschess-help-area hr { margin:10px 20px 0; }
+.vschess-layout-default .vschess-copy-finish  { display:none; position:absolute; top:244px; left:220px; width:320px; height:40px; line-height:40px; font-size:12px; z-index:100; color:#fff; text-align:center; background-color:#000; background-color:rgba(0,0,0,0.7); }
+.vschess-layout-default .vschess-copy-finish-show { display:block; }

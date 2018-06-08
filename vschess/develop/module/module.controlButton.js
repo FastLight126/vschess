@@ -68,8 +68,8 @@ fn.createFormatBar = function(){
 		chinese		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-chinese" value="中 文" />'),
 		wxf			: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
 		iccs		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
-		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" />'),
-		saveInput	: $('<input type="hidden" name="data" />')
+		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" class="vschess-format-bar-save-format" />'),
+		saveInput	: $('<input type="text" name="data" class="vschess-format-bar-save-input" />')
 	};
 
 	this.formatBarButton.format.bind(this.options.click, function(){
@@ -114,9 +114,17 @@ fn.createFormatBar = function(){
 	}
 
 	this.formatBarButton.copy.bind(this.options.click, function(){
-		if (window.ActiveXObject) {
+		if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+			var fen = _this.getCurrentFen();
+			_this.formatBarButton.saveInput.val(fen);
+			_this.formatBarButton.saveInput.focus();
+			_this.formatBarButton.saveInput[0].setSelectionRange(0, fen.length);
+			document.execCommand("copy");
+			_this.copyFenFinish();
+		}
+		else if (window.clipboardData) {
 			if (window.clipboardData.setData("Text", _this.getCurrentFen())) {
-				alert("局面复制成功，您可以直接在象棋软件中粘贴使用！");
+				_this.copyFenFinish();
 			}
 			else {
 				prompt("请按 Ctrl+C 复制：", _this.getCurrentFen());
@@ -128,12 +136,20 @@ fn.createFormatBar = function(){
 	});
 
 	this.DOM.append(this.formatBar);
-	return this.createHelp();
+	return this.createCopyFinishTips().createHelp();
+};
+
+fn.createCopyFinishTips = function(){
+	this.copyFinishTips = $('<div class="vschess-copy-finish">局面复制成功，您可以直接在象棋软件中粘贴使用！</div>');
+	this.DOM.append(this.copyFinishTips);
+	return this;
 };
 
 // 复制成功提示
 fn.copyFenFinish = function(){
-	alert("局面复制成功，您可以直接在象棋软件中粘贴使用！");
+	var _this = this;
+	this.copyFinishTips.addClass("vschess-copy-finish-show");
+	setTimeout(function(){ _this.copyFinishTips.removeClass("vschess-copy-finish-show"); }, 1500);
 	return this;
 };
 

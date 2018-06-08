@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋巫师友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月6日
- * Wed, 06 Jun 2018 02:49:08 +0800
+ * 最后修改日期：北京时间 2018年6月8日
+ * Fri, 08 Jun 2018 17:09:59 +0800
  */
 
 (function(){
@@ -380,7 +380,7 @@ var vschess = {
 		B: "\u4e2d\u70ae\u5c40 \u4e2d\u70ae\u5bf9\u8fdb\u53f3\u9a6c \u4e2d\u70ae\u5bf9\u8fdb\u53f3\u9a6c\u5148\u4e0a\u58eb \u4e2d\u70ae\u5bf9\u9e33\u9e2f\u70ae \u4e2d\u70ae\u5bf9\u53f3\u4e09\u6b65\u864e \u4e2d\u70ae\u5bf9\u8fdb\u5de6\u9a6c \u4e2d\u70ae\u5bf9\u9f9f\u80cc\u70ae \u4e2d\u70ae\u5bf9\u5de6\u70ae\u5c01\u8f66   \u4e2d\u70ae\u5bf9\u5355\u63d0\u9a6c \u4e2d\u70ae\u5bf9\u58eb\u89d2\u70ae\u8f6c\u5355\u63d0\u9a6c \u4e2d\u70ae\u5bf9\u5355\u63d0\u9a6c\u6a2a\u8f66 \u4e2d\u70ae\u5de1\u6cb3\u70ae\u5bf9\u5355\u63d0\u9a6c\u6a2a\u8f66 \u4e2d\u70ae\u8fdb\u4e03\u5175\u5bf9\u5355\u63d0\u9a6c\u6a2a\u8f66      \u4e2d\u70ae\u5bf9\u5de6\u4e09\u6b65\u864e \u4e2d\u70ae\u8fb9\u76f8\u5bf9\u5de6\u4e09\u6b65\u864e\u9a91\u6cb3\u8f66 \u4e2d\u70ae\u53f3\u6a2a\u8f66\u5bf9\u5de6\u4e09\u6b65\u864e \u4e2d\u70ae\u5de1\u6cb3\u70ae\u5bf9\u5de6\u4e09\u6b65\u864e \u4e2d\u70ae\u8fc7\u6cb3\u70ae\u5bf9\u5de6\u4e09\u6b65\u864e \u4e2d\u70ae\u4e24\u5934\u86c7\u5bf9\u5de6\u4e09\u6b65\u864e     \u4e2d\u70ae\u5bf9\u53cd\u5bab\u9a6c\u540e\u8865\u5de6\u9a6c \u4e2d\u70ae\u5bf9\u53cd\u5bab\u9a6c \u4e2d\u70ae\u6025\u8fdb\u5de6\u9a6c\u5bf9\u53cd\u5bab\u9a6c \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u5bf9\u53cd\u5bab\u9a6c \u4e2d\u70ae\u53f3\u6a2a\u8f66\u5bf9\u53cd\u5bab\u9a6c \u4e2d\u70ae\u5de1\u6cb3\u70ae\u5bf9\u53cd\u5bab\u9a6c \u4e94\u516b\u70ae\u5bf9\u53cd\u5bab\u9a6c    \u4e94\u516d\u70ae\u5bf9\u53cd\u5bab\u9a6c \u4e94\u516d\u70ae\u5de6\u6b63\u9a6c\u5bf9\u53cd\u5bab\u9a6c \u4e94\u516d\u70ae\u5de6\u6b63\u9a6c\u5bf9\u53cd\u5bab\u9a6c#\u9ed1\u53f3\u76f4\u8f66 \u4e94\u516d\u70ae\u5de6\u6b63\u9a6c\u5bf9\u53cd\u5bab\u9a6c#\u9ed1\u53f3\u76f4\u8f66\u8fb9\u70ae \u4e94\u516d\u70ae\u5de6\u6b63\u9a6c\u5bf9\u53cd\u5bab\u9a6c#\u9ed1\u53f3\u76f4\u8f66\u8fb9\u70ae\u8fdb\uff17\u5352 \u4e94\u516d\u70ae\u5de6\u8fb9\u9a6c\u5bf9\u53cd\u5bab\u9a6c     \u4e94\u4e03\u70ae\u5bf9\u53cd\u5bab\u9a6c \u4e94\u4e03\u70ae\u5bf9\u53cd\u5bab\u9a6c\u5de6\u76f4\u8f66 \u4e94\u4e03\u70ae\u5bf9\u53cd\u5bab\u9a6c\u5de6\u6a2a\u8f66 \u4e94\u4e03\u70ae\u5bf9\u53cd\u5bab\u9a6c\u53f3\u76f4\u8f66 \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u53cd\u5bab\u9a6c \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u53cd\u5bab\u9a6c#\u9ed1\u53f3\u70ae\u8fc7\u6cb3 \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u53cd\u5bab\u9a6c#\u7ea2\u5f03\u53cc\u5175\u5bf9\u9ed1\u53f3\u70ae\u8fc7\u6cb3".split(" "),
 		C: "\u4e2d\u70ae\u5bf9\u5c4f\u98ce\u9a6c \u4e2d\u70ae\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c \u4e2d\u70ae\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de6\u9a6c\u76d8\u6cb3 \u4e2d\u70ae\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u8fdb\u4e2d\u5175 \u4e2d\u70ae\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u8fdb\u4e2d\u5175\u5bf9\u9ed1\u53cc\u70ae\u8fc7\u6cb3 \u4e2d\u70ae\u5de6\u8fb9\u9a6c\u5bf9\u5c4f\u98ce\u9a6c \u4e2d\u70ae\u5de6\u8fb9\u9a6c\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de6\u6a2a\u8f66    \u4e2d\u70ae\u53f3\u6a2a\u8f66\u5bf9\u5c4f\u98ce\u9a6c \u4e2d\u70ae\u53f3\u6a2a\u8f66\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de6\u9a6c\u76d8\u6cb3 \u4e2d\u70ae\u53f3\u6a2a\u8f66\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de1\u6cb3\u70ae \u4e2d\u70ae\u53f3\u6a2a\u8f66\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u8fb9\u70ae \u4e2d\u70ae\u53f3\u6a2a\u8f66\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u8fdb\u4e2d\u5175 \u4e2d\u70ae\u5de1\u6cb3\u8f66\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u4e0d\u8fdb\u5de6\u9a6c \u4e2d\u70ae\u5de1\u6cb3\u8f66\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u8fdb\u5de6\u9a6c \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u5bf9\u5c4f\u98ce\u9a6c \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u5de6\u8fb9\u9a6c\u5bf9\u5c4f\u98ce\u9a6c \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c\u4e24\u5934\u86c7 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c\u4e24\u5934\u86c7#\u7ea2\u5de6\u6a2a\u8f66 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c\u4e24\u5934\u86c7#\u7ea2\u5de6\u6a2a\u8f66\u5bf9\u9ed1\u9ad8\u53f3\u70ae \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c\u4e24\u5934\u86c7#\u7ea2\u5de6\u6a2a\u8f66\u5151\u4e09\u5175\u5bf9\u9ed1\u9ad8\u53f3\u70ae \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c\u4e24\u5934\u86c7#\u7ea2\u5de6\u6a2a\u8f66\u5151\u4e03\u5175\u5bf9\u9ed1\u9ad8\u53f3\u70ae \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e03\u8def\u9a6c\u5bf9\u5c4f\u98ce\u9a6c\u4e24\u5934\u86c7#\u7ea2\u5de6\u6a2a\u8f66\u5151\u53cc\u5175\u5bf9\u9ed1\u9ad8\u53f3\u70ae     \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u4e0a\u58eb \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u98de\u8c61 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u53f3\u6a2a\u8f66 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u53f3\u70ae\u8fc7\u6cb3 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5de6\u9a6c\u76d8\u6cb3 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5de6\u9a6c\u76d8\u6cb3#\u7ea2\u4e03\u8def\u9a6c \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5de6\u9a6c\u76d8\u6cb3#\u7ea2\u4e03\u8def\u9a6c\u5bf9\u9ed1\u98de\u53f3\u8c61 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5de6\u9a6c\u76d8\u6cb3#\u7ea2\u4e03\u8def\u9a6c\u9ad8\u5de6\u70ae\u5bf9\u9ed1\u98de\u53f3\u8c61 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5de6\u9a6c\u76d8\u6cb3#\u7ea2\u8fb9\u70ae\u5bf9\u9ed1\u98de\u53f3\u8c61 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5e73\u70ae\u5151\u8f66 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5e73\u70ae\u5151\u8f66#\u9ed1\u9000\u8fb9\u70ae \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5e73\u70ae\u5151\u8f66#\u7ea2\u4e03\u8def\u9a6c\u5bf9\u9ed1\u9000\u8fb9\u70ae \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5e73\u70ae\u5151\u8f66#\u7ea2\u4e03\u8def\u9a6c\u5bf9\u9ed1\u9000\u8fb9\u70ae\u4e0a\u53f3\u58eb \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5e73\u70ae\u5151\u8f66#\u7ea2\u5de6\u9a6c\u76d8\u6cb3\u5bf9\u9ed1\u9000\u8fb9\u70ae\u4e0a\u53f3\u58eb \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5e73\u70ae\u5151\u8f66#\u7ea2\u5de6\u8fb9\u70ae\u5bf9\u9ed1\u9000\u8fb9\u70ae\u4e0a\u53f3\u58eb \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5e73\u70ae\u5151\u8f66#\u7ea2\u5de6\u8fb9\u70ae\u5bf9\u9ed1\u9000\u8fb9\u70ae\u4e0a\u53f3\u58eb\u53f3\u76f4\u8f66 \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5e73\u70ae\u5151\u8f66#\u7ea2\u5de6\u8fb9\u9a6c\u5bf9\u9ed1\u9000\u8fb9\u70ae \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5e73\u70ae\u5151\u8f66#\u7ea2\u4ed5\u89d2\u70ae\u5bf9\u9ed1\u9000\u8fb9\u70ae \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c\u5e73\u70ae\u5151\u8f66#\u7ea2\u8fdb\u4e2d\u5175\u5bf9\u9ed1\u9000\u8fb9\u70ae \u4e94\u516d\u70ae\u5bf9\u5c4f\u98ce\u9a6c \u4e94\u516d\u70ae\u5de6\u8fb9\u9a6c\u5bf9\u5c4f\u98ce\u9a6c \u4e94\u516d\u70ae\u5de6\u8fb9\u9a6c\u5bf9\u5c4f\u98ce\u9a6c#\u9ed1\u8fdb\uff17\u5352\u53f3\u76f4\u8f66 \u4e94\u516d\u70ae\u5de6\u8fb9\u9a6c\u5bf9\u5c4f\u98ce\u9a6c#\u9ed1\u8fdb\uff17\u5352\u53f3\u76f4\u8f66\u53f3\u70ae\u8fc7\u6cb3 \u4e94\u516d\u70ae\u8fc7\u6cb3\u8f66\u5bf9\u5c4f\u98ce\u9a6c \u4e94\u516d\u70ae\u8fc7\u6cb3\u8f66\u5bf9\u5c4f\u98ce\u9a6c#\u9ed1\u8fdb\uff17\u5352\u53f3\u76f4\u8f66 \u4e94\u516d\u70ae\u8fc7\u6cb3\u8f66\u5bf9\u5c4f\u98ce\u9a6c#\u9ed1\u4e24\u5934\u86c7    \u4e94\u4e03\u70ae\u5bf9\u5c4f\u98ce\u9a6c \u4e94\u4e03\u70ae\u5bf9\u5c4f\u98ce\u9a6c\u8fdb\uff17\u5352 \u4e94\u4e03\u70ae\u5bf9\u5c4f\u98ce\u9a6c\u8fdb\uff17\u5352#\u9ed1\u53f3\u76f4\u8f66 \u4e94\u4e03\u70ae\u5bf9\u5c4f\u98ce\u9a6c\u8fdb\uff17\u5352#\u7ea2\u5de6\u76f4\u8f66\u5bf9\u9ed1\u53f3\u76f4\u8f66 \u4e94\u4e03\u70ae\u5bf9\u5c4f\u98ce\u9a6c\u8fdb\uff17\u5352#\u7ea2\u5de6\u76f4\u8f66\u5bf9\u9ed1\u53f3\u76f4\u8f66\u5de6\u70ae\u8fc7\u6cb3 \u4e94\u4e03\u70ae\u5bf9\u5c4f\u98ce\u9a6c\u8fdb\uff17\u5352#\u7ea2\u5de6\u76f4\u8f66\u5bf9\u9ed1\u53f3\u76f4\u8f66\u53f3\u70ae\u5de1\u6cb3 \u4e94\u4e03\u70ae\u5bf9\u5c4f\u98ce\u9a6c\u8fdb\uff17\u5352#\u7ea2\u5de6\u76f4\u8f66\u5bf9\u9ed1\u53f3\u76f4\u8f66\u53f3\u70ae\u8fc7\u6cb3 \u4e94\u4e03\u70ae\u5bf9\u5c4f\u98ce\u9a6c\u8fdb\uff17\u5352#\u9ed1\u53f3\u70ae\u5de1\u6cb3 \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e03\u5175\u5bf9\u5c4f\u98ce\u9a6c  \u4e94\u4e03\u70ae\u5bf9\u5c4f\u98ce\u9a6c\u8fdb\uff13\u5352 \u4e94\u4e03\u70ae\u5bf9\u5c4f\u98ce\u9a6c\u8fdb\uff13\u5352\u53f3\u9a6c\u5916\u76d8\u6cb3 \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c\u8fb9\u5352\u53f3\u9a6c\u5916\u76d8\u6cb3 \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c\u8fb9\u5352\u53f3\u9a6c\u5916\u76d8\u6cb3#\u7ea2\u5de6\u6a2a\u8f66 \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c\u8fb9\u5352\u53f3\u9a6c\u5916\u76d8\u6cb3#\u7ea2\u5de6\u6a2a\u8f66\u5bf9\u9ed1\u98de\u5de6\u8c61 \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c\u8fb9\u5352\u53f3\u9a6c\u5916\u76d8\u6cb3#\u7ea2\u5de6\u6a2a\u8f66\u53f3\u9a6c\u76d8\u6cb3\u5bf9\u9ed1\u98de\u5de6\u8c61 \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c\u8fb9\u5352\u53f3\u9a6c\u5916\u76d8\u6cb3#\u7ea2\u5de6\u6a2a\u8f66\u53f3\u8f66\u5de1\u6cb3\u5bf9\u9ed1\u98de\u5de6\u8c61 \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c\u8fb9\u5352\u53f3\u9a6c\u5916\u76d8\u6cb3#\u7ea2\u5de6\u6a2a\u8f66\u5bf9\u9ed1\u98de\u53f3\u8c61 \u4e94\u4e03\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c\u8fb9\u5352\u53f3\u9a6c\u5916\u76d8\u6cb3#\u7ea2\u5de6\u6a2a\u8f66\u5bf9\u9ed1\u5151\u8fb9\u5352  \u4e2d\u70ae\u5de1\u6cb3\u70ae\u5bf9\u5c4f\u98ce\u9a6c \u4e2d\u70ae\u5de1\u6cb3\u70ae\u5bf9\u5c4f\u98ce\u9a6c#\u9ed1\u98de\u5de6\u8c61 \u4e2d\u70ae\u5de1\u6cb3\u70ae\u5bf9\u5c4f\u98ce\u9a6c#\u9ed1\u98de\u5de6\u8c61\u53f3\u6a2a\u8f66 \u4e2d\u70ae\u5de1\u6cb3\u70ae\u5bf9\u5c4f\u98ce\u9a6c#\u9ed1\u98de\u5de6\u8c61\u5de6\u70ae\u5de1\u6cb3 \u4e2d\u70ae\u5de1\u6cb3\u70ae\u5bf9\u5c4f\u98ce\u9a6c#\u9ed1\u98de\u53f3\u8c61 \u4e2d\u70ae\u5de1\u6cb3\u70ae\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de6\u9a6c\u76d8\u6cb3\u5bf9\u9ed1\u5de6\u9a6c\u5916\u76d8\u6cb3 \u4e2d\u70ae\u5de1\u6cb3\u70ae\u7f13\u5f00\u8f66\u5bf9\u5c4f\u98ce\u9a6c\u5de6\u9a6c\u5916\u76d8\u6cb3#\u7ea2\u53f3\u6a2a\u8f66    \u4e94\u516b\u70ae\u5bf9\u5c4f\u98ce\u9a6c \u4e94\u516b\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c \u4e94\u516b\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de6\u6b63\u9a6c \u4e94\u516b\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de6\u8fb9\u9a6c \u4e94\u516b\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de6\u8fb9\u9a6c\u5bf9\u9ed1\u4e0a\u58eb \u4e94\u516b\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de6\u8fb9\u9a6c\u5bf9\u9ed1\u5151\uff17\u5352 \u4e94\u516b\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de6\u8fb9\u9a6c\u5bf9\u9ed1\u8fb9\u5352 \u4e94\u516b\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5de6\u8fb9\u9a6c\u5e73\u70ae\u538b\u9a6c\u5bf9\u9ed1\u8fb9\u5352 \u4e94\u516b\u70ae\u4e92\u8fdb\u4e09\u5175\u5bf9\u5c4f\u98ce\u9a6c#\u7ea2\u5e73\u70ae\u538b\u9a6c \u4e94\u4e5d\u70ae\u5bf9\u5c4f\u98ce\u9a6c".split(" "),
 		D: "\u987a\u70ae\u7f13\u5f00\u8f66\u5bf9\u5176\u4ed6 \u987a\u70ae\u7f13\u5f00\u8f66\u5bf9\u6a2a\u8f66 \u987a\u70ae\u7f13\u5f00\u8f66\u5bf9\u76f4\u8f66 \u987a\u70ae\u6a2a\u8f66\u5bf9\u7f13\u5f00\u8f66 \u987a\u70ae\u6a2a\u8f66\u5bf9\u76f4\u8f66 \u987a\u70ae\u6a2a\u8f66\u5bf9\u76f4\u8f66\u5de1\u6cb3     \u987a\u70ae\u76f4\u8f66\u5bf9\u7f13\u5f00\u8f66 \u987a\u70ae\u76f4\u8f66\u5bf9\u7f13\u5f00\u8f66#\u9ed1\u5de6\u6a2a\u8f66 \u987a\u70ae\u76f4\u8f66\u5bf9\u7f13\u5f00\u8f66#\u9ed1\u53f3\u6a2a\u8f66 \u987a\u70ae\u76f4\u8f66\u5bf9\u7f13\u5f00\u8f66#\u9ed1\u5151\u76f4\u8f66 \u987a\u70ae\u76f4\u8f66\u5bf9\u7f13\u5f00\u8f66#\u9ed1\u8fc7\u6cb3\u70ae \u987a\u70ae\u76f4\u8f66\u5bf9\u7f13\u5f00\u8f66#\u9ed1\u8fb9\u70ae     \u987a\u70ae\u76f4\u8f66\u5bf9\u6a2a\u8f66 \u987a\u70ae\u76f4\u8f66\u5bf9\u6a2a\u8f66#\u7ea2\u5148\u4e0a\u4ed5 \u987a\u70ae\u76f4\u8f66\u5bf9\u6a2a\u8f66#\u7ea2\u5de6\u8fb9\u9a6c \u987a\u70ae\u76f4\u8f66\u5bf9\u6a2a\u8f66#\u7ea2\u5de1\u6cb3\u8f66 \u987a\u70ae\u76f4\u8f66\u5bf9\u6a2a\u8f66#\u7ea2\u8fc7\u6cb3\u8f66 \u987a\u70ae\u76f4\u8f66\u5bf9\u6a2a\u8f66#\u7ea2\u4ed5\u89d2\u70ae \u987a\u70ae\u76f4\u8f66\u5bf9\u6a2a\u8f66#\u7ea2\u8fdb\u4e09\u5175 \u987a\u70ae\u76f4\u8f66\u5bf9\u6a2a\u8f66#\u7ea2\u8fdb\u4e03\u5175 \u987a\u70ae\u76f4\u8f66\u5bf9\u6a2a\u8f66#\u7ea2\u4e24\u5934\u86c7 \u987a\u70ae\u76f4\u8f66\u5bf9\u6a2a\u8f66#\u7ea2\u4e24\u5934\u86c7\u5bf9\u9ed1\u53cc\u6a2a\u8f66 \u4e2d\u70ae\u4e0d\u8fdb\u4e09\u5175\u5bf9\u5de6\u70ae\u5c01\u8f66\u8f6c\u5217\u70ae \u4e2d\u70ae\u8fdb\u4e09\u5175\u5bf9\u5de6\u70ae\u5c01\u8f66\u8f6c\u5217\u70ae \u4e2d\u70ae\u8fdb\u4e09\u5175\u5bf9\u5de6\u70ae\u5c01\u8f66\u8f6c\u5217\u70ae#\u7ea2\u53f3\u9a6c\u76d8\u6cb3 \u4e2d\u70ae\u8fdb\u4e09\u5175\u5bf9\u5de6\u70ae\u5c01\u8f66\u8f6c\u5217\u70ae#\u7ea2\u4e03\u8def\u9a6c \u4e2d\u70ae\u8fdb\u4e09\u5175\u5bf9\u5de6\u70ae\u5c01\u8f66\u8f6c\u5217\u70ae#\u7ea2\u5de6\u8fb9\u9a6c \u4e2d\u70ae\u8fdb\u4e09\u5175\u5bf9\u5de6\u70ae\u5c01\u8f66\u8f6c\u5217\u70ae#\u7ea2\u8fdb\u70ae\u6253\u9a6c \u4e2d\u70ae\u8fdb\u4e09\u5175\u5bf9\u5de6\u70ae\u5c01\u8f66\u8f6c\u5217\u70ae#\u7ea2\u4e24\u5934\u86c7    \u4e2d\u70ae\u5bf9\u5de6\u4e09\u6b65\u864e\u8f6c\u5217\u70ae \u4e2d\u70ae\u8fdb\u4e2d\u5175\u5bf9\u5de6\u4e09\u6b65\u864e\u9a91\u6cb3\u8f66\u8f6c\u5217\u70ae \u4e2d\u70ae\u5bf9\u5de6\u4e09\u6b65\u864e\u8f6c\u5217\u70ae#\u7ea2\u5de6\u76f4\u8f66 \u4e2d\u70ae\u5bf9\u5de6\u4e09\u6b65\u864e\u8f6c\u5217\u70ae#\u7ea2\u4e24\u5934\u86c7       \u4e2d\u70ae\u5bf9\u5217\u70ae \u4e2d\u70ae\u5bf9\u540e\u8865\u5217\u70ae \u4e2d\u70ae\u53f3\u76f4\u8f66\u5bf9\u540e\u8865\u5217\u70ae \u4e2d\u70ae\u8fc7\u6cb3\u8f66\u5bf9\u540e\u8865\u5217\u70ae \u4e2d\u70ae\u5de6\u76f4\u8f66\u5bf9\u540e\u8865\u5217\u70ae \u4e2d\u70ae\u53cc\u76f4\u8f66\u5bf9\u540e\u8865\u5217\u70ae".split(" "),
-		E: "\u4ed9\u4eba\u6307\u8def\u5c40 \u4ed9\u4eba\u6307\u8def\u5bf9\u98de\u8c61 \u4ed9\u4eba\u6307\u8def\u8fdb\u53f3\u9a6c\u5bf9\u98de\u8c61 \u4ed9\u4eba\u6307\u8def\u5bf9\u4e2d\u70ae \u4ed9\u4eba\u6307\u8def\u5bf9\u4ed5\u89d2\u70ae\u6216\u8fc7\u5bab\u70ae \u4ed9\u4eba\u6307\u8def\u5bf9\u91d1\u94a9\u70ae \u4ed9\u4eba\u6307\u8def\u5bf9\u8fdb\u53f3\u9a6c \u4ed9\u4eba\u6307\u8def\u4e92\u8fdb\u53f3\u9a6c\u5c40 \u4e24\u5934\u86c7\u5bf9\u8fdb\u53f3\u9a6c \u4e24\u5934\u86c7\u5bf9\u8fdb\u53f3\u9a6c\u8f6c\u5352\u5e95\u70ae \u4ed9\u4eba\u6307\u8def\u5bf9\u5352\u5e95\u70ae \u4ed9\u4eba\u6307\u8def\u98de\u76f8\u5bf9\u5352\u5e95\u70ae \u4ed9\u4eba\u6307\u8def\u8f6c\u53f3\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u53f3\u8c61 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u53f3\u8c61#\u7ea2\u53f3\u8fb9\u9a6c \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u53f3\u8c61#\u4e92\u8fdb\u8fb9\u9a6c \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u8f6c\u987a\u70ae   \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5148\u4e0a\u4ed5 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u8fdb\u5de6\u9a6c \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u8fdb\u5de6\u9a6c\u5bf9\u9ed1\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u5bf9\u9ed1\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u9a6c\u76d8\u6cb3\u5bf9\u9ed1\u53f3\u6a2a\u8f66\u4e0a\u58eb \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u9a6c\u76d8\u6cb3\u5bf9\u9ed1\u53f3\u6a2a\u8f66\u8fc7\u6cb3 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u9a6c\u76d8\u6cb3\u5bf9\u9ed1\u53f3\u6a2a\u8f66\u8fb9\u5352   \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u9ed1\u8fdb\uff17\u5352 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u9ed1\u8fde\u8fdb\uff17\u5352 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u8fb9\u9a6c\u5bf9\u9ed1\u8fde\u8fdb\uff17\u5352\u62d0\u89d2\u9a6c \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u8fb9\u9a6c\u5bf9\u9ed1\u8fde\u8fdb7\u5352\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u8fb9\u9a6c\u4e0a\u4ed5\u5bf9\u9ed1\u8fde\u8fdb\uff17\u5352\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de1\u6cb3\u8f66\u53f3\u8fb9\u9a6c\u5bf9\u9ed1\u8fde\u8fdb\uff17\u5352\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u53cc\u76f4\u8f66\u53f3\u8fb9\u9a6c\u5bf9\u9ed1\u8fde\u8fdb\uff17\u5352\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u53f3\u8fb9\u9a6c \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u70ae\u6253\u4e2d\u5352  \u5bf9\u5175\u5c40 \u5bf9\u5175\u8fdb\u53f3\u9a6c\u5c40 \u5bf9\u5175\u4e92\u8fdb\u53f3\u9a6c\u5c40 \u5bf9\u5175\u5bf9\u8fdb\u53f3\u9a6c\u5c40#\u7ea2\u98de\u76f8 \u5bf9\u5175\u5bf9\u8fdb\u53f3\u9a6c\u5c40#\u7ea2\u6a2a\u8f66 \u5bf9\u5175\u5bf9\u8fdb\u53f3\u9a6c\u5c40#\u7ea2\u8fb9\u70ae \u5bf9\u5175\u8f6c\u5175\u5e95\u70ae \u5bf9\u5175\u8f6c\u5175\u5e95\u70ae\u5bf9\u53f3\u4e2d\u70ae \u5bf9\u5175\u8f6c\u5175\u5e95\u70ae\u5bf9\u5de6\u4e2d\u70ae".split(" ")
+		E: "\u4ed9\u4eba\u6307\u8def\u5c40 \u4ed9\u4eba\u6307\u8def\u5bf9\u98de\u8c61 \u4ed9\u4eba\u6307\u8def\u8fdb\u53f3\u9a6c\u5bf9\u98de\u8c61 \u4ed9\u4eba\u6307\u8def\u5bf9\u4e2d\u70ae \u4ed9\u4eba\u6307\u8def\u5bf9\u4ed5\u89d2\u70ae\u6216\u8fc7\u5bab\u70ae \u4ed9\u4eba\u6307\u8def\u5bf9\u91d1\u94a9\u70ae \u4ed9\u4eba\u6307\u8def\u5bf9\u8fdb\u53f3\u9a6c \u4ed9\u4eba\u6307\u8def\u4e92\u8fdb\u53f3\u9a6c\u5c40 \u4e24\u5934\u86c7\u5bf9\u8fdb\u53f3\u9a6c \u4e24\u5934\u86c7\u5bf9\u8fdb\u53f3\u9a6c\u8f6c\u5352\u5e95\u70ae \u4ed9\u4eba\u6307\u8def\u5bf9\u5352\u5e95\u70ae \u4ed9\u4eba\u6307\u8def\u98de\u76f8\u5bf9\u5352\u5e95\u70ae \u4ed9\u4eba\u6307\u8def\u8f6c\u53f3\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u53f3\u8c61 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u53f3\u8c61#\u7ea2\u53f3\u8fb9\u9a6c \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u53f3\u8c61#\u4e92\u8fdb\u8fb9\u9a6c \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u8f6c\u987a\u70ae   \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5148\u4e0a\u4ed5 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u8fdb\u5de6\u9a6c \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u8fdb\u5de6\u9a6c\u5bf9\u9ed1\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u5bf9\u9ed1\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u9a6c\u76d8\u6cb3\u5bf9\u9ed1\u53f3\u6a2a\u8f66\u4e0a\u58eb \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u9a6c\u76d8\u6cb3\u5bf9\u9ed1\u53f3\u6a2a\u8f66\u8fc7\u6cb3 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u9a6c\u76d8\u6cb3\u5bf9\u9ed1\u53f3\u6a2a\u8f66\u8fb9\u5352   \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u9ed1\u8fdb\uff17\u5352 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u9ed1\u8fde\u8fdb\uff17\u5352 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u8fb9\u9a6c\u5bf9\u9ed1\u8fde\u8fdb\uff17\u5352\u62d0\u89d2\u9a6c \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u8fb9\u9a6c\u5bf9\u9ed1\u8fde\u8fdb7\u5352\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de6\u76f4\u8f66\u53f3\u8fb9\u9a6c\u4e0a\u4ed5\u5bf9\u9ed1\u8fde\u8fdb\uff17\u5352\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u5de1\u6cb3\u8f66\u53f3\u8fb9\u9a6c\u5bf9\u9ed1\u8fde\u8fdb\uff17\u5352\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u53cc\u76f4\u8f66\u53f3\u8fb9\u9a6c\u5bf9\u9ed1\u8fde\u8fdb\uff17\u5352\u53f3\u6a2a\u8f66 \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u53f3\u8fb9\u9a6c \u4ed9\u4eba\u6307\u8def\u8f6c\u5de6\u4e2d\u70ae\u5bf9\u5352\u5e95\u70ae\u98de\u5de6\u8c61#\u7ea2\u70ae\u6253\u4e2d\u5352  \u5bf9\u5175\u5c40 \u5bf9\u5175\u8fdb\u53f3\u9a6c\u5c40 \u5bf9\u5175\u4e92\u8fdb\u53f3\u9a6c\u5c40 \u5bf9\u5175\u4e92\u8fdb\u53f3\u9a6c\u5c40#\u7ea2\u98de\u76f8 \u5bf9\u5175\u4e92\u8fdb\u53f3\u9a6c\u5c40#\u7ea2\u6a2a\u8f66 \u5bf9\u5175\u4e92\u8fdb\u53f3\u9a6c\u5c40#\u7ea2\u8fb9\u70ae \u5bf9\u5175\u8f6c\u5175\u5e95\u70ae \u5bf9\u5175\u8f6c\u5175\u5e95\u70ae\u5bf9\u53f3\u4e2d\u70ae \u5bf9\u5175\u8f6c\u5175\u5e95\u70ae\u5bf9\u5de6\u4e2d\u70ae".split(" ")
 	},
 
 	// 编辑局面开始按钮列表
@@ -625,16 +625,29 @@ vschess.dataToInfo_PFC = function(chessData){
 
 // 从标准 PGN 格式中抽取棋局信息
 vschess.dataToInfo_PGN = function(chessData){
-	var result = {};
+	var result = {}, original = {};
+	var lines = chessData.split("\n");
+
+	for (var i = 0; i < lines.length; ++i) {
+		var l = $.trim(lines[i]);
+		var start = l.    indexOf("[");
+		var end   = l.lastIndexOf("]");
+
+		if (~start && ~end) {
+			var info  = l.substring(start + 1, end);
+			var name  = info.split(/[\s]/)[0];
+			var value = $.trim(info.replace(name, ""));
+			var quotA = value.charAt(0               ) === "'" || value.charAt(0               ) === '"';
+			var quotB = value.charAt(value.length - 1) === "'" || value.charAt(value.length - 1) === '"';
+			quotA && (value = value.substring(1                  ));
+			quotB && (value = value.substring(0, value.length - 1));
+			original[name] = value;
+		}
+	}
 
 	for (var i in vschess.info.name) {
-		var startTag = "[" + (vschess.info.pgn[i] || vschess.fieldNameToCamel(i));
-		var startPos = chessData.indexOf(startTag);
-
-		if (~startPos) {
-			var value = chessData.substring(startPos + startTag.length + 2, chessData.indexOf("]", startPos) - 1);
-			value && (result[i] = value);
-		}
+		var name = vschess.info.pgn[i] || vschess.fieldNameToCamel(i);
+		original[name] && (result[i] = original[name]);
 	}
 
 	return result;
@@ -1990,6 +2003,7 @@ vschess.load.prototype.createBoard = function(){
 	this.createFormatBar();
 	this.createTab();
 	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
+	this.chessId  = vschess.chessList.length;
 
 	vschess.chessList.push(this);
 	return this;
@@ -2854,7 +2868,7 @@ vschess.Node2WXF = function(move, fen){
 		return { move: result, movedFen: vschess.situationToFen(situation) };
 	}
 
-	return { move: "None", fen: vschess.defaultFen };
+	return { move: "None", movedFen: vschess.defaultFen };
 };
 
 // 节点 ICCS 转换为 ICCS 着法
@@ -2864,8 +2878,8 @@ vschess.Node2ICCS = function(move, fen){
 	var situation = vschess.fenToSituation(fen);
 	situation[vschess.i2s[move.substring(2, 4)]] = situation[vschess.i2s[move.substring(0, 2)]];
 	situation[vschess.i2s[move.substring(0, 2)]] = 1;
-	situation[0]  = 3  -   situation[0];
-	situation[0] == 1 && ++situation[1];
+	situation[0]   = 3  -   situation[0];
+	situation[0] === 1 && ++situation[1];
 	return { move: move.toUpperCase().substring(0, 2) + "-" + move.toUpperCase().substring(2, 4), movedFen: vschess.situationToFen(situation) };
 };
 
@@ -2880,7 +2894,7 @@ vschess.nodeList2moveList = function(moveList, fen, format, options, mirror){
 
 	if (RegExp.FenShort.test(moveList[0])) {
 		moveList = moveList.slice(0);
-		fen = moveList.shift();
+		fen      = moveList.shift( );
 	}
 	else {
 		RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
@@ -2895,7 +2909,7 @@ vschess.nodeList2moveList = function(moveList, fen, format, options, mirror){
 		default    : var converter = vschess.Node2Chinese; break;
 	}
 
-	for (var i=0;i<moveList.length;++i) {
+	for (var i = 0; i < moveList.length; ++i) {
 		move = mirror ? vschess.turnMove(moveList[i]) : moveList[i];
 		stepData = converter(move, currentFen, options);
 		currentFen = stepData.movedFen;
@@ -2910,13 +2924,13 @@ vschess.WXF2ECCO = function(wxfList){
 	wxfList = wxfList ? wxfList.slice(0) : [vschess.defaultFen];
 
 	if (wxfList[0].length > 4 && wxfList.shift().split(" ", 2).join(" ") !== vschess.defaultFen.split(" ", 2).join(" ")) {
-		return { ecco:"A00", opening:"\u6b8b\u5c40", variation:"" };
+		return { ecco: "A00", opening: "\u6b8b\u5c40", variation: "" };
 	}
 
 	wxfList.length > 20 && (wxfList.length = 20);
 
-	if (wxfList.length && ~~wxfList[0].substring(1, 2) > 5) {
-		for (var i=0;i<wxfList.length;++i) {
+	if (wxfList.length && wxfList[0].substring(1, 2) > 5) {
+		for (var i = 0; i < wxfList.length; ++i) {
 			wxfList[i] = vschess.turnWXF(wxfList[i]);
 		}
 	}
@@ -2925,7 +2939,7 @@ vschess.WXF2ECCO = function(wxfList){
 	wxfList80.length < 80 && (wxfList80 += new Array(81 - wxfList80.length).join(" "));
 	var index = vschess.WXF2ECCOIndex(wxfList80);
 	var ecco  = vschess.ECCOIndex2Name(index).split("#");
-	return { ecco:index, opening:ecco[0], variation:ecco[1] || "" };
+	return { ecco: index, opening: ecco[0], variation: ecco[1] || "" };
 };
 
 // WXF 着法字符串转换为 ECCO 开局编号
@@ -2957,12 +2971,12 @@ vschess.WXF2ECCOIndex = function(wxf){
 
 		var RN = R.join(""), BN = B.join("");
 
-		for (var i=0;i<R.length;++i) {
+		for (var i = 0; i < R.length; ++i) {
 			if (!~RN.indexOf(moveList[i][0])) return false;
 			RN = RN.replace(moveList[i][0], "");
 		}
 
-		for (var i=0;i<B.length;++i) {
+		for (var i = 0; i < B.length; ++i) {
 			if (!~BN.indexOf(moveList[i][1])) return false;
 			BN = BN.replace(moveList[i][1], "");
 		}
@@ -2976,14 +2990,14 @@ vschess.WXF2ECCOIndex = function(wxf){
 	function B5x() {
 		var i, bIsB54 = true;
 
-		for (i=1;i<5;++i) {
+		for (i = 1; i < 5; ++i) {
 			switch (moveList[i][0]) {
 				case "N2+3": case "N8+9": case "R1.2": case "P3+1": break;
 				default    : bIsB54 = false; break;
 			}
 		}
 
-		for (i=1;i<4;++i) {
+		for (i = 1; i < 4; ++i) {
 			switch (moveList[i][1]) {
 				case "N8+7": case "C8.6": case "P3+1": break;
 				default    : bIsB54 = false; break;
@@ -2999,7 +3013,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 			return "B54";
 		}
 		else {
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][1]) {
 					case "B7+5": case "B3+5": case "N8+7": case "C8.6": case "P7+1": case "P3+1": break;
 					case "R1.2": return "B53";
@@ -3020,10 +3034,10 @@ vschess.WXF2ECCOIndex = function(wxf){
 			return "B32";
 		}
 		else {
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][1]) {
 					case "N8+7":
-						for (i=1;i<10;++i) {
+						for (i = 1; i < 10; ++i) {
 							switch (moveList[i][0]) {
 								case "N8+9": bRedN9 = true; break;
 								case "N8+7": bRedN7 = true; break;
@@ -3038,9 +3052,9 @@ vschess.WXF2ECCOIndex = function(wxf){
 									if (bRedC6) {
 										if (S("N2+3C8.6R1.2N8+7", SR(2))) {
 											if (bRedN7) {
-												if (moveList[3][0] == "C8.6" && moveList[3][1] == "R1.2") {
-													if (moveList[4][1] == "C2.1") {
-														if (moveList[5][1] == "P7+1")  return "B44";
+												if (moveList[3][0] === "C8.6" && moveList[3][1] === "R1.2") {
+													if (moveList[4][1] === "C2.1") {
+														if (moveList[5][1] === "P7+1")  return "B44";
 														return "B43";
 													}
 
@@ -3074,7 +3088,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 	function C5x() {
 		var i, bIsC52 = true, bIsC55 = true;
 
-		for (i=1;i<5;++i) {
+		for (i = 1; i < 5; ++i) {
 			switch (moveList[i][0]) {
 				case "N2+3": case "R1.2": case "C8.6": break;
 				case "N8+9": bIsC55 = false; break;
@@ -3083,7 +3097,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 			}
 		}
 
-		for (i=1;i<4;++i) {
+		for (i = 1; i < 4; ++i) {
 			switch (moveList[i][1]) {
 				case "N2+3": case "N8+7": case "R9.8": case "P7+1": break;
 				default    : bIsC52 = bIsC55 = false; break;
@@ -3092,7 +3106,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 
 		if (bIsC52) {
 			if (S("R1.2R9.8", SB(5))) {
-				if (moveList[5][1] == "C2+4") return "C53";
+				if (moveList[5][1] === "C2+4") return "C53";
 				return "C52";
 			}
 
@@ -3106,7 +3120,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 			}
 		}
 		else {
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][0]) {
 					case "N2+3": case "R1.2": case "C8.6": case "P3+1": case "P7+1": break;
 					case "R2+6": return "C54";
@@ -3122,26 +3136,26 @@ vschess.WXF2ECCOIndex = function(wxf){
 	function C8x() {
 		var i, bIsC85 = true, bBlackB7 = false;
 
-		for (i=1;i<5;++i) {
+		for (i = 1; i < 5; ++i) {
 			switch (moveList[i][0]) {
 				case "N2+3": case "N8+7": case "C8+2": case "P7+1": break;
 				default    : bIsC85 = false;
 			}
 		}
 
-		for (i=1;i<4;++i) {
+		for (i = 1; i < 4; ++i) {
 			switch (moveList[i][1]) {
 				case "N8+7": case "N2+3": case "R9.8": case "P7+1": break;
 				default    : bIsC85 = false; break;
 			}
 		}
 
-		if (bIsC85 && moveList[4][1] == "N7+8") {
-			if (moveList[5][0] == "N7+6" && moveList[6][0] == "R1+1") return "C86";
+		if (bIsC85 && moveList[4][1] === "N7+8") {
+			if (moveList[5][0] === "N7+6" && moveList[6][0] === "R1+1") return "C86";
 			return "C85";
 		}
 		else {
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][1]) {
 					case "B7+5": bBlackB7 = true; break;
 					case "B3+5": return "C84";
@@ -3158,24 +3172,24 @@ vschess.WXF2ECCOIndex = function(wxf){
 	}
 
 	function C9x() {
-		for (var i=1;i<10;++i) {
+		for (var i = 1; i < 10; ++i) {
 			switch (moveList[i][0]) {
 				case "P3+1":
-					for (i=1;i<10;++i) {
+					for (i = 1; i < 10; ++i) {
 						switch (moveList[i][1]) {
 							case "P3+1":
-								for (i=1;i<10;++i) {
+								for (i = 1; i < 10; ++i) {
 									switch (moveList[i][0]) {
 										case "N8+9":
 											switch (moveList[4][1]) {
 												case "B7+5": case "B3+5":
 													switch (moveList[5][1]) {
-														case "P1+1": if (moveList[6][0] == "C8.7") return "C97"; return "C96";
+														case "P1+1": if (moveList[6][0] === "C8.7") return "C97"; return "C96";
 														case "A6+5": case "A4+5": return "C94";
 														case "P7+1": return "C95";
 														default    : return "C93";
 													}
-												case "P1+1": if (moveList[6][0] == "C8.7") return "C97"; return "C96";
+												case "P1+1": if (moveList[6][0] === "C8.7") return "C97"; return "C96";
 												case "A6+5": case "A4+5": return "C94";
 												case "P7+1": return "C95";
 												default    : return "C93";
@@ -3207,11 +3221,11 @@ vschess.WXF2ECCOIndex = function(wxf){
 		bRedN7 = bRedN9 = bRedR6 = bBlackC8 = bBlackC2 = bBlackP3 = false;
 
 		if (U("C2.5N8+7N2+3R9.8R1.2P7+1R2+6N2+3N8+7P3+1")) {
-			if (moveList[5][0] == "R9+1") {
+			if (moveList[5][0] === "R9+1") {
 				if (S("C2+1R2-2B3+5", SB(6))) {
 					switch (moveList[7][0]) {
-						case "P3+1": if (moveList[8][0] == "P7+1") return "C25"; return "C23";
-						case "P7+1": if (moveList[8][0] == "P7+1") return "C25"; return "C24";
+						case "P3+1": if (moveList[8][0] === "P7+1") return "C25"; return "C23";
+						case "P7+1": if (moveList[8][0] === "P7+1") return "C25"; return "C24";
 						default    : return "C22";
 					}
 				}
@@ -3224,8 +3238,8 @@ vschess.WXF2ECCOIndex = function(wxf){
 		else if (U("C2.5N8+7N2+3R9.8R1.2P7+1R2+6N2+3P7+1")) {
 			switch (moveList[4][1]) {
 				case "N7+6":
-					if (moveList[5][0] == "N8+7") {
-						if (moveList[5][1] == "B3+5") {
+					if (moveList[5][0] === "N8+7") {
+						if (moveList[5][1] === "B3+5") {
 							switch (moveList[6][0]) {
 								case "C8.9": return "C39";
 								case "C8+1": return "C38";
@@ -3241,9 +3255,9 @@ vschess.WXF2ECCOIndex = function(wxf){
 					if (S("R2.3C9-1", SR(6))) {
 						switch (moveList[6][0]) {
 							case "N8+7":
-								if (moveList[6][1] == "A4+5") {
+								if (moveList[6][1] === "A4+5") {
 									switch (moveList[7][0]) {
-										case "C8.9": if (moveList[7][1] == "R1.2" || moveList[8][1] == "R1.2") return "C46"; return "C45";
+										case "C8.9": if (moveList[7][1] === "R1.2" || moveList[8][1] === "R1.2") return "C46"; return "C45";
 										case "N7+6": return "C44";
 										default    : return "C43";
 									}
@@ -3268,7 +3282,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 		else if (U("C2.5N8+7N2+3R9.8R1.2P7+1N8+9N2+3C8.7")) {
 			switch (moveList[4][1]) {
 				case "R1.2":
-					if (moveList[5][0] == "R9.8") {
+					if (moveList[5][0] === "R9.8") {
 						switch (moveList[5][1]) {
 							case "C2+4": return "C66";
 							case "C2+2": return "C65";
@@ -3283,7 +3297,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 			}
 		}
 		else if (U("C2.5N8+7N2+3R9.8R1.2N2+3P3+1P3+1N8+9P1+1C8.7N3+2")) {
-			if (moveList[6][0] == "R9+1") {
+			if (moveList[6][0] === "R9+1") {
 				switch (moveList[6][1]) {
 					case "B7+5":
 						switch (moveList[7][0]) {
@@ -3300,10 +3314,10 @@ vschess.WXF2ECCOIndex = function(wxf){
 			return "C72";
 		}
 		else {
-			for (i=1;i<9;++i) {
+			for (i = 1; i < 9; ++i) {
 				switch (moveList[i][0]) {
 					case "R2+4":
-						for (i=1;i<10;++i) {
+						for (i = 1; i < 10; ++i) {
 							switch (moveList[i][0]) {
 								case "N2+3": case "R1.2": case "R2+4": case "P3+1": case "P7+1": break;
 								case "N8+7": case "N8+9": return "C16";
@@ -3311,7 +3325,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 							}
 						}
 					case "R1+1":
-						for (i=1;i<10;++i) {
+						for (i = 1; i < 10; ++i) {
 							switch (moveList[i][0]) {
 								case "N2+3": case "N8+7": case "R1+1": case "R1.4": case "R1.6": case "P3+1": case "P7+1": break;
 								case "P5+1": return "C14";
@@ -3324,10 +3338,10 @@ vschess.WXF2ECCOIndex = function(wxf){
 
 						return "C10";
 					case "C8.7":
-						for (i=1;i<10;++i) {
+						for (i = 1; i < 10; ++i) {
 							switch (moveList[i][1]) {
 								case "P7+1":
-									for (i=1;i<10;++i) {
+									for (i = 1; i < 10; ++i) {
 										switch (moveList[i][0]) {
 											case "N2+3": case "N8+9": case "R1.2": case "R2+6": case "C8.7": break;
 											case "P7+1": return "C68";
@@ -3352,7 +3366,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 					case "C8.9": return "C99";
 					default:
 						if (bRedR6) {
-							for (i=1;i<10;++i) {
+							for (i = 1; i < 10; ++i) {
 								switch (moveList[i][0]) {
 									case "N2+3": case "R1.2": case "R2+6": case "P3+1": case "P7+1": break;
 									case "N8+9": return "C19";
@@ -3364,10 +3378,10 @@ vschess.WXF2ECCOIndex = function(wxf){
 							return "C17";
 						}
 						else if (bRedN7) {
-							for (i=1;i<10;++i) {
+							for (i = 1; i < 10; ++i) {
 								switch (moveList[i][0]) {
 									case "P5+1":
-										for (i=1;i<10;++i) {
+										for (i = 1; i < 10; ++i) {
 											switch (moveList[i][1]) {
 												case "N2+3": case "N8+7": case "R9.8": case "P7+1": case "P3+1": break;
 												case "C8+4": if (bBlackC2) return "C04"; bBlackC8 = true; break;
@@ -3386,7 +3400,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 							return "C01";
 						}
 						else if (bRedN9) {
-							for (i=1;i<10;++i) {
+							for (i = 1; i < 10; ++i) {
 								switch (moveList[i][0]) {
 									case "N2+3": case "N8+9": case "R1.2": case "P3+1": case "P7+1": break;
 									case "R9+1": return "C06";
@@ -3408,7 +3422,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 	function Bxx() {
 		switch (moveList[1][1]) {
 			case "R9+1":
-				if (moveList[1][0] == "N2+3" && S("R1.2R9.4", SR(3))) {
+				if (moveList[1][0] === "N2+3" && S("R1.2R9.4", SR(3))) {
 					switch (moveList[3][0]) {
 						case "P7+1": return "B14";
 						case "C8+2": return "B13";
@@ -3441,7 +3455,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 		function CxxClassify() {
 			var i, bBlackCx = 0;
 
-			for (i=1;i<10;i++) {
+			for (i = 1; i < 10; i++) {
 				switch(moveList[i][1]) {
 					case "R9.8": case "R8+5": case "P7+1": case "P3+1": break;
 					case "N2+3": if (bBlackCx) return bBlackCx; return 7;
@@ -3461,9 +3475,9 @@ vschess.WXF2ECCOIndex = function(wxf){
 
 		switch (CxxClassify()) {
 			case 1:
-				for (i=1;i<10;++i) {
+				for (i = 1; i < 10; ++i) {
 					switch (moveList[i][0]) {
-						case "B7+9": if (moveList[i - 1][1] == "R8+5") return "B21"; return "B20";
+						case "B7+9": if (moveList[i - 1][1] === "R8+5") return "B21"; return "B20";
 						case "P3+1": if (bRedP7) return "B25"; bRedP3 = true; break;
 						case "P7+1": if (bRedP3) return "B25"; bRedP7 = true; break;
 						case "N2+3": case "N8+7": break;
@@ -3489,9 +3503,9 @@ vschess.WXF2ECCOIndex = function(wxf){
 
 				return "D30";
 			case 4:
-				for (i=1;i<10;++i) {
+				for (i = 1; i < 10; ++i) {
 					switch (moveList[i][0]) {
-						case "P5+1": if (moveList[i - 1][1] == "R8+5" && moveList[i][1] == "C2.5") return "D41"; return "D40";
+						case "P5+1": if (moveList[i - 1][1] === "R8+5" && moveList[i][1] === "C2.5") return "D41"; return "D40";
 						case "P3+1": if (bRedP7) return "D43"; bRedP3 = true; break;
 						case "P7+1": if (bRedP3) return "D43"; bRedP7 = true; break;
 						case "N2+3": case "N8+7": break;
@@ -3502,7 +3516,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 
 				return "D40";
 			case 5:
-				for (i=1;i<10;++i) {
+				for (i = 1; i < 10; ++i) {
 					switch (moveList[i][0]) {
 						case "R2+6": return "D53";
 						case "N2+3": case "N8+7": case "P3+1": case "P7+1": break;
@@ -3521,7 +3535,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 	}
 
 	function D1x() {
-		for (var i=2;i<10;++i) {
+		for (var i = 2; i < 10; ++i) {
 			switch (moveList[i][1]) {
 				case "N2+3": case "P7+1": case "P3+1": break;
 				case "C2.1": return "D15";
@@ -3539,7 +3553,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 	function D2x() {
 		var i, bRedP3 = false, bRedP7 = false;
 
-		for (i=3;i<10;++i) {
+		for (i = 3; i < 10; ++i) {
 			switch (moveList[i][0]) {
 				case "A4+5": case "A6+5": return "D21";
 				case "N8+9": return "D22";
@@ -3548,7 +3562,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 				case "C8.6": return "D25";
 				case "P3+1":
 					if (bRedP7) {
-						for (i=3;i<10;++i) {
+						for (i = 3; i < 10; ++i) {
 							switch (moveList[i][1]) {
 								case "N2+3": case "R9.4": break;
 								case "R1+1": return "D29";
@@ -3563,7 +3577,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 					break;
 				case "P7+1":
 					if (bRedP3) {
-						for (i=3;i<10;++i) {
+						for (i = 3; i < 10; ++i) {
 							switch (moveList[i][1]) {
 								case "N2+3": case "R9.4": break;
 								case "R1+1": return "D29";
@@ -3590,10 +3604,10 @@ vschess.WXF2ECCOIndex = function(wxf){
 				switch (moveList[1][1]) {
 					case "N8+7":
 						switch (moveList[2][0]) {
-							case "R1.2": if (moveList[2][1] == "R9+1") return D2x(); return D1x();
+							case "R1.2": if (moveList[2][1] === "R9+1") return D2x(); return D1x();
 							case "R1+1":
-								if (moveList[2][1] == "R9.8") {
-									if (moveList[3][1] == "R8+4") return "D05";
+								if (moveList[2][1] === "R9.8") {
+									if (moveList[3][1] === "R8+4") return "D05";
 									return "D04";
 								}
 
@@ -3610,7 +3624,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 				}
 			case "R1+1":
 				if (S("R9.8N8+7", SB(2))) {
-					if (moveList[2][1] == "R8+4") return "D05";
+					if (moveList[2][1] === "R8+4") return "D05";
 					return "D04";
 				}
 
@@ -3623,7 +3637,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 		function isA28() {
 			var i, bRedN3 = false, bRedN7 = false;
 
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][0]) {
 					case "N2+3": if (bRedN7) return true; bRedN3 = true; break;
 					case "N8+7": if (bRedN3) return true; bRedN7 = true; break;
@@ -3638,7 +3652,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 		function isA53() {
 			var i, bRedN3 = false, bRedN7 = false;
 
-			for (i=1;i<10;++i) {
+			for (i = 1; i < 10; ++i) {
 				switch (moveList[i][0]) {
 					case "N2+3": if (bRedN7) return true; bRedN3 = true; break;
 					case "N8+7": if (bRedN3) return true; bRedN7 = true; break;
@@ -3669,7 +3683,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 							default    : return "A21";
 						}
 					case "C8.4":
-						if (moveList[1][0] == "N2+3") {
+						if (moveList[1][0] === "N2+3") {
 							if (S("N8+7R1.2P7+1", SB(2))) {
 								switch (moveList[3][0]) {
 									case "P7+1": return "A34";
@@ -3699,7 +3713,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 					default    : return "A10";
 				}
 			case "N2+3":
-				if (moveList[0][1] == "P7+1") {
+				if (moveList[0][1] === "P7+1") {
 					switch (moveList[1][0]) {
 						case "P7+1": return "A45";
 						case "C8.5": return "A44";
@@ -3728,9 +3742,9 @@ vschess.WXF2ECCOIndex = function(wxf){
 			case "C2.6":
 				switch (moveList[0][1]) {
 					case "C8.5":
-						if (moveList[1][0] == "N2+3" && moveList[2][0] == "R1.2") {
-							if (moveList[1][1] == "N8+7" && moveList[2][1] == "R9+1") return "A65";
-							if (moveList[1][1] == "R9+1" && moveList[2][1] == "N8+7") return "A65";
+						if (moveList[1][0] === "N2+3" && moveList[2][0] === "R1.2") {
+							if (moveList[1][1] === "N8+7" && moveList[2][1] === "R9+1") return "A65";
+							if (moveList[1][1] === "R9+1" && moveList[2][1] === "N8+7") return "A65";
 							return "A64";
 						}
 
@@ -3746,8 +3760,8 @@ vschess.WXF2ECCOIndex = function(wxf){
 							case "C8.5":
 								switch (moveList[1][1]) {
 									case "B3+5":
-										if (moveList[2][0] == "N2+1") {
-											if (moveList[2][1] == "N8+9") return "E16";
+										if (moveList[2][0] === "N2+1") {
+											if (moveList[2][1] === "N8+9") return "E16";
 											return "E15";
 										}
 
@@ -3773,7 +3787,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 														return "E23";
 													case "P7+1":
 														if (S("N2+1P7+1", SR(4)) || S("R9.8P7+1", SR(4))) {
-															if (moveList[4][0] == "N2+1" || moveList[4][0] == "R9.8") {
+															if (moveList[4][0] === "N2+1" || moveList[4][0] === "R9.8") {
 																switch (moveList[4][1]) {
 																	case "R1+1":
 																		switch (moveList[5][0]) {
@@ -3808,7 +3822,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 					case "N2+3":
 						switch (moveList[1][0]) {
 							case "N2+3":
-								if (moveList[1][1] == "P3+1") {
+								if (moveList[1][1] === "P3+1") {
 									switch (moveList[2][0]) {
 										case "B3+5": case "B7+5": return "E43";
 										case "C2.1": return "E45";
@@ -3818,13 +3832,13 @@ vschess.WXF2ECCOIndex = function(wxf){
 								}
 
 								return "E07";
-							case "P7+1": if (moveList[1][1] == "C8.7") return "E09"; return "E08";
+							case "P7+1": if (moveList[1][1] === "C8.7") return "E09"; return "E08";
 							default    : return "E06";
 						}
 					case "P3+1":
 						switch (moveList[1][0]) {
 							case "N2+3":
-								if (moveList[1][1] == "N2+3") {
+								if (moveList[1][1] === "N2+3") {
 									switch (moveList[2][0]) {
 										case "B3+5": case "B7+5": return "E43";
 										case "C2.1": return "E45";
@@ -3842,7 +3856,7 @@ vschess.WXF2ECCOIndex = function(wxf){
 								}
 							default: return "E40";
 						}
-					case "B7+5": case "B3+5": if (moveList[1][0] == "N2+3") return "E02"; return "E01";
+					case "B7+5": case "B3+5": if (moveList[1][0] === "N2+3") return "E02"; return "E01";
 					case "C8.6": case "C8.4": case "C2.6": case "C2.4": return "E04";
 					case "C8.5": case "C2.5": return "E03";
 					case "C2.7": return "E05";
@@ -4221,8 +4235,8 @@ vschess.load.prototype.createFormatBar = function(){
 		chinese		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-chinese" value="\u4e2d \u6587" />'),
 		wxf			: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
 		iccs		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
-		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" />'),
-		saveInput	: $('<input type="hidden" name="data" />')
+		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" class="vschess-format-bar-save-format" />'),
+		saveInput	: $('<input type="text" name="data" class="vschess-format-bar-save-input" />')
 	};
 
 	this.formatBarButton.format.bind(this.options.click, function(){
@@ -4267,9 +4281,17 @@ vschess.load.prototype.createFormatBar = function(){
 	}
 
 	this.formatBarButton.copy.bind(this.options.click, function(){
-		if (window.ActiveXObject) {
+		if (document.queryCommandSupported && document.queryCommandSupported('copy')) {
+			var fen = _this.getCurrentFen();
+			_this.formatBarButton.saveInput.val(fen);
+			_this.formatBarButton.saveInput.focus();
+			_this.formatBarButton.saveInput[0].setSelectionRange(0, fen.length);
+			document.execCommand("copy");
+			_this.copyFenFinish();
+		}
+		else if (window.clipboardData) {
 			if (window.clipboardData.setData("Text", _this.getCurrentFen())) {
-				alert("\u5c40\u9762\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728\u8c61\u68cb\u8f6f\u4ef6\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01");
+				_this.copyFenFinish();
 			}
 			else {
 				prompt("\u8bf7\u6309 Ctrl+C \u590d\u5236\uff1a", _this.getCurrentFen());
@@ -4281,12 +4303,20 @@ vschess.load.prototype.createFormatBar = function(){
 	});
 
 	this.DOM.append(this.formatBar);
-	return this.createHelp();
+	return this.createCopyFinishTips().createHelp();
+};
+
+vschess.load.prototype.createCopyFinishTips = function(){
+	this.copyFinishTips = $('<div class="vschess-copy-finish">\u5c40\u9762\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728\u8c61\u68cb\u8f6f\u4ef6\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01</div>');
+	this.DOM.append(this.copyFinishTips);
+	return this;
 };
 
 // 复制成功提示
 vschess.load.prototype.copyFenFinish = function(){
-	alert("\u5c40\u9762\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728\u8c61\u68cb\u8f6f\u4ef6\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01");
+	var _this = this;
+	this.copyFinishTips.addClass("vschess-copy-finish-show");
+	setTimeout(function(){ _this.copyFinishTips.removeClass("vschess-copy-finish-show"); }, 1500);
 	return this;
 };
 
@@ -4372,6 +4402,20 @@ vschess.load.prototype.getCurrentMove = function(){
 // 取得指定局面号着法是否为吃子着法
 vschess.load.prototype.getEatStatusByStep = function(step){
 	return this.eatStatus[vschess.limit(step, 0, this.eatStatus.length - 1, this.getCurrentStep())];
+};
+
+// 取得 UCCI 着法列表
+vschess.load.prototype.getUCCIList = function(step){
+	step = vschess.limit(step, 0, this.eatStatus.length - 1, this.getCurrentStep());
+	var startIndex = 0, result = [];
+
+	for (var i = step; i >= 0 && !startIndex; --i) {
+		this.eatStatus[i] && (startIndex = i);
+	}
+
+	result.push(this.fenList[startIndex]);
+	result = result.concat(this.moveList.slice(startIndex + 1, step + 1));
+	return result;
 };
 
 // 创建编辑局面区域
@@ -6496,6 +6540,6 @@ vschess.toString = function(){
 };
 
 // 将 vschess 提升为全局变量，这样外部脚本就可以调用了
-typeof window.vschess == "undefined" && (window.vschess = vschess);
+typeof window.vschess === "undefined" && (window.vschess = vschess);
 
 })();
