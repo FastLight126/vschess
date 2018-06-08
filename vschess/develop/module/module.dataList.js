@@ -57,3 +57,17 @@ fn.getCurrentMove = function(){
 fn.getEatStatusByStep = function(step){
 	return this.eatStatus[vs.limit(step, 0, this.eatStatus.length - 1, this.getCurrentStep())];
 };
+
+// 取得 UCCI 着法列表
+fn.getUCCIList = function(step){
+	step = vs.limit(step, 0, this.eatStatus.length - 1, this.getCurrentStep());
+	var startIndex = 0, result = [];
+
+	for (var i = step; i >= 0 && !startIndex; --i) {
+		this.eatStatus[i] && (startIndex = i);
+	}
+
+	result.push(this.fenList[startIndex]);
+	result = result.concat(this.moveList.slice(startIndex + 1, step + 1));
+	return result;
+};
