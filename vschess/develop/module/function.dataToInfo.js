@@ -36,7 +36,8 @@ vs.dataToInfo_PFC = function(chessData){
 
 // 从标准 PGN 格式中抽取棋局信息
 vs.dataToInfo_PGN = function(chessData){
-	var result = {}, original = {};
+	// 识别模式 A
+	var resultA = {}, original = {};
 	var lines = chessData.split("\n");
 
 	for (var i = 0; i < lines.length; ++i) {
@@ -58,10 +59,28 @@ vs.dataToInfo_PGN = function(chessData){
 
 	for (var i in vs.info.name) {
 		var name = vs.info.pgn[i] || vs.fieldNameToCamel(i);
-		original[name] && (result[i] = original[name]);
+		original[name] && (resultA[i] = original[name]);
 	}
 
-	return result;
+	// 识别模式 B
+	var resultB = {};
+
+	for (var i in vs.info.name) {
+		var startTag = "[" + (vs.info.pgn[i] || vs.fieldNameToCamel(i));
+		var startPos = chessData.indexOf(startTag);
+
+		if (~startPos) {
+			var value = chessData.substring(startPos + startTag.length + 2, chessData.indexOf("]", startPos) - 1);
+			value && (resultB[i] = value);
+		}
+	}
+
+	// AB 结果集合并
+	for (var i in resultB) {
+		(!resultA[i] || resultB[i].length > resultA[i].length) && (resultA[i] = resultB[i]);
+	}
+
+	return resultA;
 };
 
 // 从东萍象棋 Dhtml 格式中抽取棋局信息
