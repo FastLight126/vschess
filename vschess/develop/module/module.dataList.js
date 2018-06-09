@@ -5,7 +5,7 @@ fn.getSituationListLength = function(){
 
 // 取得当前节点树路径下最后局面的索引号
 fn.lastSituationIndex = function(){
-	return this.getSituationListLength() - 1;
+	return this.situationList.length - 1;
 };
 
 // 取得当前节点树路径下的所有 Fen 串
@@ -16,7 +16,7 @@ fn.getFenList = function(){
 
 	var result = [];
 
-	for (var i=0;i<this.fenList.length;++i) {
+	for (var i = 0; i < this.fenList.length; ++i) {
 		result.push(vs.turnFen(this.fenList[i]));
 	}
 
@@ -25,7 +25,7 @@ fn.getFenList = function(){
 
 // 取得当前节点树路径下的所有节点 ICCS 着法，[0] 为初始 Fen 串
 fn.getMoveList = function(){
-	return this.moveList;
+	return this.moveList.slice(0);
 };
 
 // 取得指定局面号 Fen 串
@@ -35,7 +35,7 @@ fn.getFenByStep = function(step){
 
 // 取得指定局面号节点 ICCS 着法，step 为 0 时返回初始 Fen 串
 fn.getMoveByStep = function(step){
-	return this.getMoveList()[vs.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep())];
+	return this.moveList[vs.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep())];
 };
 
 // 取得当前 Fen 串
