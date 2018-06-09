@@ -114,7 +114,7 @@ fn.initArguments = function(){
 fn.createLoading = function(selector){
 	this.originalData = this.DOM.html();
 	this.chessData = this.options.chessData === false ? this.originalData : this.options.chessData;
-	this.DOM.html('<div class="vschess-loading">棋盘加载中，请稍候。</div>').addClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout);
+	this.DOM.html('<div class="vschess-loading">棋盘加载中，请稍候。</div>').addClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).attr("data-vschess-dpr", vs.dpr);
 	return this;
 };
 
@@ -130,7 +130,7 @@ fn.initStart = function(){
 
 // 初始化回调列表
 fn.initCallback = function(){
-	for (var i=0;i<vs.callbackList.length;++i) {
+	for (var i = 0; i < vs.callbackList.length; ++i) {
 		this["callback_" + vs.callbackList[i]] = this.options[vs.callbackList[i]] || function(){};
 	}
 
@@ -151,7 +151,7 @@ fn.intervalCallback = function(){
 
 // 卸载棋盘，即将对应的 DOM 恢复原状，但不保留原 DOM 的事件绑定
 fn.unload = function(){
-	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout);
+	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).removeAttr("data-dpr");
 	return this;
 };
 

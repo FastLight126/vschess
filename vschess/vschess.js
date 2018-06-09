@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋巫师友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月9日
- * Sat, 09 Jun 2018 02:16:16 +0800
+ * 最后修改日期：北京时间 2018年6月10日
+ * Sun, 10 Jun 2018 01:52:52 +0800
  */
 
 (function(){
@@ -312,6 +312,9 @@ var vschess = {
 
 	// 伪线程延时，20 为宜
 	threadTimeout: 20,
+
+	// 页面 Device Pixel Ratio
+	dpr: window.devicePixelRatio || 1,
 
 	// 棋谱信息项目列表
 	info: {
@@ -625,7 +628,8 @@ vschess.dataToInfo_PFC = function(chessData){
 
 // 从标准 PGN 格式中抽取棋局信息
 vschess.dataToInfo_PGN = function(chessData){
-	var result = {}, original = {};
+	// 识别模式 A
+	var resultA = {}, original = {};
 	var lines = chessData.split("\n");
 
 	for (var i = 0; i < lines.length; ++i) {
@@ -647,10 +651,28 @@ vschess.dataToInfo_PGN = function(chessData){
 
 	for (var i in vschess.info.name) {
 		var name = vschess.info.pgn[i] || vschess.fieldNameToCamel(i);
-		original[name] && (result[i] = original[name]);
+		original[name] && (resultA[i] = original[name]);
 	}
 
-	return result;
+	// 识别模式 B
+	var resultB = {};
+
+	for (var i in vschess.info.name) {
+		var startTag = "[" + (vschess.info.pgn[i] || vschess.fieldNameToCamel(i));
+		var startPos = chessData.indexOf(startTag);
+
+		if (~startPos) {
+			var value = chessData.substring(startPos + startTag.length + 2, chessData.indexOf("]", startPos) - 1);
+			value && (resultB[i] = value);
+		}
+	}
+
+	// AB 结果集合并
+	for (var i in resultB) {
+		(!resultA[i] || resultB[i].length > resultA[i].length) && (resultA[i] = resultB[i]);
+	}
+
+	return resultA;
 };
 
 // 从东萍象棋 Dhtml 格式中抽取棋局信息
@@ -936,7 +958,9 @@ vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 		DhtmlXQ_ToFenFinal += vschess.cca(DhtmlXQ_ToFen[+firstMovePos[0] + firstMovePos[1] * 9]) > 96 ? " b - - 0 1" : " w - - 0 1";
 	}
 	else {
-		DhtmlXQ_ToFenFinal += " w - - 0 1";
+		var checkW = DhtmlXQ_ToFenFinal + " w - - 0 1";
+		var checkB = DhtmlXQ_ToFenFinal + " b - - 0 1";
+		DhtmlXQ_ToFenFinal = vschess.checkFen(checkB).length < vschess.checkFen(checkW).length ? checkB : checkW;
 	}
 
 	if (onlyFen) {
@@ -1862,7 +1886,7 @@ vschess.checkFen = function(fen){
 		return ["Fen \u4e32\u4e0d\u5408\u6cd5"];
 	}
 
-	var errorList = [], board = vschess.fenToArray(fen);
+	var errorList = [], board = vschess.fenToArray(fen), Kk = false;
 	var total = { R: 0, N: 0, B: 0, A: 0, K: 0, C: 0, P: 0, r: 0, n: 0, b: 0, a: 0, k: 0, c: 0, p: 0, "*": 0 };
 
 	function push(error){
@@ -1884,7 +1908,7 @@ vschess.checkFen = function(fen){
 		if (board[i] === "K") {
 			for (var j = i - 9; j > 0; j -= 9) {
 				if (board[j] !== "*") {
-					board[j] === "k" && push("\u5e05\u5c06\u9762\u5bf9\u9762\u4e86");
+					board[j] === "k" && (Kk = true) && push("\u5e05\u5c06\u9762\u5bf9\u9762\u4e86");
 					break;
 				}
 			}
@@ -1919,6 +1943,15 @@ vschess.checkFen = function(fen){
 	total.k > 1 && push("\u9ed1\u65b9\u51fa\u73b0\u4e86" + total.k + "\u4e2a\u5c06\uff0c\u591a\u4e86" + (total.k - 1) + "\u4e2a");
 	total.K < 1 && push("\u7ea2\u65b9\u5fc5\u987b\u6709\u4e00\u4e2a\u5e05");
 	total.k < 1 && push("\u9ed1\u65b9\u5fc5\u987b\u6709\u4e00\u4e2a\u5c06");
+
+	if (!Kk) {
+		if (vschess.checkThreat(fen) && vschess.checkThreat(vschess.fenChangePlayer(fen))) {
+			push("\u7ea2\u9ed1\u53cc\u65b9\u540c\u65f6\u88ab\u5c06\u519b");
+		}
+		else if (vschess.checkThreat(vschess.fenChangePlayer(fen))) {
+			fen.split(" ")[1] === "b" ? push("\u8f6e\u5230\u9ed1\u65b9\u8d70\u68cb\uff0c\u4f46\u6b64\u65f6\u7ea2\u65b9\u6b63\u5728\u88ab\u5c06\u519b") : push("\u8f6e\u5230\u7ea2\u65b9\u8d70\u68cb\uff0c\u4f46\u6b64\u65f6\u9ed1\u65b9\u6b63\u5728\u88ab\u5c06\u519b");
+		}
+	}
 
 	return errorList;
 };
@@ -2039,7 +2072,7 @@ vschess.load.prototype.initArguments = function(){
 vschess.load.prototype.createLoading = function(selector){
 	this.originalData = this.DOM.html();
 	this.chessData = this.options.chessData === false ? this.originalData : this.options.chessData;
-	this.DOM.html('<div class="vschess-loading">\u68cb\u76d8\u52a0\u8f7d\u4e2d\uff0c\u8bf7\u7a0d\u5019\u3002</div>').addClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout);
+	this.DOM.html('<div class="vschess-loading">\u68cb\u76d8\u52a0\u8f7d\u4e2d\uff0c\u8bf7\u7a0d\u5019\u3002</div>').addClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).attr("data-vschess-dpr", vschess.dpr);
 	return this;
 };
 
@@ -2055,7 +2088,7 @@ vschess.load.prototype.initStart = function(){
 
 // 初始化回调列表
 vschess.load.prototype.initCallback = function(){
-	for (var i=0;i<vschess.callbackList.length;++i) {
+	for (var i = 0; i < vschess.callbackList.length; ++i) {
 		this["callback_" + vschess.callbackList[i]] = this.options[vschess.callbackList[i]] || function(){};
 	}
 
@@ -2076,7 +2109,7 @@ vschess.load.prototype.intervalCallback = function(){
 
 // 卸载棋盘，即将对应的 DOM 恢复原状，但不保留原 DOM 的事件绑定
 vschess.load.prototype.unload = function(){
-	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout);
+	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).removeAttr("data-dpr");
 	return this;
 };
 
@@ -4062,7 +4095,7 @@ vschess.load.prototype.addConfigItem = function(name, text, type, defaultValue, 
 	this.configValue[name] = defaultValue;
 
 	if (type === "boolean") {
-		this.configItemM[name] = $('<div class="vschess-tab-body-config-item-boolean"></div>');
+		this.configItemM[name] = $('<div class="vschess-tab-body-config-item-boolean"><span></span></div>');
 		this.configItemM[name].bind(this.options.click, function(){ _this.setConfigItemValue(name, !_this.configValue[name]); typeof action === "function" && action(); });
 		this.configValue[name] || this.configItemM[name].addClass("vschess-tab-body-config-item-boolean-false");
 	}
@@ -4170,14 +4203,14 @@ vschess.load.prototype.createControlBar = function(){
 	var _this = this;
 	this.controlBar = $('<div class="vschess-control-bar"></div>');
 	this.controlBarButton = {
-		first: $('<input type="button" class="vschess-control-bar-button vschess-control-bar-first" value="\u5f00 \u5c40" />'),
-		prevQ: $('<input type="button" class="vschess-control-bar-button vschess-control-bar-prevQ" value="\u5feb \u9000" />'),
-		prev : $('<input type="button" class="vschess-control-bar-button vschess-control-bar-prev"  value="\u540e \u9000" />'),
-		play : $('<input type="button" class="vschess-control-bar-button vschess-control-bar-play"  value="\u64ad \u653e" />'),
-		pause: $('<input type="button" class="vschess-control-bar-button vschess-control-bar-pause" value="\u6682 \u505c" />'),
-		next : $('<input type="button" class="vschess-control-bar-button vschess-control-bar-next"  value="\u524d \u8fdb" />'),
-		nextQ: $('<input type="button" class="vschess-control-bar-button vschess-control-bar-nextQ" value="\u5feb \u8fdb" />'),
-		last : $('<input type="button" class="vschess-control-bar-button vschess-control-bar-last"  value="\u7ec8 \u5c40" />')
+		first: $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-first" value="\u5f00 \u5c40" />'),
+		prevQ: $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-prevQ" value="\u5feb \u9000" />'),
+		prev : $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-prev"  value="\u540e \u9000" />'),
+		play : $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-play"  value="\u64ad \u653e" />'),
+		pause: $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-pause" value="\u6682 \u505c" />'),
+		next : $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-next"  value="\u524d \u8fdb" />'),
+		nextQ: $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-nextQ" value="\u5feb \u8fdb" />'),
+		last : $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-last"  value="\u7ec8 \u5c40" />')
 	};
 
 	this.controlBarButton.first.bind(this.options.click, function(){ _this.pause(false).setBoardByStep(0); });
@@ -4228,13 +4261,13 @@ vschess.load.prototype.createFormatBar = function(){
 	}
 
 	this.formatBarButton = {
-		copy		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-copy" value="\u590d \u5236" />'),
-		format		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-format" value="\u683c \u5f0f" />'),
-		help		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-help" value="\u5e2e \u52a9" />'),
-		save		: $('<input type="submit" class="vschess-format-bar-button vschess-format-bar-save" value="\u4fdd \u5b58" />'),
-		chinese		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-chinese" value="\u4e2d \u6587" />'),
-		wxf			: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
-		iccs		: $('<input type="button" class="vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
+		copy		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-copy" value="\u590d \u5236" />'),
+		format		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-format" value="\u683c \u5f0f" />'),
+		help		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-help" value="\u5e2e \u52a9" />'),
+		save		: $('<input type="submit" class="vschess-button vschess-format-bar-button vschess-format-bar-save" value="\u4fdd \u5b58" />'),
+		chinese		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-chinese" value="\u4e2d \u6587" />'),
+		wxf			: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
+		iccs		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
 		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" class="vschess-format-bar-save-format" />'),
 		saveInput	: $('<input type="text" name="data" class="vschess-format-bar-save-input" />')
 	};
@@ -4354,7 +4387,7 @@ vschess.load.prototype.getSituationListLength = function(){
 
 // 取得当前节点树路径下最后局面的索引号
 vschess.load.prototype.lastSituationIndex = function(){
-	return this.getSituationListLength() - 1;
+	return this.situationList.length - 1;
 };
 
 // 取得当前节点树路径下的所有 Fen 串
@@ -4365,7 +4398,7 @@ vschess.load.prototype.getFenList = function(){
 
 	var result = [];
 
-	for (var i=0;i<this.fenList.length;++i) {
+	for (var i = 0; i < this.fenList.length; ++i) {
 		result.push(vschess.turnFen(this.fenList[i]));
 	}
 
@@ -4374,7 +4407,7 @@ vschess.load.prototype.getFenList = function(){
 
 // 取得当前节点树路径下的所有节点 ICCS 着法，[0] 为初始 Fen 串
 vschess.load.prototype.getMoveList = function(){
-	return this.moveList;
+	return this.moveList.slice(0);
 };
 
 // 取得指定局面号 Fen 串
@@ -4384,7 +4417,7 @@ vschess.load.prototype.getFenByStep = function(step){
 
 // 取得指定局面号节点 ICCS 着法，step 为 0 时返回初始 Fen 串
 vschess.load.prototype.getMoveByStep = function(step){
-	return this.getMoveList()[vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep())];
+	return this.moveList[vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep())];
 };
 
 // 取得当前 Fen 串
@@ -4503,11 +4536,10 @@ vschess.load.prototype.hideNodeEditModule = function(){
 
 	return this;
 };
-
 // 创建编辑局面区域开始编辑按钮
 vschess.load.prototype.createEditStartButton = function(){
 	var _this = this;
-	this.editStartButton = $('<input type="button" class="vschess-tab-body-edit-start-button" value="\u7f16\u8f91\u5c40\u9762" />');
+	this.editStartButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-start-button" value="\u7f16\u8f91\u5c40\u9762" />');
 	this.editStartButton.appendTo(this.editArea);
 
 	this.editStartButton.bind(this.options.click, function(){
@@ -4527,7 +4559,7 @@ vschess.load.prototype.createEditStartButton = function(){
 // 创建编辑局面区域结束编辑按钮
 vschess.load.prototype.createEditEndButton = function(){
 	var _this = this;
-	this.editEndButton = $('<input type="button" class="vschess-tab-body-edit-end-button" value="\u786e \u5b9a" />');
+	this.editEndButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-end-button" value="\u786e \u5b9a" />');
 	this.editEndButton.appendTo(this.editArea);
 
 	this.editEndButton.bind(this.options.click, function(){
@@ -4584,7 +4616,7 @@ vschess.load.prototype.createEditEndButton = function(){
 // 创建编辑局面区域取消编辑按钮
 vschess.load.prototype.createEditCancelButton = function(){
 	var _this = this;
-	this.editCancelButton = $('<input type="button" class="vschess-tab-body-edit-cancel-button" value="\u53d6 \u6d88" />');
+	this.editCancelButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-cancel-button" value="\u53d6 \u6d88" />');
 	this.editCancelButton.appendTo(this.editArea);
 
 	this.editCancelButton.bind(this.options.click, function(){
@@ -4650,7 +4682,6 @@ vschess.load.prototype.createEditPieceArea = function(){
 			this.editPieceList[k].appendTo(this.editPieceArea);
 		}
 	}
-
 	this.editPieceArea.bind("dragover", function(e){
 		e.preventDefault();
 		return true;
@@ -4666,7 +4697,7 @@ vschess.load.prototype.createEditPieceArea = function(){
 	$.each(this.editPieceList, function(i){
 		var currentIndex = -vschess.f2n[i];
 
-		this.bind(_this.options.click, function(){
+		this.bind(_this.options.click, function(e){
 			_this.editRemoveSelect();
 
 			if (_this.editSelectedIndex === -99) {
@@ -4684,7 +4715,23 @@ vschess.load.prototype.createEditPieceArea = function(){
 			}
 		});
 
-		this.bind("dragstart", function(){ _this.dragPiece = currentIndex; });
+		this.bind("selectstart", function(e) {
+			e.preventDefault();
+			return false;
+		});
+	
+		this.bind("dragstart", function(e){
+			e.originalEvent.dataTransfer.setData("text", e.originalEvent.target.innerHTML);
+			_this.dragPiece = currentIndex;
+			_this.editRemoveSelect();
+			_this.editSelectedIndex = -99;
+		});
+
+		this.bind("drop", function(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		});
 	});
 
 	return this;
@@ -4711,7 +4758,7 @@ vschess.load.prototype.createEditStartRound = function(){
 // 创建编辑局面区域先行走子方选项
 vschess.load.prototype.createEditStartPlayer = function(){
 	var _this = this;
-	this.editEditStartPlayer = $('<div class="vschess-tab-body-edit-start-player"></div>');
+	this.editEditStartPlayer = $('<div class="vschess-tab-body-edit-start-player"><span></span></div>');
 	this.editEditStartPlayer.appendTo(this.editArea);
 
 	this.editEditStartPlayer.bind(this.options.click, function(){
@@ -4729,7 +4776,7 @@ vschess.load.prototype.createEditBoard = function(){
 	var _this = this;
 	this.editBoard = $('<div class="vschess-board-edit"></div>');
 	this.DOM.append(this.editBoard);
-	this.editBoard.append(new Array(91).join('<div class="vschess-piece" draggable="true"><span></span></div>'));
+	this.editBoard.append(new Array(91).join('<div class="vschess-piece"><span></span></div>'));
 	this.editPiece = this.editBoard.children(".vschess-piece");
 
 	this.editPiece.each(function(i){
@@ -4760,12 +4807,16 @@ vschess.load.prototype.createEditBoard = function(){
 			return false;
 		});
 
-		$(this).bind("selectstart", function() {
+		$(this).bind("selectstart", function(e) {
+			e.preventDefault();
 			return false;
 		});
 
 		$(this).bind("dragstart", function(e){
+			e.originalEvent.dataTransfer.setData("text", e.originalEvent.target.innerHTML);
 			_this.dragPiece = i;
+			_this.editRemoveSelect();
+			_this.editSelectedIndex = -99;
 		});
 
 		$(this).bind("dragover", function(e){
@@ -4774,6 +4825,7 @@ vschess.load.prototype.createEditBoard = function(){
 		});
 
 		$(this).bind("drop", function(e){
+			e.stopPropagation();
 			e.preventDefault();
 
 			if (_this.dragPiece !== i) {
@@ -4915,14 +4967,14 @@ vschess.load.prototype.fillEditBoardByFen = function(fen){
 // 将当前编辑局面展示到视图中
 vschess.load.prototype.fillEditBoard = function(ignoreSelect){
 	var selected = this.editPiece.filter(".vschess-piece-s");
-	this.editPiece.removeClass().addClass("vschess-piece");
+	this.editPiece.removeClass().addClass("vschess-piece").removeAttr("draggable");
 	ignoreSelect && selected.addClass("vschess-piece-s");
 	this.editEditStartRound.val(this.editSituation[1]);
 	this.editEditStartPlayer.removeClass("vschess-tab-body-edit-start-player-black");
 	this.editSituation[0] === 2 && this.editEditStartPlayer.addClass("vschess-tab-body-edit-start-player-black");
 
 	for (var i = 51; i < 204; ++i) {
-		this.editSituation[i] > 1 && this.editPiece.eq(vschess.s2b[i]).addClass("vschess-piece-" + vschess.n2f[this.editSituation[i]]);
+		this.editSituation[i] > 1 && this.editPiece.eq(vschess.s2b[i]).addClass("vschess-piece-" + vschess.n2f[this.editSituation[i]]).attr({ draggable: true });
 	}
 
 	return this;
@@ -4931,7 +4983,7 @@ vschess.load.prototype.fillEditBoard = function(ignoreSelect){
 // 创建粘贴棋谱区域开始编辑按钮
 vschess.load.prototype.createNodeStartButton = function(){
 	var _this = this;
-	this.editNodeStartButton = $('<input type="button" class="vschess-tab-body-edit-node-start-button" value="\u7c98\u8d34\u68cb\u8c31" />');
+	this.editNodeStartButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-node-start-button" value="\u7c98\u8d34\u68cb\u8c31" />');
 	this.editNodeStartButton.appendTo(this.editArea);
 
 	this.editNodeStartButton.bind(this.options.click, function(){
@@ -4947,7 +4999,7 @@ vschess.load.prototype.createNodeStartButton = function(){
 // 创建粘贴棋谱区域完成编辑按钮
 vschess.load.prototype.createNodeEndButton = function(){
 	var _this = this;
-	this.editNodeEndButton = $('<input type="button" class="vschess-tab-body-edit-node-end-button" value="\u786e \u5b9a" />');
+	this.editNodeEndButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-node-end-button" value="\u786e \u5b9a" />');
 	this.editNodeEndButton.appendTo(this.editArea);
 
 	this.editNodeEndButton.bind(this.options.click, function(){
@@ -4977,7 +5029,7 @@ vschess.load.prototype.createNodeEndButton = function(){
 // 创建粘贴棋谱区域取消编辑按钮
 vschess.load.prototype.createNodeCancelButton = function(){
 	var _this = this;
-	this.editNodeCancelButton = $('<input type="button" class="vschess-tab-body-edit-node-cancel-button" value="\u53d6 \u6d88" />');
+	this.editNodeCancelButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-node-cancel-button" value="\u53d6 \u6d88" />');
 	this.editNodeCancelButton.appendTo(this.editArea);
 
 	this.editNodeCancelButton.bind(this.options.click, function(){
@@ -5021,7 +5073,7 @@ vschess.load.prototype.createEditOtherButton = function(){
 
 	// 打开棋谱按钮
 	var buttonId = "vschess-tab-body-edit-open-button-" + vschess.guid();
-	this.editOpenButton = $('<label for="' + buttonId + '" class="vschess-tab-body-edit-open-button">\u6253\u5f00\u68cb\u8c31</label>');
+	this.editOpenButton = $('<label for="' + buttonId + '" class="vschess-button vschess-tab-body-edit-open-button">\u6253\u5f00\u68cb\u8c31</label>');
 	this.editOpenButton.appendTo(this.editArea);
 	this.editOpenFile = $('<input type="file" class="vschess-tab-body-edit-open-file" id="' + buttonId + '" />');
 	this.editOpenFile.appendTo(this.editArea);
@@ -5065,7 +5117,7 @@ vschess.load.prototype.createEditOtherButton = function(){
 	});
 
 	// 重新开局按钮
-	this.editBeginButton = $('<input type="button" class="vschess-tab-body-edit-begin-button" value="\u91cd\u65b0\u5f00\u5c40" />');
+	this.editBeginButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-begin-button" value="\u91cd\u65b0\u5f00\u5c40" />');
 	this.editBeginButton.appendTo(this.editArea);
 
 	this.editBeginButton.bind(this.options.click, function(){
@@ -5087,7 +5139,7 @@ vschess.load.prototype.createEditOtherButton = function(){
 	});
 
 	// 清空棋盘按钮
-	this.editBlankButton = $('<input type="button" class="vschess-tab-body-edit-blank-button" value="\u6e05\u7a7a\u68cb\u76d8" />');
+	this.editBlankButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-blank-button" value="\u6e05\u7a7a\u68cb\u76d8" />');
 	this.editBlankButton.appendTo(this.editArea);
 
 	this.editBlankButton.bind(this.options.click, function(){
@@ -5188,8 +5240,8 @@ vschess.load.prototype.createExport = function(){
 	this.exportArea     = $('<form method="post" action="' + this.options.cloudApi.savebook + '" class="vschess-tab-body vschess-tab-body-export"></form>');
 	this.exportTextarea = $('<textarea class="vschess-tab-body-export-textarea" readonly="readonly" name="data"></textarea>').appendTo(this.exportArea);
 	this.exportFormat   = $('<select class="vschess-tab-body-export-format" name="format"></select>').appendTo(this.exportArea);
-	this.exportGenerate = $('<input type="button" class="vschess-tab-body-export-generate" value="\u751f \u6210" />').appendTo(this.exportArea);
-	this.exportDownload = $('<input type="submit" class="vschess-tab-body-export-download vschess-tab-body-export-current" value="\u4fdd \u5b58" />').appendTo(this.exportArea);
+	this.exportGenerate = $('<input type="button" class="vschess-button vschess-tab-body-export-generate" value="\u751f \u6210" />').appendTo(this.exportArea);
+	this.exportDownload = $('<input type="submit" class="vschess-button vschess-tab-body-export-download vschess-tab-body-export-current" value="\u4fdd \u5b58" />').appendTo(this.exportArea);
 	this.exportData     = {};
 	this.tabArea.children(".vschess-tab-title-export, .vschess-tab-body-export").remove();
 	this.tabArea.append(this.exportTitle);
@@ -5383,7 +5435,7 @@ vschess.load.prototype.createHelp = function(){
 	this.helpArea = $('<div class="vschess-help-area"></div>');
 	this.helpArea.html(this.options.help);
 	this.DOM.append(this.helpArea);
-	this.helpAreaClose = $('<input type="button" class="vschess-help-close" value="\u5173 \u95ed" />');
+	this.helpAreaClose = $('<input type="button" class="vschess-button vschess-help-close" value="\u5173 \u95ed" />');
 	this.helpAreaClose.bind(this.options.click, function(){ _this.hideHelpArea(); });
 	this.helpArea.append(this.helpAreaClose);
 	return this;
@@ -5423,8 +5475,8 @@ vschess.load.prototype.createInfoList = function(){
 	this.infoList = $('<ul class="vschess-tab-body-info-list"></ul>');
 	this.infoArea.append(this.infoList);
 	this.insertInfoByCurrent();
-	this.infoEdit  = $('<input type="button" class="vschess-tab-body-info-edit"  value="\u7f16 \u8f91" />');
-	this.infoEmpty = $('<input type="button" class="vschess-tab-body-info-empty" value="\u6e05 \u7a7a" />');
+	this.infoEdit  = $('<input type="button" class="vschess-button vschess-tab-body-info-edit"  value="\u7f16 \u8f91" />');
+	this.infoEmpty = $('<input type="button" class="vschess-button vschess-tab-body-info-empty" value="\u6e05 \u7a7a" />');
 	this.infoArea.append(this.infoEdit );
 	this.infoArea.append(this.infoEmpty);
 	this.infoEdit.bind(this.options.click, function(){ _this.showInfoEditor(); });
@@ -5504,15 +5556,15 @@ vschess.load.prototype.createInfoEditor = function(){
 		}
 
 		if (~vschess.autoInfo.indexOf(i)) {
-			this.infoEditorItemAuto[i] = $('<input type="button" class="vschess-info-editor-item-auto vschess-info-editor-item-auto-' + i + '" value="\u8bc6 \u522b" alt="\u6839\u636e\u5f53\u524d\u5206\u652f\u81ea\u52a8\u8bc6\u522b' + vschess.info.name[i] + '" title="\u6839\u636e\u5f53\u524d\u5206\u652f\u81ea\u52a8\u8bc6\u522b' + vschess.info.name[i] + '" />');
+			this.infoEditorItemAuto[i] = $('<input type="button" class="vschess-button vschess-info-editor-item-auto vschess-info-editor-item-auto-' + i + '" value="\u8bc6 \u522b" alt="\u6839\u636e\u5f53\u524d\u5206\u652f\u81ea\u52a8\u8bc6\u522b' + vschess.info.name[i] + '" title="\u6839\u636e\u5f53\u524d\u5206\u652f\u81ea\u52a8\u8bc6\u522b' + vschess.info.name[i] + '" />');
 			this.infoEditorItem[i].append(this.infoEditorItemAuto[i]);
 		}
 	}
 
 	this.setInfoEditorItemValueResult(this.infoEditorItemValue.result.val());
-	this.infoEditorOK     = $('<input type="button" class="vschess-info-editor-ok"     value="\u786e \u5b9a" />');
-	this.infoEditorEmpty  = $('<input type="button" class="vschess-info-editor-empty"  value="\u6e05 \u7a7a" />');
-	this.infoEditorCancel = $('<input type="button" class="vschess-info-editor-cancel" value="\u53d6 \u6d88" />');
+	this.infoEditorOK     = $('<input type="button" class="vschess-button vschess-info-editor-ok"     value="\u786e \u5b9a" />');
+	this.infoEditorEmpty  = $('<input type="button" class="vschess-button vschess-info-editor-empty"  value="\u6e05 \u7a7a" />');
+	this.infoEditorCancel = $('<input type="button" class="vschess-button vschess-info-editor-cancel" value="\u53d6 \u6d88" />');
 
 	this.infoEditorOK.bind(this.options.click, function(){
 		_this.chessInfo = _this.getInfoFromEditor();

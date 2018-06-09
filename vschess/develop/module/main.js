@@ -294,6 +294,9 @@ var vschess = {
 	// 伪线程延时，20 为宜
 	threadTimeout: 20,
 
+	// 页面 Device Pixel Ratio
+	dpr: window.devicePixelRatio || 1,
+
 	// 棋谱信息项目列表
 	info: {
 		name: {

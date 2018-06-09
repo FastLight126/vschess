@@ -39,7 +39,7 @@ fn.addConfigItem = function(name, text, type, defaultValue, param, action){
 	this.configValue[name] = defaultValue;
 
 	if (type === "boolean") {
-		this.configItemM[name] = $('<div class="vschess-tab-body-config-item-boolean"></div>');
+		this.configItemM[name] = $('<div class="vschess-tab-body-config-item-boolean"><span></span></div>');
 		this.configItemM[name].bind(this.options.click, function(){ _this.setConfigItemValue(name, !_this.configValue[name]); typeof action === "function" && action(); });
 		this.configValue[name] || this.configItemM[name].addClass("vschess-tab-body-config-item-boolean-false");
 	}

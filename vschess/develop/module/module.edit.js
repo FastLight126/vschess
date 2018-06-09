@@ -80,11 +80,10 @@ fn.hideNodeEditModule = function(){
 
 	return this;
 };
-
 // 创建编辑局面区域开始编辑按钮
 fn.createEditStartButton = function(){
 	var _this = this;
-	this.editStartButton = $('<input type="button" class="vschess-tab-body-edit-start-button" value="编辑局面" />');
+	this.editStartButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-start-button" value="编辑局面" />');
 	this.editStartButton.appendTo(this.editArea);
 
 	this.editStartButton.bind(this.options.click, function(){
@@ -104,7 +103,7 @@ fn.createEditStartButton = function(){
 // 创建编辑局面区域结束编辑按钮
 fn.createEditEndButton = function(){
 	var _this = this;
-	this.editEndButton = $('<input type="button" class="vschess-tab-body-edit-end-button" value="确 定" />');
+	this.editEndButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-end-button" value="确 定" />');
 	this.editEndButton.appendTo(this.editArea);
 
 	this.editEndButton.bind(this.options.click, function(){
@@ -161,7 +160,7 @@ fn.createEditEndButton = function(){
 // 创建编辑局面区域取消编辑按钮
 fn.createEditCancelButton = function(){
 	var _this = this;
-	this.editCancelButton = $('<input type="button" class="vschess-tab-body-edit-cancel-button" value="取 消" />');
+	this.editCancelButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-cancel-button" value="取 消" />');
 	this.editCancelButton.appendTo(this.editArea);
 
 	this.editCancelButton.bind(this.options.click, function(){
@@ -227,7 +226,6 @@ fn.createEditPieceArea = function(){
 			this.editPieceList[k].appendTo(this.editPieceArea);
 		}
 	}
-
 	this.editPieceArea.bind("dragover", function(e){
 		e.preventDefault();
 		return true;
@@ -243,7 +241,7 @@ fn.createEditPieceArea = function(){
 	$.each(this.editPieceList, function(i){
 		var currentIndex = -vs.f2n[i];
 
-		this.bind(_this.options.click, function(){
+		this.bind(_this.options.click, function(e){
 			_this.editRemoveSelect();
 
 			if (_this.editSelectedIndex === -99) {
@@ -261,7 +259,23 @@ fn.createEditPieceArea = function(){
 			}
 		});
 
-		this.bind("dragstart", function(){ _this.dragPiece = currentIndex; });
+		this.bind("selectstart", function(e) {
+			e.preventDefault();
+			return false;
+		});
+	
+		this.bind("dragstart", function(e){
+			e.originalEvent.dataTransfer.setData("text", e.originalEvent.target.innerHTML);
+			_this.dragPiece = currentIndex;
+			_this.editRemoveSelect();
+			_this.editSelectedIndex = -99;
+		});
+
+		this.bind("drop", function(e) {
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		});
 	});
 
 	return this;
@@ -288,7 +302,7 @@ fn.createEditStartRound = function(){
 // 创建编辑局面区域先行走子方选项
 fn.createEditStartPlayer = function(){
 	var _this = this;
-	this.editEditStartPlayer = $('<div class="vschess-tab-body-edit-start-player"></div>');
+	this.editEditStartPlayer = $('<div class="vschess-tab-body-edit-start-player"><span></span></div>');
 	this.editEditStartPlayer.appendTo(this.editArea);
 
 	this.editEditStartPlayer.bind(this.options.click, function(){
@@ -306,7 +320,7 @@ fn.createEditBoard = function(){
 	var _this = this;
 	this.editBoard = $('<div class="vschess-board-edit"></div>');
 	this.DOM.append(this.editBoard);
-	this.editBoard.append(new Array(91).join('<div class="vschess-piece" draggable="true"><span></span></div>'));
+	this.editBoard.append(new Array(91).join('<div class="vschess-piece"><span></span></div>'));
 	this.editPiece = this.editBoard.children(".vschess-piece");
 
 	this.editPiece.each(function(i){
@@ -337,12 +351,16 @@ fn.createEditBoard = function(){
 			return false;
 		});
 
-		$(this).bind("selectstart", function() {
+		$(this).bind("selectstart", function(e) {
+			e.preventDefault();
 			return false;
 		});
 
 		$(this).bind("dragstart", function(e){
+			e.originalEvent.dataTransfer.setData("text", e.originalEvent.target.innerHTML);
 			_this.dragPiece = i;
+			_this.editRemoveSelect();
+			_this.editSelectedIndex = -99;
 		});
 
 		$(this).bind("dragover", function(e){
@@ -351,6 +369,7 @@ fn.createEditBoard = function(){
 		});
 
 		$(this).bind("drop", function(e){
+			e.stopPropagation();
 			e.preventDefault();
 
 			if (_this.dragPiece !== i) {
@@ -492,14 +511,14 @@ fn.fillEditBoardByFen = function(fen){
 // 将当前编辑局面展示到视图中
 fn.fillEditBoard = function(ignoreSelect){
 	var selected = this.editPiece.filter(".vschess-piece-s");
-	this.editPiece.removeClass().addClass("vschess-piece");
+	this.editPiece.removeClass().addClass("vschess-piece").removeAttr("draggable");
 	ignoreSelect && selected.addClass("vschess-piece-s");
 	this.editEditStartRound.val(this.editSituation[1]);
 	this.editEditStartPlayer.removeClass("vschess-tab-body-edit-start-player-black");
 	this.editSituation[0] === 2 && this.editEditStartPlayer.addClass("vschess-tab-body-edit-start-player-black");
 
 	for (var i = 51; i < 204; ++i) {
-		this.editSituation[i] > 1 && this.editPiece.eq(vs.s2b[i]).addClass("vschess-piece-" + vs.n2f[this.editSituation[i]]);
+		this.editSituation[i] > 1 && this.editPiece.eq(vs.s2b[i]).addClass("vschess-piece-" + vs.n2f[this.editSituation[i]]).attr({ draggable: true });
 	}
 
 	return this;
@@ -508,7 +527,7 @@ fn.fillEditBoard = function(ignoreSelect){
 // 创建粘贴棋谱区域开始编辑按钮
 fn.createNodeStartButton = function(){
 	var _this = this;
-	this.editNodeStartButton = $('<input type="button" class="vschess-tab-body-edit-node-start-button" value="粘贴棋谱" />');
+	this.editNodeStartButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-node-start-button" value="粘贴棋谱" />');
 	this.editNodeStartButton.appendTo(this.editArea);
 
 	this.editNodeStartButton.bind(this.options.click, function(){
@@ -524,7 +543,7 @@ fn.createNodeStartButton = function(){
 // 创建粘贴棋谱区域完成编辑按钮
 fn.createNodeEndButton = function(){
 	var _this = this;
-	this.editNodeEndButton = $('<input type="button" class="vschess-tab-body-edit-node-end-button" value="确 定" />');
+	this.editNodeEndButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-node-end-button" value="确 定" />');
 	this.editNodeEndButton.appendTo(this.editArea);
 
 	this.editNodeEndButton.bind(this.options.click, function(){
@@ -554,7 +573,7 @@ fn.createNodeEndButton = function(){
 // 创建粘贴棋谱区域取消编辑按钮
 fn.createNodeCancelButton = function(){
 	var _this = this;
-	this.editNodeCancelButton = $('<input type="button" class="vschess-tab-body-edit-node-cancel-button" value="取 消" />');
+	this.editNodeCancelButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-node-cancel-button" value="取 消" />');
 	this.editNodeCancelButton.appendTo(this.editArea);
 
 	this.editNodeCancelButton.bind(this.options.click, function(){
@@ -598,7 +617,7 @@ fn.createEditOtherButton = function(){
 
 	// 打开棋谱按钮
 	var buttonId = "vschess-tab-body-edit-open-button-" + vs.guid();
-	this.editOpenButton = $('<label for="' + buttonId + '" class="vschess-tab-body-edit-open-button">打开棋谱</label>');
+	this.editOpenButton = $('<label for="' + buttonId + '" class="vschess-button vschess-tab-body-edit-open-button">打开棋谱</label>');
 	this.editOpenButton.appendTo(this.editArea);
 	this.editOpenFile = $('<input type="file" class="vschess-tab-body-edit-open-file" id="' + buttonId + '" />');
 	this.editOpenFile.appendTo(this.editArea);
@@ -642,7 +661,7 @@ fn.createEditOtherButton = function(){
 	});
 
 	// 重新开局按钮
-	this.editBeginButton = $('<input type="button" class="vschess-tab-body-edit-begin-button" value="重新开局" />');
+	this.editBeginButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-begin-button" value="重新开局" />');
 	this.editBeginButton.appendTo(this.editArea);
 
 	this.editBeginButton.bind(this.options.click, function(){
@@ -664,7 +683,7 @@ fn.createEditOtherButton = function(){
 	});
 
 	// 清空棋盘按钮
-	this.editBlankButton = $('<input type="button" class="vschess-tab-body-edit-blank-button" value="清空棋盘" />');
+	this.editBlankButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-blank-button" value="清空棋盘" />');
 	this.editBlankButton.appendTo(this.editArea);
 
 	this.editBlankButton.bind(this.options.click, function(){
