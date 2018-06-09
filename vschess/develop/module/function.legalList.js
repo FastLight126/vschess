@@ -244,7 +244,7 @@ vs.checkFen = function(fen){
 		return ["Fen 串不合法"];
 	}
 
-	var errorList = [], board = vs.fenToArray(fen);
+	var errorList = [], board = vs.fenToArray(fen), Kk = false;
 	var total = { R: 0, N: 0, B: 0, A: 0, K: 0, C: 0, P: 0, r: 0, n: 0, b: 0, a: 0, k: 0, c: 0, p: 0, "*": 0 };
 
 	function push(error){
@@ -266,7 +266,7 @@ vs.checkFen = function(fen){
 		if (board[i] === "K") {
 			for (var j = i - 9; j > 0; j -= 9) {
 				if (board[j] !== "*") {
-					board[j] === "k" && push("帅将面对面了");
+					board[j] === "k" && (Kk = true) && push("帅将面对面了");
 					break;
 				}
 			}
@@ -301,6 +301,15 @@ vs.checkFen = function(fen){
 	total.k > 1 && push("黑方出现了" + total.k + "个将，多了" + (total.k - 1) + "个");
 	total.K < 1 && push("红方必须有一个帅");
 	total.k < 1 && push("黑方必须有一个将");
+
+	if (!Kk) {
+		if (vs.checkThreat(fen) && vs.checkThreat(vs.fenChangePlayer(fen))) {
+			push("红黑双方同时被将军");
+		}
+		else if (vs.checkThreat(vs.fenChangePlayer(fen))) {
+			fen.split(" ")[1] === "b" ? push("轮到黑方走棋，但此时红方正在被将军") : push("轮到红方走棋，但此时黑方正在被将军");
+		}
+	}
 
 	return errorList;
 };
