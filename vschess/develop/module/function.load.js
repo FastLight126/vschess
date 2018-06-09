@@ -151,7 +151,7 @@ fn.intervalCallback = function(){
 
 // 卸载棋盘，即将对应的 DOM 恢复原状，但不保留原 DOM 的事件绑定
 fn.unload = function(){
-	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).removeAttr("data-dpr");
+	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).removeAttr("data-vschess-dpr");
 	return this;
 };
 
