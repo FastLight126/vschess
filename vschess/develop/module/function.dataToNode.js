@@ -256,7 +256,9 @@ vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 		DhtmlXQ_ToFenFinal += vs.cca(DhtmlXQ_ToFen[+firstMovePos[0] + firstMovePos[1] * 9]) > 96 ? " b - - 0 1" : " w - - 0 1";
 	}
 	else {
-		DhtmlXQ_ToFenFinal += " w - - 0 1";
+		var checkW = DhtmlXQ_ToFenFinal + " w - - 0 1";
+		var checkB = DhtmlXQ_ToFenFinal + " b - - 0 1";
+		DhtmlXQ_ToFenFinal = vs.checkFen(checkB).length < vs.checkFen(checkW).length ? checkB : checkW;
 	}
 
 	if (onlyFen) {
