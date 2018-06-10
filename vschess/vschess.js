@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋巫师友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月10日
- * Sun, 10 Jun 2018 17:05:17 +0800
+ * 最后修改日期：北京时间 2018年6月11日
+ * Mon, 11 Jun 2018 00:43:58 +0800
  */
 
 (function(){
@@ -547,7 +547,7 @@ vschess.defaultOptions = {
 vschess.defaultOptions.help  = '<h1>\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V' + vschess.version + ' \u5e2e\u52a9\u4fe1\u606f</h1>';
 vschess.defaultOptions.help += '<hr />';
 vschess.defaultOptions.help += '<h2>1.&ensp;&ensp;\u5355\u51fb\u201c\u64ad\u653e\u201d\u6309\u94ae\uff0c\u53ef\u4ee5\u81ea\u52a8\u64ad\u653e\u68cb\u5c40\uff1b\u64ad\u653e\u8fc7\u7a0b\u4e2d\uff0c\u5355\u51fb\u201c\u6682\u505c\u201d\u6309\u94ae\uff0c\u68cb\u5c40\u505c\u6b62\u81ea\u52a8\u64ad\u653e\u3002</h2>';
-vschess.defaultOptions.help += '<h2>2.&ensp;&ensp;\u5355\u51fb\u201c\u524d\u8fdb\u201d\u3001\u201c\u540e\u9000\u201d\u6309\u94ae\uff0c\u6bcf\u6b21\u53d8\u53161\u6b65\uff1b\u5355\u51fb\u201c\u5feb\u8fdb\u201d\u3001\u201c\u5feb\u9000\u201d\u6309\u94ae\uff0c\u6bcf\u6b21\u53d8\u53165\u4e2a\u56de\u5408\uff0c\u537310\u6b65\u3002</h2>';
+vschess.defaultOptions.help += '<h2>2.&ensp;&ensp;\u5355\u51fb\u201c\u524d\u8fdb\u201d\u3001\u201c\u540e\u9000\u201d\u6309\u94ae\uff0c\u6bcf\u6b21\u53d8\u53161\u6b65\uff1b\u5355\u51fb\u201c\u5feb\u8fdb\u201d\u3001\u201c\u5feb\u9000\u201d\u6309\u94ae\uff0c\u6bcf\u6b21\u53d8\u5316#quickStepOffsetRound#\u4e2a\u56de\u5408\uff0c\u5373#quickStepOffset#\u6b65\u3002</h2>';
 vschess.defaultOptions.help += '<h2>3.&ensp;&ensp;\u5355\u51fb\u201c\u590d\u5236\u201d\u6309\u94ae\uff0c\u53ef\u4ee5\u590d\u5236\u5f53\u524d\u5c40\u9762\u3002</h2>';
 vschess.defaultOptions.help += '<h2>4.&ensp;&ensp;\u590d\u5236\u5c40\u9762\u540e\uff0c\u53ef\u4ee5\u76f4\u63a5\u5728\u4e13\u4e1a\u8c61\u68cb\u8f6f\u4ef6\u4e2d\u7c98\u8d34\u4f7f\u7528\u3002</h2>';
 vschess.defaultOptions.help += '<h2>5.&ensp;&ensp;\u5206\u6790\u5c40\u9762\u65f6\uff0c\u5efa\u8bae\u5c06\u5c40\u9762\u590d\u5236\u5230\u4e13\u4e1a\u8c61\u68cb\u8f6f\u4ef6\u4e2d\u8fdb\u884c\u5206\u6790\u3002</h2>';
@@ -2027,6 +2027,7 @@ vschess.load.prototype.createBoard = function(){
 	this.board.append('<div class="vschess-piece-animate"><span></span></div>');
 	this.animatePiece = this.board.children(".vschess-piece-animate");
 	this.pieceClick();
+	this.initPieceRotateDeg();
 
 	// 其他组件
 	this.createColumnIndex();
@@ -4369,6 +4370,7 @@ vschess.load.prototype.copyFenFinish = function(){
 // 设置快进快退偏移量
 vschess.load.prototype.setQuickStepOffset = function(quickStepOffset){
 	this._.quickStepOffset = vschess.limit(quickStepOffset, 1, Infinity);
+	this.refreshHelp();
 	return this;
 };
 
@@ -5443,12 +5445,20 @@ vschess.load.prototype.hideExportFormatIfNeedStart = function(){
 // 创建帮助区域
 vschess.load.prototype.createHelp = function(){
 	var _this = this;
+	var helpDetail = this.options.help.replace(/#quickStepOffsetRound#/g, this._.quickStepOffset / 2).replace(/#quickStepOffset#/g, this._.quickStepOffset);
 	this.helpArea = $('<div class="vschess-help-area"></div>');
-	this.helpArea.html(this.options.help);
+	this.helpArea.html('<div class="vschess-help-area-detail">' + helpDetail + '</div>');
 	this.DOM.append(this.helpArea);
 	this.helpAreaClose = $('<input type="button" class="vschess-button vschess-help-close" value="\u5173 \u95ed" />');
 	this.helpAreaClose.bind(this.options.click, function(){ _this.hideHelpArea(); });
 	this.helpArea.append(this.helpAreaClose);
+	return this;
+};
+
+// 刷新帮助信息
+vschess.load.prototype.refreshHelp = function(){
+	var helpDetail = this.options.help.replace(/#quickStepOffsetRound#/g, this._.quickStepOffset / 2).replace(/#quickStepOffset#/g, this._.quickStepOffset);
+	this.helpArea.children(".vschess-help-area-detail").html(helpDetail);
 	return this;
 };
 
@@ -5973,11 +5983,18 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 				_playSound && _this.playSoundBySituation();
 				_this.animating = false;
 				finishHandlerRunned = true;
+
+				_this.pieceRotateDeg[to]   = _this.pieceRotateDeg[from];
+				_this.pieceRotateDeg[from] = vschess.degToRotateCSS(Math.random() * 360);
+				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
+
 				typeof callback === "function" && callback();
 			};
 
 			var sIndex = vschess.b2s[vschess.turn[this.getTurn()][from]];
 			var piece  = this.situationList[this.getCurrentStep()][sIndex];
+
+			this.getPieceRotate() ? this.animatePiece.children("span").attr({ style: this.pieceRotateDeg[from] }) : this.animatePiece.children("span").removeAttr("style");
 
 			this.animatePiece.addClass("vschess-piece-" + vschess.n2f[piece]).css({
 				top : this.piece.eq(from).position().top,
@@ -6028,6 +6045,11 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 				Evt.removeEventListener(      "transitionend", finishHandler);
 
 				finishHandlerRunned = true;
+
+				_this.pieceRotateDeg[to]   = _this.pieceRotateDeg[from];
+				_this.pieceRotateDeg[from] = vschess.degToRotateCSS(Math.random() * 360);
+				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
+
 				typeof callback == "function" && callback();
 			};
 
@@ -6035,6 +6057,8 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 			var deltaY = this.piece.eq(to).position().top  - this.piece.eq(from).position().top;
 			var sIndex = vschess.b2s[vschess.turn[this.getTurn()][from]];
 			var piece  = this.situationList[this.getCurrentStep()][sIndex];
+
+			this.getPieceRotate() ? this.animatePiece.children("span").attr({ style: this.pieceRotateDeg[from] }) : this.animatePiece.children("span").removeAttr("style");
 
 			var Evt = this.animatePiece.addClass("vschess-piece-" + vschess.n2f[piece]).css({
 				top : this.piece.eq(from).position().top,
@@ -6414,7 +6438,7 @@ vschess.load.prototype.setBoardByStep = function(step){
 		piece > 1 && $(this).addClass("vschess-piece-" + vschess.n2f[piece]);
 	});
 
-	this.getPieceRotate() ? this.setPieceRotateRandom() : this.clearPieceRotate();
+	this.getPieceRotate() ? this.loadPieceRotate() : this.clearPieceRotate();
 	this.legalList     = vschess.legalList    (this.situationList[this.getCurrentStep()]);
 	this.legalMoveList = vschess.legalMoveList(this.situationList[this.getCurrentStep()]);
 	this.setSelectByStep();
@@ -6491,10 +6515,23 @@ vschess.load.prototype.getPieceRotate = function(){
 	return this._.pieceRotate;
 };
 
-// 棋子随机旋转
-vschess.load.prototype.setPieceRotateRandom = function(){
-	this.piece.children("span").each(function(){
-		$(this).attr({ style: vschess.degToRotateCSS(Math.random() * 360) });
+// 初始化棋子旋转角度
+vschess.load.prototype.initPieceRotateDeg = function(){
+	this.pieceRotateDeg = [];
+
+	for (var i = 0; i < 90; ++i) {
+		this.pieceRotateDeg.push(vschess.degToRotateCSS(Math.random() * 360));
+	}
+
+	return this;
+};
+
+// 设置棋子旋转
+vschess.load.prototype.loadPieceRotate = function(){
+	var _this = this;
+
+	this.piece.children("span").each(function(k){
+		$(this).attr({ style: _this.pieceRotateDeg[k] });
 	});
 
 	return this;

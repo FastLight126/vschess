@@ -12,7 +12,7 @@ fn.setBoardByStep = function(step){
 		piece > 1 && $(this).addClass("vschess-piece-" + vs.n2f[piece]);
 	});
 
-	this.getPieceRotate() ? this.setPieceRotateRandom() : this.clearPieceRotate();
+	this.getPieceRotate() ? this.loadPieceRotate() : this.clearPieceRotate();
 	this.legalList     = vs.legalList    (this.situationList[this.getCurrentStep()]);
 	this.legalMoveList = vs.legalMoveList(this.situationList[this.getCurrentStep()]);
 	this.setSelectByStep();
@@ -89,10 +89,23 @@ fn.getPieceRotate = function(){
 	return this._.pieceRotate;
 };
 
-// 棋子随机旋转
-fn.setPieceRotateRandom = function(){
-	this.piece.children("span").each(function(){
-		$(this).attr({ style: vs.degToRotateCSS(Math.random() * 360) });
+// 初始化棋子旋转角度
+fn.initPieceRotateDeg = function(){
+	this.pieceRotateDeg = [];
+
+	for (var i = 0; i < 90; ++i) {
+		this.pieceRotateDeg.push(vs.degToRotateCSS(Math.random() * 360));
+	}
+
+	return this;
+};
+
+// 设置棋子旋转
+fn.loadPieceRotate = function(){
+	var _this = this;
+
+	this.piece.children("span").each(function(k){
+		$(this).attr({ style: _this.pieceRotateDeg[k] });
 	});
 
 	return this;

@@ -69,6 +69,7 @@ fn.createBoard = function(){
 	this.board.append('<div class="vschess-piece-animate"><span></span></div>');
 	this.animatePiece = this.board.children(".vschess-piece-animate");
 	this.pieceClick();
+	this.initPieceRotateDeg();
 
 	// 其他组件
 	this.createColumnIndex();
