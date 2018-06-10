@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年6月10日
- * Sun, 10 Jun 2018 16:33:28 +0800
+ * Sun, 10 Jun 2018 17:05:17 +0800
  */
 
 (function(){
@@ -2073,17 +2073,19 @@ vschess.load.prototype.initArguments = function(){
 vschess.load.prototype.createLoading = function(selector){
 	this.originalData = this.DOM.html();
 	this.chessData = this.options.chessData === false ? this.originalData : this.options.chessData;
-	this.DOM.html('<div class="vschess-loading">\u68cb\u76d8\u52a0\u8f7d\u4e2d\uff0c\u8bf7\u7a0d\u5019\u3002</div>').addClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).attr("data-vschess-dpr", vschess.dpr);
+	this.DOM.html('<div class="vschess-loading">\u68cb\u76d8\u52a0\u8f7d\u4e2d\uff0c\u8bf7\u7a0d\u5019\u3002</div>');
+	this.DOM.addClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout);
+	this.DOM.attr("data-vschess-dpr", vschess.dpr);
 	return this;
 };
 
 // 初始化起始局面
 vschess.load.prototype.initStart = function(){
 	this.node = vschess.dataToNode(this.chessData, this.options.parseType);
-	this.rebuildSituation(true);
-	this.setTurn		(this.options.turn			);
-	this.setBoardByStep	(this.options.currentStep	);
-	this.setExportFormat("PGN_Chinese");
+	this.rebuildSituation();
+	this.setTurn		 (this.options.turn			);
+	this.setBoardByStep	 (this.options.currentStep	);
+	this.setExportFormat ("PGN_Chinese");
 	return this;
 };
 
@@ -4277,7 +4279,7 @@ vschess.load.prototype.createFormatBar = function(){
 		wxf			: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
 		iccs		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
 		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" class="vschess-format-bar-save-format" />'),
-		saveInput	: $('<input type="text" name="data" class="vschess-format-bar-save-input" />')
+		saveInput	: $('<textarea name="data" class="vschess-format-bar-save-input"></textarea>')
 	};
 
 	this.formatBarButton.format.bind(this.options.click, function(){

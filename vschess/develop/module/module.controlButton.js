@@ -69,7 +69,7 @@ fn.createFormatBar = function(){
 		wxf			: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
 		iccs		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
 		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" class="vschess-format-bar-save-format" />'),
-		saveInput	: $('<input type="text" name="data" class="vschess-format-bar-save-input" />')
+		saveInput	: $('<textarea name="data" class="vschess-format-bar-save-input"></textarea>')
 	};
 
 	this.formatBarButton.format.bind(this.options.click, function(){
