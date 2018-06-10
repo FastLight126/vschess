@@ -80,6 +80,7 @@ fn.createBoard = function(){
 	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
 	this.chessId  = vs.chessList.length;
 
+	window.addEventListener("resize", this.resetDPR, false);
 	vs.chessList.push(this);
 	return this;
 };
@@ -152,6 +153,7 @@ fn.intervalCallback = function(){
 // 卸载棋盘，即将对应的 DOM 恢复原状，但不保留原 DOM 的事件绑定
 fn.unload = function(){
 	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).removeAttr("data-vschess-dpr");
+	window.removeEventListener("resize", this.resetDPR, false);
 	return this;
 };
 
@@ -168,5 +170,11 @@ fn.createColumnIndex = function(){
 		this.columnIndexB.append('<div class="vschess-column-index-item">' + columnText[i + 9] + '</div>');
 	}
 
+	return this;
+};
+
+fn.resetDPR = function(){
+	vs.dpr = window.devicePixelRatio || 1;
+	$(this.DOM).attr("data-vschess-dpr", vs.dpr);
 	return this;
 };

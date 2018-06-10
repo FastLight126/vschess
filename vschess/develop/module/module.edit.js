@@ -80,6 +80,7 @@ fn.hideNodeEditModule = function(){
 
 	return this;
 };
+
 // 创建编辑局面区域开始编辑按钮
 fn.createEditStartButton = function(){
 	var _this = this;

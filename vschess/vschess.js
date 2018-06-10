@@ -1,5 +1,5 @@
 /*
- * 微思象棋播放器 V2.0.1
+ * 微思象棋播放器 V2.1.0
  * https://www.xiaxiangqi.com/
  *
  * Copyright @ 2009-2018 Margin.Top 版权所有
@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年6月10日
- * Sun, 10 Jun 2018 01:52:52 +0800
+ * Sun, 10 Jun 2018 16:33:28 +0800
  */
 
 (function(){
@@ -42,7 +42,7 @@ else {
 // 主程序
 var vschess = {
 	// 当前版本号
-	version: "2.0.1",
+	version: "2.1.0",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -2038,6 +2038,7 @@ vschess.load.prototype.createBoard = function(){
 	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
 	this.chessId  = vschess.chessList.length;
 
+	window.addEventListener("resize", this.resetDPR, false);
 	vschess.chessList.push(this);
 	return this;
 };
@@ -2109,7 +2110,8 @@ vschess.load.prototype.intervalCallback = function(){
 
 // 卸载棋盘，即将对应的 DOM 恢复原状，但不保留原 DOM 的事件绑定
 vschess.load.prototype.unload = function(){
-	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).removeAttr("data-dpr");
+	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).removeAttr("data-vschess-dpr");
+	window.removeEventListener("resize", this.resetDPR, false);
 	return this;
 };
 
@@ -2126,6 +2128,12 @@ vschess.load.prototype.createColumnIndex = function(){
 		this.columnIndexB.append('<div class="vschess-column-index-item">' + columnText[i + 9] + '</div>');
 	}
 
+	return this;
+};
+
+vschess.load.prototype.resetDPR = function(){
+	vschess.dpr = window.devicePixelRatio || 1;
+	$(this.DOM).attr("data-vschess-dpr", vschess.dpr);
 	return this;
 };
 
@@ -4536,6 +4544,7 @@ vschess.load.prototype.hideNodeEditModule = function(){
 
 	return this;
 };
+
 // 创建编辑局面区域开始编辑按钮
 vschess.load.prototype.createEditStartButton = function(){
 	var _this = this;

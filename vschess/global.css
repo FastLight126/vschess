@@ -22,5 +22,4 @@
 .vschess-piece-p { cursor:pointer; }
 .vschess-piece-animate { position:absolute; z-index:1; top:0px; left:0px; display:none; }
 .vschess-info-editor-item-value-result { display:none; }
-.vschess-format-bar-save-input { width:1px; height:0px; border:none; margin:0; padding:0; position:absolute; top:0px; left:0px; opacity:0; }
 .vschess-tab-body-edit-open-file { display:none; }
