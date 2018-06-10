@@ -159,6 +159,7 @@ fn.copyFenFinish = function(){
 // 设置快进快退偏移量
 fn.setQuickStepOffset = function(quickStepOffset){
 	this._.quickStepOffset = vs.limit(quickStepOffset, 1, Infinity);
+	this.refreshHelp();
 	return this;
 };
 
