@@ -115,17 +115,19 @@ fn.initArguments = function(){
 fn.createLoading = function(selector){
 	this.originalData = this.DOM.html();
 	this.chessData = this.options.chessData === false ? this.originalData : this.options.chessData;
-	this.DOM.html('<div class="vschess-loading">棋盘加载中，请稍候。</div>').addClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).attr("data-vschess-dpr", vs.dpr);
+	this.DOM.html('<div class="vschess-loading">棋盘加载中，请稍候。</div>');
+	this.DOM.addClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout);
+	this.DOM.attr("data-vschess-dpr", vs.dpr);
 	return this;
 };
 
 // 初始化起始局面
 fn.initStart = function(){
 	this.node = vs.dataToNode(this.chessData, this.options.parseType);
-	this.rebuildSituation(true);
-	this.setTurn		(this.options.turn			);
-	this.setBoardByStep	(this.options.currentStep	);
-	this.setExportFormat("PGN_Chinese");
+	this.rebuildSituation();
+	this.setTurn		 (this.options.turn			);
+	this.setBoardByStep	 (this.options.currentStep	);
+	this.setExportFormat ("PGN_Chinese");
 	return this;
 };
 
