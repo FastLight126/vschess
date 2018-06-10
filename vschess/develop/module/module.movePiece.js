@@ -51,7 +51,7 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 				finishHandlerRunned = true;
 
 				_this.pieceRotateDeg[to]   = _this.pieceRotateDeg[from];
-				_this.pieceRotateDeg[from] = vs.degToRotateCSS(Math.random() * 360);
+				_this.pieceRotateDeg[from] = Math.random() * 360;
 				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
 
 				typeof callback === "function" && callback();
@@ -60,7 +60,7 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 			var sIndex = vs.b2s[vs.turn[this.getTurn()][from]];
 			var piece  = this.situationList[this.getCurrentStep()][sIndex];
 
-			this.getPieceRotate() ? this.animatePiece.children("span").attr({ style: this.pieceRotateDeg[from] }) : this.animatePiece.children("span").removeAttr("style");
+			this.getPieceRotate() ? this.animatePiece.children("span").attr({ style: vs.degToRotateCSS(this.pieceRotateDeg[from]) }) : this.animatePiece.children("span").removeAttr("style");
 
 			this.animatePiece.addClass("vschess-piece-" + vs.n2f[piece]).css({
 				top : this.piece.eq(from).position().top,
@@ -113,7 +113,7 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 				finishHandlerRunned = true;
 
 				_this.pieceRotateDeg[to]   = _this.pieceRotateDeg[from];
-				_this.pieceRotateDeg[from] = vs.degToRotateCSS(Math.random() * 360);
+				_this.pieceRotateDeg[from] = Math.random() * 360;
 				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
 
 				typeof callback == "function" && callback();
@@ -124,7 +124,7 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 			var sIndex = vs.b2s[vs.turn[this.getTurn()][from]];
 			var piece  = this.situationList[this.getCurrentStep()][sIndex];
 
-			this.getPieceRotate() ? this.animatePiece.children("span").attr({ style: this.pieceRotateDeg[from] }) : this.animatePiece.children("span").removeAttr("style");
+			this.getPieceRotate() ? this.animatePiece.children("span").attr({ style: vs.degToRotateCSS(this.pieceRotateDeg[from]) }) : this.animatePiece.children("span").removeAttr("style");
 
 			var Evt = this.animatePiece.addClass("vschess-piece-" + vs.n2f[piece]).css({
 				top : this.piece.eq(from).position().top,

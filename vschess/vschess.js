@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年6月11日
- * Mon, 11 Jun 2018 00:43:58 +0800
+ * Mon, 11 Jun 2018 03:01:33 +0800
  */
 
 (function(){
@@ -5985,7 +5985,7 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 				finishHandlerRunned = true;
 
 				_this.pieceRotateDeg[to]   = _this.pieceRotateDeg[from];
-				_this.pieceRotateDeg[from] = vschess.degToRotateCSS(Math.random() * 360);
+				_this.pieceRotateDeg[from] = Math.random() * 360;
 				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
 
 				typeof callback === "function" && callback();
@@ -5994,7 +5994,7 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 			var sIndex = vschess.b2s[vschess.turn[this.getTurn()][from]];
 			var piece  = this.situationList[this.getCurrentStep()][sIndex];
 
-			this.getPieceRotate() ? this.animatePiece.children("span").attr({ style: this.pieceRotateDeg[from] }) : this.animatePiece.children("span").removeAttr("style");
+			this.getPieceRotate() ? this.animatePiece.children("span").attr({ style: vschess.degToRotateCSS(this.pieceRotateDeg[from]) }) : this.animatePiece.children("span").removeAttr("style");
 
 			this.animatePiece.addClass("vschess-piece-" + vschess.n2f[piece]).css({
 				top : this.piece.eq(from).position().top,
@@ -6047,7 +6047,7 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 				finishHandlerRunned = true;
 
 				_this.pieceRotateDeg[to]   = _this.pieceRotateDeg[from];
-				_this.pieceRotateDeg[from] = vschess.degToRotateCSS(Math.random() * 360);
+				_this.pieceRotateDeg[from] = Math.random() * 360;
 				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
 
 				typeof callback == "function" && callback();
@@ -6058,7 +6058,7 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 			var sIndex = vschess.b2s[vschess.turn[this.getTurn()][from]];
 			var piece  = this.situationList[this.getCurrentStep()][sIndex];
 
-			this.getPieceRotate() ? this.animatePiece.children("span").attr({ style: this.pieceRotateDeg[from] }) : this.animatePiece.children("span").removeAttr("style");
+			this.getPieceRotate() ? this.animatePiece.children("span").attr({ style: vschess.degToRotateCSS(this.pieceRotateDeg[from]) }) : this.animatePiece.children("span").removeAttr("style");
 
 			var Evt = this.animatePiece.addClass("vschess-piece-" + vschess.n2f[piece]).css({
 				top : this.piece.eq(from).position().top,
@@ -6520,7 +6520,7 @@ vschess.load.prototype.initPieceRotateDeg = function(){
 	this.pieceRotateDeg = [];
 
 	for (var i = 0; i < 90; ++i) {
-		this.pieceRotateDeg.push(vschess.degToRotateCSS(Math.random() * 360));
+		this.pieceRotateDeg.push(Math.random() * 360);
 	}
 
 	return this;
@@ -6531,7 +6531,7 @@ vschess.load.prototype.loadPieceRotate = function(){
 	var _this = this;
 
 	this.piece.children("span").each(function(k){
-		$(this).attr({ style: _this.pieceRotateDeg[k] });
+		$(this).attr({ style: vschess.degToRotateCSS(_this.pieceRotateDeg[k]) });
 	});
 
 	return this;

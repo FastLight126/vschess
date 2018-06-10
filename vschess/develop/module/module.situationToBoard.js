@@ -94,7 +94,7 @@ fn.initPieceRotateDeg = function(){
 	this.pieceRotateDeg = [];
 
 	for (var i = 0; i < 90; ++i) {
-		this.pieceRotateDeg.push(vs.degToRotateCSS(Math.random() * 360));
+		this.pieceRotateDeg.push(Math.random() * 360);
 	}
 
 	return this;
@@ -105,7 +105,7 @@ fn.loadPieceRotate = function(){
 	var _this = this;
 
 	this.piece.children("span").each(function(k){
-		$(this).attr({ style: _this.pieceRotateDeg[k] });
+		$(this).attr({ style: vs.degToRotateCSS(_this.pieceRotateDeg[k]) });
 	});
 
 	return this;
