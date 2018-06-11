@@ -81,7 +81,7 @@ fn.createBoard = function(){
 	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
 	this.chessId  = vs.chessList.length;
 
-	window.addEventListener("resize", this.resetDPR, false);
+	window.addEventListener("resize", function(){ _this.resetDPR(); }, false);
 	vs.chessList.push(this);
 	return this;
 };
