@@ -5,6 +5,7 @@ fn.createTab = function(){
 	this.DOM.append(this.tabArea);
 	this.createComment();
 	this.createInfo   ();
+	this.createShare  ();
 	this.createExport ();
 	this.createEdit   ();
 	this.createConfig ();

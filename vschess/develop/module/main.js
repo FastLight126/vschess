@@ -247,7 +247,7 @@ var vschess = {
 	chessList: [],
 
 	// 标签列表
-	tabList: "comment info export edit config".split(" "),
+	tabList: "comment info share export edit config".split(" "),
 
 	// 钩子列表
 	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece".split(" "),
@@ -465,6 +465,9 @@ vs.defaultOptions = {
 	// 默认展开的标签
 	defaultTab: "comment",
 
+	// UBB 分享标签名称
+	ubbTagName: "vschess",
+
 	// 走子提示
 	moveTips: true,
 
@@ -494,8 +497,9 @@ vs.defaultOptions = {
 
 	// 云服务 API 地址
 	cloudApi: {
-		startfen: "https://www.xiaxiangqi.com/api/cloud/startfen",
-		savebook: "https://www.xiaxiangqi.com/api/cloud/savebook"
+		startFen: "https://www.xiaxiangqi.com/api/cloud/startfen",
+		saveBook: "https://www.xiaxiangqi.com/api/cloud/savebook",
+		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save"
 	},
 
 	// 默认推荐起始局面列表

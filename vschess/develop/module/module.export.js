@@ -1,8 +1,8 @@
 // 创建导出棋谱区域
 fn.createExport = function(){
 	var _this = this;
-	this.exportTitle    = $('<div class="vschess-tab-title vschess-tab-title-export">导出棋谱</div>');
-	this.exportArea     = $('<form method="post" action="' + this.options.cloudApi.savebook + '" class="vschess-tab-body vschess-tab-body-export"></form>');
+	this.exportTitle    = $('<div class="vschess-tab-title vschess-tab-title-export">棋谱导出</div>');
+	this.exportArea     = $('<form method="post" action="' + this.options.cloudApi.saveBook + '" class="vschess-tab-body vschess-tab-body-export"></form>');
 	this.exportTextarea = $('<textarea class="vschess-tab-body-export-textarea" readonly="readonly" name="data"></textarea>').appendTo(this.exportArea);
 	this.exportFormat   = $('<select class="vschess-tab-body-export-format" name="format"></select>').appendTo(this.exportArea);
 	this.exportGenerate = $('<input type="button" class="vschess-button vschess-tab-body-export-generate" value="生 成" />').appendTo(this.exportArea);
