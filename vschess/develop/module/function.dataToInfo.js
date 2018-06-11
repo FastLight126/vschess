@@ -93,7 +93,7 @@ vs.dataToInfo_DhtmlXQ = function(chessData){
 		var startPos = chessData.indexOf(startTag);
 
 		if (~startPos) {
-			var value = chessData.substring(startPos + startTag.length, chessData.indexOf("[/" + key + "]", startPos));
+			var value = chessData.substring(startPos + startTag.length, chessData.indexOf("[/DhtmlXQ_", startPos));
 			value && (result[i] = value);
 		}
 	}
