@@ -1,5 +1,5 @@
-.vschess-layout-default { width:754px; height:519px; padding:2px; border:1px solid #d3c7b8; background-color:#fff; font-family: "微软雅黑", "宋体", Tahoma, "Arial Unicode MS"; }
-.vschess-layout-default * { font-family: "微软雅黑", "宋体", Tahoma, "Arial Unicode MS"; font-size:12px; margin:0; padding:0 }
+.vschess-layout-default { width:754px; height:519px; padding:2px; border:1px solid #d3c7b8; background-color:#fff; font-family: "Microsoft YaHei", "SimSun", Tahoma, "Arial Unicode MS"; }
+.vschess-layout-default * { font-family: "Microsoft YaHei", "SimSun", Tahoma, "Arial Unicode MS"; font-size:12px; margin:0; padding:0 }
 .vschess-layout-default .vschess-button { width:48px; height:24px; position:relative; display:block; font-size:12px; cursor:pointer; -webkit-appearance:none; border:1px solid #bfbfbf; background-color:#f5f5f5; text-align:center; }
 .vschess-layout-default .vschess-button:hover { border-color:#0078d7; background-color:#e5f1fb; }
 .vschess-layout-default .vschess-loading { width:754px; height:519px; position:absolute; top:0px; left:0px; text-align:center; line-height:519px; font-size:20px; }
