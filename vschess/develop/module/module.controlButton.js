@@ -52,7 +52,7 @@ fn.pause = function(playSound){
 // 格式控制器
 fn.createFormatBar = function(){
 	var _this = this;
-	this.formatBar = $('<form method="post" action="' + this.options.cloudApi.savebook + '" class="vschess-format-bar"></form>');
+	this.formatBar = $('<form method="post" action="' + this.options.cloudApi.saveBook + '" class="vschess-format-bar"></form>');
 
 	switch (this.getMoveFormat()) {
 		case "wxf"		: var formarButton = "WXF"	; break;
