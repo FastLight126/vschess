@@ -46,7 +46,7 @@ fn.createShareGenerateButton = function(){
 fn.createShareUBB = function(){
 	this.shareUBBTitle = $('<div class="vschess-tab-body-share-title">论坛 UBB 代码：</div>');
 	this.shareUBBTitle.appendTo(this.shareArea);
-	this.shareUBBText = $('<input class="vschess-tab-body-share-text" value="请点击“生成分享信代码”按钮。" readonly="readonly" />');
+	this.shareUBBText = $('<input class="vschess-tab-body-share-text" value="请点击“生成分享代码”按钮。" readonly="readonly" />');
 	this.shareUBBText.appendTo(this.shareArea);
 	return this;
 };
