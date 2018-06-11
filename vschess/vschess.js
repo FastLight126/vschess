@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年6月11日
- * Mon, 11 Jun 2018 21:51:59 +0800
+ * Mon, 11 Jun 2018 23:45:50 +0800
  */
 
 (function(){
@@ -689,7 +689,7 @@ vschess.dataToInfo_DhtmlXQ = function(chessData){
 		var startPos = chessData.indexOf(startTag);
 
 		if (~startPos) {
-			var value = chessData.substring(startPos + startTag.length, chessData.indexOf("[/" + key + "]", startPos));
+			var value = chessData.substring(startPos + startTag.length, chessData.indexOf("[/DhtmlXQ_", startPos));
 			value && (result[i] = value);
 		}
 	}
@@ -4267,7 +4267,7 @@ vschess.load.prototype.pause = function(playSound){
 // 格式控制器
 vschess.load.prototype.createFormatBar = function(){
 	var _this = this;
-	this.formatBar = $('<form method="post" action="' + this.options.cloudApi.savebook + '" class="vschess-format-bar"></form>');
+	this.formatBar = $('<form method="post" action="' + this.options.cloudApi.saveBook + '" class="vschess-format-bar"></form>');
 
 	switch (this.getMoveFormat()) {
 		case "wxf"		: var formarButton = "WXF"	; break;
@@ -6476,7 +6476,7 @@ vschess.load.prototype.createShareGenerateButton = function(){
 vschess.load.prototype.createShareUBB = function(){
 	this.shareUBBTitle = $('<div class="vschess-tab-body-share-title">\u8bba\u575b UBB \u4ee3\u7801\uff1a</div>');
 	this.shareUBBTitle.appendTo(this.shareArea);
-	this.shareUBBText = $('<input class="vschess-tab-body-share-text" value="\u8bf7\u70b9\u51fb\u201c\u751f\u6210\u5206\u4eab\u4fe1\u4ee3\u7801\u201d\u6309\u94ae\u3002" readonly="readonly" />');
+	this.shareUBBText = $('<input class="vschess-tab-body-share-text" value="\u8bf7\u70b9\u51fb\u201c\u751f\u6210\u5206\u4eab\u4ee3\u7801\u201d\u6309\u94ae\u3002" readonly="readonly" />');
 	this.shareUBBText.appendTo(this.shareArea);
 	return this;
 };
