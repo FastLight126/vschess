@@ -67,6 +67,7 @@ vs.init = function(options){
 			var soundName = options.soundStyle + "-" + name;
 			var soundId   = "vschess-sound-" + soundName;
 			var soundSrc  = options.soundPath ? options.soundPath + name + ".mp3" : vs.defaultPath + 'sound/' + options.soundStyle + '/' + name + ".mp3";
+			vs.soundObject[soundName] = function(){};
 
 			// IE 下利用 Windows Media Player 来实现走子音效
 			if (window.ActiveXObject) {

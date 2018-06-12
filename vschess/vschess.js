@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋巫师友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月11日
- * Mon, 11 Jun 2018 23:45:50 +0800
+ * 最后修改日期：北京时间 2018年6月12日
+ * Tue, 12 Jun 2018 14:09:57 +0800
  */
 
 (function(){
@@ -1588,6 +1588,7 @@ vschess.init = function(options){
 			var soundName = options.soundStyle + "-" + name;
 			var soundId   = "vschess-sound-" + soundName;
 			var soundSrc  = options.soundPath ? options.soundPath + name + ".mp3" : vschess.defaultPath + 'sound/' + options.soundStyle + '/' + name + ".mp3";
+			vschess.soundObject[soundName] = function(){};
 
 			// IE 下利用 Windows Media Player 来实现走子音效
 			if (window.ActiveXObject) {
@@ -2034,11 +2035,14 @@ vschess.load.prototype.createBoard = function(){
 	this.initPieceRotateDeg();
 
 	// 其他组件
+	this.createChangeSelectList();
+	this.createMoveSelectList();
+	this.createCopyTextarea();
 	this.createColumnIndex();
 	this.createControlBar();
-	this.createMoveSelectList();
-	this.createChangeSelectList();
+	this.createMessageBox();
 	this.createFormatBar();
+	this.createHelp();
 	this.createTab();
 	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
 	this.chessId  = vschess.chessList.length;
@@ -4284,7 +4288,7 @@ vschess.load.prototype.createFormatBar = function(){
 		wxf			: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
 		iccs		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
 		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" class="vschess-format-bar-save-format" />'),
-		saveInput	: $('<textarea name="data" class="vschess-format-bar-save-input"></textarea>')
+		saveInput	: $('<input type="hidden" name="data" class="vschess-format-bar-save-input" />')
 	};
 
 	this.formatBarButton.format.bind(this.options.click, function(){
@@ -4329,45 +4333,10 @@ vschess.load.prototype.createFormatBar = function(){
 	}
 
 	this.formatBarButton.copy.bind(this.options.click, function(){
-		if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported('copy')) {
-			_this.formatBarButton.saveInput.val(_this.getCurrentFen());
-			_this.formatBarButton.saveInput[0].select();
-
-			if (document.execCommand("copy")) {
-				_this.copyFenFinish();
-			}
-			else {
-				prompt("\u8bf7\u6309 Ctrl+C \u590d\u5236\uff1a", _this.getCurrentFen());
-			}
-		}
-		else if (window.clipboardData) {
-			if (window.clipboardData.setData("Text", _this.getCurrentFen())) {
-				_this.copyFenFinish();
-			}
-			else {
-				prompt("\u8bf7\u6309 Ctrl+C \u590d\u5236\uff1a", _this.getCurrentFen());
-			}
-		}
-		else {
-			prompt("\u8bf7\u6309 Ctrl+C \u590d\u5236\uff1a", _this.getCurrentFen());
-		}
+		_this.copy(_this.getCurrentFen(), function(){ _this.showTips("\u5c40\u9762\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728\u8c61\u68cb\u8f6f\u4ef6\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01"); });
 	});
 
 	this.DOM.append(this.formatBar);
-	return this.createCopyFinishTips().createHelp();
-};
-
-vschess.load.prototype.createCopyFinishTips = function(){
-	this.copyFinishTips = $('<div class="vschess-copy-finish">\u5c40\u9762\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728\u8c61\u68cb\u8f6f\u4ef6\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01</div>');
-	this.DOM.append(this.copyFinishTips);
-	return this;
-};
-
-// 复制成功提示
-vschess.load.prototype.copyFenFinish = function(){
-	var _this = this;
-	this.copyFinishTips.addClass("vschess-copy-finish-show");
-	setTimeout(function(){ _this.copyFinishTips.removeClass("vschess-copy-finish-show"); }, 1500);
 	return this;
 };
 
@@ -4394,6 +4363,57 @@ vschess.load.prototype.setPlayGap = function(playGap){
 // 取得自动播放时间间隔
 vschess.load.prototype.getPlayGap = function(){
 	return this._.playGap;
+};
+
+// 创建复制用文本框
+vschess.load.prototype.createCopyTextarea = function(){
+	this.copyTextarea = $('<textarea class="vschess-copy"></textarea>').appendTo(this.DOM);
+	return this;
+};
+
+// 复制字符串
+vschess.load.prototype.copy = function(str, success){
+	typeof success !== "function" && (success = function(){});
+
+	if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported('copy')) {
+		this.copyTextarea.val(str);
+		this.copyTextarea[0].select();
+	
+		if (document.execCommand("copy")) {
+			success();
+		}
+		else {
+			prompt("\u8bf7\u6309 Ctrl+C \u590d\u5236\uff1a", str);
+		}
+	}
+	else if (window.clipboardData) {
+		if (window.clipboardData.setData("Text", str)) {
+			success();
+		}
+		else {
+			prompt("\u8bf7\u6309 Ctrl+C \u590d\u5236\uff1a", str);
+		}
+	}
+	else {
+		prompt("\u8bf7\u6309 Ctrl+C \u590d\u5236\uff1a", str);
+	}
+
+	return this;
+};
+
+// 创建信息提示框
+vschess.load.prototype.createMessageBox = function(){
+	this.copyFinishTips = $('<div class="vschess-message-box"></div>');
+	this.DOM.append(this.copyFinishTips);
+	return this;
+};
+
+// 显示提示框
+vschess.load.prototype.showTips = function(msg){
+	var _this = this;
+	this.copyFinishTips.text(msg).addClass("vschess-message-box-show");
+	setTimeout(function(){ _this.copyFinishTips.removeClass("vschess-message-box-show"); }, 1500);
+	return this;
 };
 
 // 取得当前节点树路径下局面数量
@@ -6450,6 +6470,7 @@ vschess.load.prototype.createShareGenerateButton = function(){
 
 	this.shareGenerateButton.bind(this.options.click, function(){
 		if (_this.options.cloudApi && _this.options.cloudApi.saveBookForShare) {
+			_this.shareUBBTextInput.val("\u6b63\u5728\u751f\u6210\uff0c\u8bf7\u7a0d\u5019\u3002");
 			_this.rebuildExportDhtmlXQ();
 
 			$.ajax({
@@ -6459,7 +6480,7 @@ vschess.load.prototype.createShareGenerateButton = function(){
 				dataType: "json",
 				success: function(response){
 					if (response.code === 0) {
-						_this.shareUBBText.val("[" + _this.options.ubbTagName + "]" + response.data.id + "[/" + _this.options.ubbTagName + "]");
+						_this.shareUBBTextInput.val("[" + _this.options.ubbTagName + "]" + response.data.id + "[/" + _this.options.ubbTagName + "]");
 					}
 				},
 				error: function(){
@@ -6474,10 +6495,20 @@ vschess.load.prototype.createShareGenerateButton = function(){
 
 // 创建 UBB 分享信息区域
 vschess.load.prototype.createShareUBB = function(){
+	var _this = this;
 	this.shareUBBTitle = $('<div class="vschess-tab-body-share-title">\u8bba\u575b UBB \u4ee3\u7801\uff1a</div>');
 	this.shareUBBTitle.appendTo(this.shareArea);
-	this.shareUBBText = $('<input class="vschess-tab-body-share-text" value="\u8bf7\u70b9\u51fb\u201c\u751f\u6210\u5206\u4eab\u4ee3\u7801\u201d\u6309\u94ae\u3002" readonly="readonly" />');
-	this.shareUBBText.appendTo(this.shareArea);
+	this.shareUBBTextBox = $('<div class="vschess-tab-body-share-text"></div>');
+	this.shareUBBTextBox.appendTo(this.shareArea);
+	this.shareUBBTextInput = $('<input class="vschess-tab-body-share-text-input" value="\u8bf7\u70b9\u51fb\u201c\u751f\u6210\u5206\u4eab\u4ee3\u7801\u201d\u6309\u94ae\u3002" readonly="readonly" />');
+	this.shareUBBTextInput.appendTo(this.shareUBBTextBox);
+	this.shareUBBTextCopy = $('<input type="button" class="vschess-button vschess-tab-body-share-text-copy" value="\u590d \u5236" />');
+	this.shareUBBTextCopy.appendTo(this.shareUBBTextBox);
+
+	this.shareUBBTextCopy.bind(this.options.click, function(){
+		_this.copy(_this.shareUBBTextInput.val(), function(){ _this.showTips("\u8bba\u575b UBB \u4ee3\u7801\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728 BBS \u8bba\u575b\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01"); });
+	});
+
 	return this;
 };
 
