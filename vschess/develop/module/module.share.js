@@ -20,6 +20,7 @@ fn.createShareGenerateButton = function(){
 
 	this.shareGenerateButton.bind(this.options.click, function(){
 		if (_this.options.cloudApi && _this.options.cloudApi.saveBookForShare) {
+			_this.shareUBBTextInput.val("正在生成，请稍候。");
 			_this.rebuildExportDhtmlXQ();
 
 			$.ajax({
@@ -29,7 +30,7 @@ fn.createShareGenerateButton = function(){
 				dataType: "json",
 				success: function(response){
 					if (response.code === 0) {
-						_this.shareUBBText.val("[" + _this.options.ubbTagName + "]" + response.data.id + "[/" + _this.options.ubbTagName + "]");
+						_this.shareUBBTextInput.val("[" + _this.options.ubbTagName + "]" + response.data.id + "[/" + _this.options.ubbTagName + "]");
 					}
 				},
 				error: function(){
@@ -44,9 +45,19 @@ fn.createShareGenerateButton = function(){
 
 // 创建 UBB 分享信息区域
 fn.createShareUBB = function(){
+	var _this = this;
 	this.shareUBBTitle = $('<div class="vschess-tab-body-share-title">论坛 UBB 代码：</div>');
 	this.shareUBBTitle.appendTo(this.shareArea);
-	this.shareUBBText = $('<input class="vschess-tab-body-share-text" value="请点击“生成分享代码”按钮。" readonly="readonly" />');
-	this.shareUBBText.appendTo(this.shareArea);
+	this.shareUBBTextBox = $('<div class="vschess-tab-body-share-text"></div>');
+	this.shareUBBTextBox.appendTo(this.shareArea);
+	this.shareUBBTextInput = $('<input class="vschess-tab-body-share-text-input" value="请点击“生成分享代码”按钮。" readonly="readonly" />');
+	this.shareUBBTextInput.appendTo(this.shareUBBTextBox);
+	this.shareUBBTextCopy = $('<input type="button" class="vschess-button vschess-tab-body-share-text-copy" value="复 制" />');
+	this.shareUBBTextCopy.appendTo(this.shareUBBTextBox);
+
+	this.shareUBBTextCopy.bind(this.options.click, function(){
+		_this.copy(_this.shareUBBTextInput.val(), function(){ _this.showTips("论坛 UBB 代码复制成功，您可以直接在 BBS 论坛中粘贴使用！"); });
+	});
+
 	return this;
 };
