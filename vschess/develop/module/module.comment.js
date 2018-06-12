@@ -9,7 +9,7 @@ fn.createComment = function(){
 	this.tabArea.append(this.commentArea );
 	this.commentTitle.bind(this.options.click, function(){ _this.showTab("comment"); });
 	this.commentTextarea.bind("change" , function( ){ _this.editCommentByStep(_this.commentTextarea.val()); });
-	this.commentTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode == 13 && _this.commentTextarea.blur(); });
+	this.commentTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode === 13 && _this.commentTextarea.blur(); });
 	this.createCommentPlaceholder();
 	return this;
 };

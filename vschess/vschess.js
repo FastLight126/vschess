@@ -8,11 +8,11 @@
  * 本程序遵循 GPL 协议
  * https://www.gnu.org/licenses/fdl.html
  *
- * ECCO 开局分类编号系统算法由象棋巫师友情提供，在此表示衷心感谢。
+ * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月12日
- * Tue, 12 Jun 2018 14:09:57 +0800
+ * 最后修改日期：北京时间 2018年6月13日
+ * Wed, 13 Jun 2018 03:48:59 +0800
  */
 
 (function(){
@@ -679,7 +679,7 @@ vschess.dataToInfo_PGN = function(chessData){
 	return resultA;
 };
 
-// 从东萍象棋 Dhtml 格式中抽取棋局信息
+// 从东萍象棋 DhtmlXQ 格式中抽取棋局信息
 vschess.dataToInfo_DhtmlXQ = function(chessData){
 	var result = {};
 
@@ -694,13 +694,7 @@ vschess.dataToInfo_DhtmlXQ = function(chessData){
 		}
 	}
 
-	switch (result.result) {
-		case "\u7ea2\u80dc": result.result = "1-0"    ; break;
-		case "\u9ed1\u80dc": result.result = "0-1"    ; break;
-		case "\u548c\u68cb": result.result = "1/2-1/2"; break;
-		default    : result.result = "*"      ; break;
-	}
-
+	result.result = vschess.dataText(result.result, "result");
 	return result;
 };
 
@@ -710,32 +704,32 @@ vschess.dataToNode = function(chessData, parseType){
 	parseType = parseType || "auto";
 
 	// 鹏飞象棋 PFC 格式
-	if (parseType == "auto" && ~chessData.indexOf("n version") || parseType == "pfc") {
+	if (parseType === "auto" && ~chessData.indexOf("n version") || parseType === "pfc") {
 		return vschess.dataToNode_PFC(chessData);
 	}
 
 	// 东萍象棋 DhtmlXQ 格式
-	if (parseType == "auto" && ~chessData.indexOf("[DhtmlXQ") || parseType == "DhtmlXQ") {
+	if (parseType === "auto" && ~chessData.indexOf("[DhtmlXQ") || parseType === "DhtmlXQ") {
 		return vschess.dataToNode_DhtmlXQ(chessData);
 	}
 
 	// QQ新中国象棋格式
-	if (parseType == "auto" && RegExp.QQNew.test(chessData) || parseType == "qqnew") {
+	if (parseType === "auto" && RegExp.QQNew.test(chessData) || parseType === "qqnew") {
 		return vschess.dataToNode_QQNew(chessData);
 	}
 
 	// 象棋世家格式
-	if (parseType == "auto" && RegExp.ShiJia.test(chessData) || parseType == "shijia") {
+	if (parseType === "auto" && RegExp.ShiJia.test(chessData) || parseType === "shijia") {
 		return vschess.dataToNode_ShiJia(chessData);
 	}
 
 	// 标准 PGN 格式
-	if (parseType == "auto" && ~chessData.indexOf('[Game "Chinese Chess"]') || parseType == "pgn") {
+	if (parseType === "auto" && ~chessData.indexOf('[Game "Chinese Chess"]') || parseType === "pgn") {
 		return vschess.dataToNode_PGN(chessData);
 	}
 
 	// 中国游戏中心 CCM 格式
-	if (parseType == "auto" && vschess.cca(chessData) === 1 || parseType == "ccm") {
+	if (parseType === "auto" && vschess.cca(chessData) === 1 || parseType === "ccm") {
 		return vschess.dataToNode_CCM(chessData);
 	}
 
@@ -908,35 +902,33 @@ vschess.dataToNode_PGN = function(chessData){
 	return result;
 };
 
-// 将东萍象棋 Dhtml 格式转换为棋谱节点树
+// 将东萍象棋 DhtmlXQ 格式转换为棋谱节点树
 vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 	var DhtmlXQ_Comment  = {};
 	var DhtmlXQ_Change   = {};
 	var DhtmlXQ_Start    = "";
 	var DhtmlXQ_MoveList = "";
-	var DhtmlXQ_EachLine = chessData.split("\n");
+	var DhtmlXQ_EachLine = chessData.split("[DhtmlXQ");
 
 	for (var i = 0; i < DhtmlXQ_EachLine.length; ++i) {
-		var l = DhtmlXQ_EachLine[i];
+		var l = "[DhtmlXQ" + DhtmlXQ_EachLine[i];
 
 		if (~l.indexOf("[DhtmlXQ_comment")) {
 			var start	  = l.indexOf("]");
-			var end 	  = l.indexOf("[/DhtmlXQ_comment");
 			var commentId = l.substring(16, start);
 			~commentId.indexOf("_") || (commentId = "0_" + commentId);
-			DhtmlXQ_Comment[commentId] = l.substring(start + 1, end).replace(/\|\|/g, "\n");
+			DhtmlXQ_Comment[commentId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_")).replace(/\|\|/g, "\n");
 		}
 		else if (~l.indexOf("[DhtmlXQ_binit")) {
-			DhtmlXQ_Start = l.substring(l.indexOf("[DhtmlXQ_binit") + 15, l.indexOf("[/DhtmlXQ_binit"));
+			DhtmlXQ_Start = l.substring(l.indexOf("[DhtmlXQ_binit") + 15, l.indexOf("[/DhtmlXQ_"));
 		}
 		else if (~l.indexOf("[DhtmlXQ_movelist")) {
-			DhtmlXQ_MoveList = l.substring(l.indexOf("[DhtmlXQ_movelist") + 18, l.indexOf("[/DhtmlXQ_movelist"));
+			DhtmlXQ_MoveList = l.substring(l.indexOf("[DhtmlXQ_movelist") + 18, l.indexOf("[/DhtmlXQ_"));
 		}
 		else if (~l.indexOf("[DhtmlXQ_move_")) {
 			var start	 = l.indexOf("]");
-			var end 	 = l.indexOf("[/DhtmlXQ_move_");
 			var changeId = l.substring(14, start);
-			DhtmlXQ_Change[changeId] = l.substring(start + 1, end);
+			DhtmlXQ_Change[changeId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_"));
 		}
 	}
 
@@ -1087,7 +1079,7 @@ vschess.stepListToNode = function(fen, stepList){
 
 // 将整数限制在一个特定的范围内
 vschess.limit = function(num, min, max, defaultValue){
-	typeof num == "undefined" && typeof defaultValue != "undefined" && (num = defaultValue);
+	typeof num === "undefined" && typeof defaultValue !== "undefined" && (num = defaultValue);
 	min = parseInt(min); isNaN(min) && (min = -Infinity);
 	max = parseInt(max); isNaN(max) && (max =  Infinity);
 	num = parseInt(num); isNaN(num) && (num = 0);
@@ -1306,11 +1298,11 @@ vschess.fieldNameToCamel = function(fieldName){
 	var key = fieldName || "";
 	var keySplit = key.split("");
 
-	if (key.length > 3 && key.substring(0, 3) == "red") {
+	if (key.length > 3 && key.substring(0, 3) === "red") {
 		keySplit[0] = "R";
 		keySplit[3] = keySplit[3].toUpperCase();
 	}
-	else if (key.length > 5 && key.substring(0, 5) == "black") {
+	else if (key.length > 5 && key.substring(0, 5) === "black") {
 		keySplit[0] = "B";
 		keySplit[5] = keySplit[5].toUpperCase();
 	}
@@ -2434,13 +2426,13 @@ vschess.moveListToData_PGN = function(moveList, startFen, commentList, infoList,
 		pgnText.push("[", vschess.info.pgn[i] || vschess.fieldNameToCamel(i), ' "', infoList[i], '"]\n');
 	}
 
-	startFen == vschess.defaultFen || pgnText.push('[FEN "', startFen, '"]\n');
+	startFen === vschess.defaultFen || pgnText.push('[FEN "', startFen, '"]\n');
 	!isICCS ? !isWXF ? null : pgnText.push('[Format "WXF"]\n') : pgnText.push('[Format "ICCS"]\n');
 	pgnText.push(commentList[0] ? "{" + commentList[0] + "}\n" : "");
 
-	if (startFenSplit[1] == "b") {
-		for (var i=0;i<moveList.length;++i) {
-			if (i == 0) {
+	if (startFenSplit[1] === "b") {
+		for (var i = 0; i < moveList.length; ++i) {
+			if (i === 0) {
 				var round = startRound;
 				round = round < 100 ? round < 10 ? "  " + round : " " + round : round;
 				pgnText.push(round, !isICCS ? !isWXF ? ". \u2026\u2026\u2026\u2026 " : ". .... " : ". ..... ", moveList[i], commentList[i + 1] ? "\n{" + commentList[i + 1] + "}" : "", "\n");
@@ -2450,29 +2442,29 @@ vschess.moveListToData_PGN = function(moveList, startFen, commentList, infoList,
 				round = round < 100 ? round < 10 ? "  " + round : " " + round : round;
 				i % 2 && pgnText.push(round, ". ");
 				pgnText.push(moveList[i], commentList[i + 1] ? "\n{" + commentList[i + 1] + "}" : "");
-				commentList[i + 1] && i % 2 && i != moveList.length - 1 && pgnText.push("\n", round, !isICCS ? !isWXF ? ". \u2026\u2026\u2026\u2026" : ". ...." : ". .....");
+				commentList[i + 1] && i % 2 && i !== moveList.length - 1 && pgnText.push("\n", round, !isICCS ? !isWXF ? ". \u2026\u2026\u2026\u2026" : ". ...." : ". .....");
 				pgnText.push(i % 2 ? " " : "\n");
 			}
 		}
 	}
 	else {
-		for (var i=0;i<moveList.length;++i) {
+		for (var i = 0; i < moveList.length; ++i) {
 			var round = i / 2 + startRound;
 			round = round < 100 ? round < 10 ? "  " + round : " " + round : round;
 			i % 2 || pgnText.push(round, ". ");
 			pgnText.push(moveList[i], commentList[i + 1] ? "\n{" + commentList[i + 1] + "}" : "");
-			commentList[i + 1] && !(i % 2) && i != moveList.length - 1 && pgnText.push("\n", round, !isICCS ? !isWXF ? ". \u2026\u2026\u2026\u2026" : ". ...." : ". .....");
+			commentList[i + 1] && !(i % 2) && i !== moveList.length - 1 && pgnText.push("\n", round, !isICCS ? !isWXF ? ". \u2026\u2026\u2026\u2026" : ". ...." : ". .....");
 			pgnText.push(i % 2 ? "\n" : " ");
 		}
 	}
 
 	pgnText = $.trim(pgnText.join(""));
 
-	if (pgnText.split("").pop() == "}") {
+	if (pgnText.split("").pop() === "}") {
 		pgnText += "\n " + result;
 	}
 	else {
-		(startFenSplit[1] == "b") == (moveList.length % 2) && (pgnText += "\n");
+		(startFenSplit[1] === "b") === !!(moveList.length % 2) && (pgnText += "\n");
 		pgnText += " " + result;
 	}
 
@@ -2499,12 +2491,12 @@ vschess.moveListToText = function(moveList, startFen, commentList, infoList, res
 		text.push(vschess.info.name[i], "\uff1a", vschess.showText(infoList[i], i), "\n");
 	}
 
-	startFen == vschess.defaultFen || text.push("\u5f00\u5c40 Fen \u4e32\uff1a", startFen, "\n");
+	startFen === vschess.defaultFen || text.push("\u5f00\u5c40 Fen \u4e32\uff1a", startFen, "\n");
 	text.push(commentList[0] ? "\uff08" + commentList[0] + "\uff09\n" : "");
 
-	if (startFenSplit[1] == "b") {
-		for (var i=0;i<moveList.length;++i) {
-			if (i == 0) {
+	if (startFenSplit[1] === "b") {
+		for (var i = 0; i < moveList.length; ++i) {
+			if (i === 0) {
 				var round = startRound;
 				round = vschess.strpad(round, Math.ceil((moveList.length + 1) / 2).toString().length, " ", "left");
 				text.push(round, ". \u2026\u2026\u2026\u2026 ", moveList[i], commentList[i + 1] ? "\n\uff08" + commentList[i + 1] + "\uff09" : "", "\n");
@@ -2520,7 +2512,7 @@ vschess.moveListToText = function(moveList, startFen, commentList, infoList, res
 		}
 	}
 	else {
-		for (var i=0;i<moveList.length;++i) {
+		for (var i = 0; i < moveList.length; ++i) {
 			var round = i / 2 + startRound;
 			round = vschess.strpad(round, Math.ceil(moveList.length / 2).toString().length, " ", "left");
 			i % 2 || text.push(round, ". ");
@@ -2534,11 +2526,11 @@ vschess.moveListToText = function(moveList, startFen, commentList, infoList, res
 	var resultStr = vschess.showText(result, "result");
 
 	if (resultStr) {
-		if (text.split("").pop() == "\uff09") {
+		if (text.split("").pop() === "\uff09") {
 			text += "\n" + resultStr;
 		}
 		else {
-			(startFenSplit[1] == "b") == (moveList.length % 2) && (text += "\n");
+			(startFenSplit[1] === "b") === !!(moveList.length % 2) && (text += "\n");
 			text += resultStr;
 		}
 	}
@@ -2567,26 +2559,26 @@ vschess.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 		DhtmlXQ.push('[DhtmlXQ_' + (vschess.info.DhtmlXQ[i] || i) + ']' + vschess.showText(infoList[i], i) + '[/DhtmlXQ_' + (vschess.info.DhtmlXQ[i] || i) + ']');
 	}
 
-	for (var i=0;i<90;++i) {
-		var position = i % 9 * 10 + ~~(i / 9);
+	for (var i = 0; i < 90; ++i) {
+		var position = i % 9 * 10 + Math.floor(i / 9);
 		position < 10 && (position = "0" + position);
 
 		switch (pieceEach[i]) {
 			case "K": DhtmlXQ_binit[ 4] = position; break;
 			case "k": DhtmlXQ_binit[20] = position; break;
-			case "R": DhtmlXQ_binit[ 0] == 99 ? DhtmlXQ_binit[ 0] = position : DhtmlXQ_binit[ 8] = position; break;
-			case "N": DhtmlXQ_binit[ 1] == 99 ? DhtmlXQ_binit[ 1] = position : DhtmlXQ_binit[ 7] = position; break;
-			case "B": DhtmlXQ_binit[ 2] == 99 ? DhtmlXQ_binit[ 2] = position : DhtmlXQ_binit[ 6] = position; break;
-			case "A": DhtmlXQ_binit[ 3] == 99 ? DhtmlXQ_binit[ 3] = position : DhtmlXQ_binit[ 5] = position; break;
-			case "C": DhtmlXQ_binit[ 9] == 99 ? DhtmlXQ_binit[ 9] = position : DhtmlXQ_binit[10] = position; break;
-			case "r": DhtmlXQ_binit[16] == 99 ? DhtmlXQ_binit[16] = position : DhtmlXQ_binit[24] = position; break;
-			case "n": DhtmlXQ_binit[17] == 99 ? DhtmlXQ_binit[17] = position : DhtmlXQ_binit[23] = position; break;
-			case "b": DhtmlXQ_binit[18] == 99 ? DhtmlXQ_binit[18] = position : DhtmlXQ_binit[22] = position; break;
-			case "a": DhtmlXQ_binit[19] == 99 ? DhtmlXQ_binit[19] = position : DhtmlXQ_binit[21] = position; break;
-			case "c": DhtmlXQ_binit[25] == 99 ? DhtmlXQ_binit[25] = position : DhtmlXQ_binit[26] = position; break;
+			case "R": DhtmlXQ_binit[ 0] === 99 ? DhtmlXQ_binit[ 0] = position : DhtmlXQ_binit[ 8] = position; break;
+			case "N": DhtmlXQ_binit[ 1] === 99 ? DhtmlXQ_binit[ 1] = position : DhtmlXQ_binit[ 7] = position; break;
+			case "B": DhtmlXQ_binit[ 2] === 99 ? DhtmlXQ_binit[ 2] = position : DhtmlXQ_binit[ 6] = position; break;
+			case "A": DhtmlXQ_binit[ 3] === 99 ? DhtmlXQ_binit[ 3] = position : DhtmlXQ_binit[ 5] = position; break;
+			case "C": DhtmlXQ_binit[ 9] === 99 ? DhtmlXQ_binit[ 9] = position : DhtmlXQ_binit[10] = position; break;
+			case "r": DhtmlXQ_binit[16] === 99 ? DhtmlXQ_binit[16] = position : DhtmlXQ_binit[24] = position; break;
+			case "n": DhtmlXQ_binit[17] === 99 ? DhtmlXQ_binit[17] = position : DhtmlXQ_binit[23] = position; break;
+			case "b": DhtmlXQ_binit[18] === 99 ? DhtmlXQ_binit[18] = position : DhtmlXQ_binit[22] = position; break;
+			case "a": DhtmlXQ_binit[19] === 99 ? DhtmlXQ_binit[19] = position : DhtmlXQ_binit[21] = position; break;
+			case "c": DhtmlXQ_binit[25] === 99 ? DhtmlXQ_binit[25] = position : DhtmlXQ_binit[26] = position; break;
 			case "P": {
-				for (var j=11;j<16;++j) {
-					if (DhtmlXQ_binit[j] == 99) {
+				for (var j = 11; j < 16; ++j) {
+					if (DhtmlXQ_binit[j] === 99) {
 						DhtmlXQ_binit[j] = position;
 						break;
 					}
@@ -2595,8 +2587,8 @@ vschess.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 				break;
 			}
 			case "p": {
-				for (var j=27;j<32;++j) {
-					if (DhtmlXQ_binit[j] == 99) {
+				for (var j = 27; j < 32; ++j) {
+					if (DhtmlXQ_binit[j] === 99) {
 						DhtmlXQ_binit[j] = position;
 						break;
 					}
@@ -2625,8 +2617,8 @@ vschess.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 		node.comment && commentResult.push(["[DhtmlXQ_comment", branchIndex, "_", parentSteps, "]", node.comment.replace(/\n/g, "||"), "[/DhtmlXQ_comment", branchIndex, "_", parentSteps, "]"].join(""));
 
 		while (node.next.length) {
-			for (var i=node.next.length-1;i>=0;--i) {
-				if (i != node.defaultIndex) {
+			for (var i = node.next.length - 1; i >= 0; --i) {
+				if (i !== node.defaultIndex) {
 					branchList.push(node.next[i]);
 					parentIndexList.push(branchIndex);
 					parentStepsList.push(parentSteps + step);
@@ -2650,8 +2642,8 @@ vschess.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 		branchList.length && makeBranch();
 	}
 
-	for (var i=nodeData.next.length-1;i>=0;--i) {
-		if (i != nodeData.defaultIndex) {
+	for (var i = nodeData.next.length - 1; i >= 0; --i) {
+		if (i !== nodeData.defaultIndex) {
 			branchList.push(nodeData.next[i]);
 			parentIndexList.push(0);
 			parentStepsList.push(1);
@@ -2673,22 +2665,22 @@ vschess.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 vschess.turn_DhtmlXQ = function(chessData){
 	var DhtmlXQ_EachLine = chessData.split("\n");
 
-	for (var i=0;i<DhtmlXQ_EachLine.length;++i) {
+	for (var i = 0; i < DhtmlXQ_EachLine.length; ++i) {
 		var l = DhtmlXQ_EachLine[i];
 
 		if (~l.indexOf("[DhtmlXQ_binit")) {
-			var startSplit = l.substring(l.indexOf("[DhtmlXQ_binit") + 15, l.indexOf("[/DhtmlXQ_binit")).split("");
+			var startSplit = l.substring(l.indexOf("[DhtmlXQ_binit") + 15, l.indexOf("[/DhtmlXQ_")).split("");
 
-			for (var j=0;j<startSplit.length;j+=2) {
+			for (var j = 0; j < startSplit.length; j += 2) {
 				startSplit[j] < 9 && (startSplit[j] = 8 - startSplit[j]);
 			}
 
 			DhtmlXQ_EachLine[i] = "[DhtmlXQ_binit]" + startSplit.join("") + "[/DhtmlXQ_binit]";
 		}
 		else if (~l.indexOf("[DhtmlXQ_movelist")) {
-			var moveSplit = l.substring(l.indexOf("[DhtmlXQ_movelist") + 18, l.indexOf("[/DhtmlXQ_movelist")).split("");
+			var moveSplit = l.substring(l.indexOf("[DhtmlXQ_movelist") + 18, l.indexOf("[/DhtmlXQ_")).split("");
 
-			for (var j=0;j<moveSplit.length;j+=2) {
+			for (var j = 0; j < moveSplit.length; j += 2) {
 				moveSplit[j] < 9 && (moveSplit[j] = 8 - moveSplit[j]);
 			}
 
@@ -2696,11 +2688,10 @@ vschess.turn_DhtmlXQ = function(chessData){
 		}
 		else if (~l.indexOf("[DhtmlXQ_move_")) {
 			var start		= l.indexOf("]");
-			var end 		= l.indexOf("[/DhtmlXQ_move_");
 			var changeId	= l.substring(14, start);
-			var changeSplit = l.substring(start + 1, end).split("");
+			var changeSplit = l.substring(start + 1, l.indexOf("[/DhtmlXQ_")).split("");
 
-			for (var j=0;j<changeSplit.length;j+=2) {
+			for (var j = 0; j < changeSplit.length; j += 2) {
 				changeSplit[j] < 9 && (changeSplit[j] = 8 - changeSplit[j]);
 			}
 
@@ -2716,9 +2707,9 @@ vschess.nodeToData_PengFei = function(nodeData, infoList, result, isMirror){
 	function getXmlByNode(nodeData, isDefault){
 		var xmlData = ['<n m="', isMirror ? vschess.turnMove(nodeData.move) : nodeData.move, '" c="', nodeData.comment.replace(/\"/g, "&quot;"), '"'];
 		isDefault && xmlData.push(' default="true"');
-		xmlData.push('>');
+		xmlData.push(">");
 
-		for (var i=0;i<nodeData.next.length;++i) {
+		for (var i = 0; i < nodeData.next.length; ++i) {
 			xmlData.push(getXmlByNode(nodeData.next[i], nodeData.defaultIndex === i));
 		}
 
@@ -2732,14 +2723,14 @@ vschess.nodeToData_PengFei = function(nodeData, infoList, result, isMirror){
 		xmlData.push(" ", vschess.info.pfc[i] || i, '="', infoList[i].replace(/\"/g, "&quot;"), '"');
 	}
 
-	xmlData.push(['>']);
+	xmlData.push(">");
 
-	for (var i=0;i<nodeData.next.length;++i) {
+	for (var i = 0; i < nodeData.next.length; ++i) {
 		xmlData.push(getXmlByNode(nodeData.next[i], nodeData.defaultIndex === i));
 	}
 
 	xmlData.push("</n>");
-	return xmlData.join("").replace(/><\/n>/g, " />");
+	return xmlData.join("").replace(/\"><\/n>/g, '" />');
 };
 
 // 翻转鹏飞象棋 PFC 格式
@@ -2748,7 +2739,7 @@ vschess.turn_PengFei = function(chessData){
 	var end = chessData[1].indexOf('"');
 	chessData[1] = vschess.turnFen(chessData[1].substring(0, end)) + chessData[1].substring(end);
 
-	for (i=2;i<chessData.length;++i) {
+	for (i = 2; i < chessData.length; ++i) {
 		chessData[i] = vschess.turnMove(chessData[i].substring(0, 4)) + chessData[i].substring(4);
 	}
 
@@ -2772,15 +2763,14 @@ vschess.moveListToData_QQ = function(moveList, isMirror){
 		23, 21, 19, 17, 16, 18, 20, 22, 24
 	];
 
-	for (var i=0;i<moveList.length;++i) {
+	for (var i = 0; i < moveList.length; ++i) {
 		var moveSplit = moveList[i].split("");
 		var from = vschess.i2b[moveList[i].substring(0, 2)];
 		var to   = vschess.i2b[moveList[i].substring(2, 4)];
 		srcCol = isMirror ? vschess.cca(moveSplit[0]) - 97 : 105 - vschess.cca(moveSplit[0]);
 		dstCol = isMirror ? vschess.cca(moveSplit[2]) - 97 : 105 - vschess.cca(moveSplit[2]);
 		result.push(board[from], " 32 ", 1 - i % 2, " ", moveSplit[1], " ", srcCol, " ", moveSplit[3], " ", dstCol, " 0 ", i + 1, " 0 ");
-		board[to  ] = board[from];
-		board[from] = 0;
+		board[to] = board[from];
 	}
 
 	return result.join("");
@@ -2792,7 +2782,7 @@ vschess.Node2Chinese = function(move, fen, options){
 	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
 	typeof options === "undefined" && (options = vschess.defaultOptions);
 	var w2i = [{ "+": 0, ".": 1, "-": 2 }, { "+": 3, "-": 4, ".": 5 }];
-	var isB = fen.split(" ")[1] == "b", result = "";
+	var isB = fen.split(" ")[1] === "b", result = "";
 	var isWXFMove = ~"+-.".indexOf(move.charAt(2));
 
 	if (isWXFMove) {
@@ -2825,10 +2815,11 @@ vschess.Node2Chinese = function(move, fen, options){
 vschess.Node2WXF = function(move, fen){
 	var RegExp = vschess.RegExp();
 	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
+	var isB = fen.split(" ")[1] === "b";
 	move = move.toLowerCase();
 
 	// 黑方旋转处理
-	if (fen.split(" ")[1] === "b") {
+	if (isB) {
 		var step	  = vschess.roundMove(move);
 		var situation = vschess.fenToSituation(vschess.roundFen(fen));
 	}
@@ -2900,7 +2891,7 @@ vschess.Node2WXF = function(move, fen){
 		var offset = to - from;
 
 		if (Math.abs(offset) > 15) {
-			result += (offset > 0 ? "-" : "+") + Math.abs(offset) / 16;
+			result += (offset > 0 ? "-" : "+") + Math.abs(offset >> 4);
 		}
 		else {
 			result += "." + toCol;
@@ -2912,12 +2903,7 @@ vschess.Node2WXF = function(move, fen){
 		situation[from]   = 1;
 		situation[0   ]   = 3    - situation[0];
 		situation[0   ] === 1 && ++situation[1];
-
-		if (fen.split(" ")[1] === "b") {
-			return { move: result, movedFen: vschess.roundFen(vschess.situationToFen(situation)) };
-		}
-
-		return { move: result, movedFen: vschess.situationToFen(situation) };
+		return { move: result, movedFen: isB ? vschess.roundFen(vschess.situationToFen(situation)) : vschess.situationToFen(situation) };
 	}
 
 	return { move: "None", movedFen: vschess.defaultFen };
@@ -3936,37 +3922,37 @@ vschess.ECCOIndex2Name = function(index){
 
 // 检查指定局面号下指定棋子是否为红方棋子
 vschess.load.prototype.isR = function(index, step){
-	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
+	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	index = vschess.turn[this.getTurn()][vschess.limit(index, 0, 89)];
-	return this.situationList[step][vschess.b2s[index]] >> 4 == 1;
+	return this.situationList[step][vschess.b2s[index]] >> 4 === 1;
 };
 
 // 检查指定局面号下指定棋子是否为黑方棋子
 vschess.load.prototype.isB = function(index, step){
-	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
+	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	index = vschess.turn[this.getTurn()][vschess.limit(index, 0, 89)];
-	return this.situationList[step][vschess.b2s[index]] >> 4 == 2;
+	return this.situationList[step][vschess.b2s[index]] >> 4 === 2;
 };
 
 // 检查指定局面号下指定棋子是否无棋子
 vschess.load.prototype.isN = function(index, step){
-	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
+	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	index = vschess.turn[this.getTurn()][vschess.limit(index, 0, 89)];
-	return this.situationList[step][vschess.b2s[index]] == 1;
+	return this.situationList[step][vschess.b2s[index]] === 1;
 };
 
 // 检查指定局面号下指定棋子是否为己方棋子
 vschess.load.prototype.isPlayer = function(index, step){
-	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
+	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	index = vschess.turn[this.getTurn()][vschess.limit(index, 0, 89)];
-	return this.situationList[step][vschess.b2s[index]] >> 4 == this.situationList[step][0];
+	return this.situationList[step][vschess.b2s[index]] >> 4 === this.situationList[step][0];
 };
 
 // 检查指定局面号下指定棋子是否为敌方棋子
 vschess.load.prototype.isEnermy = function(index, step){
-	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
+	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	index = vschess.turn[this.getTurn()][vschess.limit(index, 0, 89)];
-	return this.situationList[step][vschess.b2s[index]] >> 4 == 3 - this.situationList[step][0];
+	return this.situationList[step][vschess.b2s[index]] >> 4 === 3 - this.situationList[step][0];
 };
 
 // 获取指定起始棋子的所有合法目标坐标
@@ -3974,8 +3960,8 @@ vschess.load.prototype.getLegalByStartPieceIndex = function(startIndex){
 	startIndex = vschess.b2s[vschess.turn[this.getTurn()][vschess.limit(startIndex, 0, 89)]];
 	var legalList = [];
 
-	for (var i=0;i<this.legalList.length;++i) {
-		this.legalList[i][0] == startIndex && legalList.push(vschess.turn[this.getTurn()][vschess.s2b[this.legalList[i][1]]]);
+	for (var i = 0; i < this.legalList.length; ++i) {
+		this.legalList[i][0] === startIndex && legalList.push(vschess.turn[this.getTurn()][vschess.s2b[this.legalList[i][1]]]);
 	}
 
 	return legalList;
@@ -3986,7 +3972,7 @@ vschess.load.prototype.clearPiece = function(index){
 	var className =  "vschess-piece-R vschess-piece-N vschess-piece-B vschess-piece-A vschess-piece-K vschess-piece-C vschess-piece-P";
 	className	 += " vschess-piece-r vschess-piece-n vschess-piece-b vschess-piece-a vschess-piece-k vschess-piece-c vschess-piece-p";
 
-	if (typeof index == "undefined") {
+	if (typeof index === "undefined") {
 		this.piece.removeClass(className);
 	}
 	else if (~index) {
@@ -4001,7 +3987,7 @@ vschess.load.prototype.clearPiece = function(index){
 
 // 将棋盘上的选择状态移除，-1 表示动画棋子
 vschess.load.prototype.clearSelect = function(index){
-	if (typeof index == "undefined") {
+	if (typeof index === "undefined") {
 		this.piece.removeClass("vschess-piece-S vschess-piece-s");
 		this.setCurrentSelect(-1);
 	}
@@ -4033,7 +4019,7 @@ vschess.load.prototype.createComment = function(){
 	this.tabArea.append(this.commentArea );
 	this.commentTitle.bind(this.options.click, function(){ _this.showTab("comment"); });
 	this.commentTextarea.bind("change" , function( ){ _this.editCommentByStep(_this.commentTextarea.val()); });
-	this.commentTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode == 13 && _this.commentTextarea.blur(); });
+	this.commentTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode === 13 && _this.commentTextarea.blur(); });
 	this.createCommentPlaceholder();
 	return this;
 };
@@ -4127,13 +4113,7 @@ vschess.load.prototype.addConfigItem = function(name, text, type, defaultValue, 
 			var _name  = selectList[i].split(":")[0];
 			var _value = selectList[i].split(":")[1];
 			this.configSelect[name].item.push({ name: _name, value: _value });
-
-			if (_value == this.getPlayGap()) {
-				this.configItemM[name].append('<option value="' + _value + '" selected="selected">' + _name + '</option>');
-			}
-			else {
-				this.configItemM[name].append('<option value="' + _value + '">' + _name + '</option>');
-			}
+			this.configItemM [name].append('<option value="' + _value + '">' + _name + '</option>');
 		}
 
 		this.configItemM[name].bind("change", function(){ _this.setConfigItemValue(name, this.value); typeof action === "function" && action(); });
@@ -4203,7 +4183,7 @@ vschess.load.prototype.setConfigItemValue = function(name, value){
 		this.configValue[name] = value;
 
 		for (var i = 0; i < this.configSelect[name].item.length; ++i) {
-			if (this.configSelect[name].item[i].value == value) {
+			if ("" + this.configSelect[name].item[i].value === "" + value) {
 				this.configItemM[name][0].selectedIndex = i;
 				break;
 			}
@@ -4333,7 +4313,7 @@ vschess.load.prototype.createFormatBar = function(){
 	}
 
 	this.formatBarButton.copy.bind(this.options.click, function(){
-		_this.copy(_this.getCurrentFen(), function(){ _this.showTips("\u5c40\u9762\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728\u8c61\u68cb\u8f6f\u4ef6\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01"); });
+		_this.copy(_this.getCurrentFen(), function(){ _this.showMessage("\u5c40\u9762\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728\u8c61\u68cb\u8f6f\u4ef6\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01"); });
 	});
 
 	this.DOM.append(this.formatBar);
@@ -4378,7 +4358,7 @@ vschess.load.prototype.copy = function(str, success){
 	if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported('copy')) {
 		this.copyTextarea.val(str);
 		this.copyTextarea[0].select();
-	
+
 		if (document.execCommand("copy")) {
 			success();
 		}
@@ -4403,16 +4383,16 @@ vschess.load.prototype.copy = function(str, success){
 
 // 创建信息提示框
 vschess.load.prototype.createMessageBox = function(){
-	this.copyFinishTips = $('<div class="vschess-message-box"></div>');
-	this.DOM.append(this.copyFinishTips);
+	this.messageBox = $('<div class="vschess-message-box"></div>');
+	this.DOM.append(this.messageBox);
 	return this;
 };
 
 // 显示提示框
-vschess.load.prototype.showTips = function(msg){
+vschess.load.prototype.showMessage = function(msg){
 	var _this = this;
-	this.copyFinishTips.text(msg).addClass("vschess-message-box-show");
-	setTimeout(function(){ _this.copyFinishTips.removeClass("vschess-message-box-show"); }, 1500);
+	this.messageBox.text(msg).addClass("vschess-message-box-show");
+	setTimeout(function(){ _this.messageBox.removeClass("vschess-message-box-show"); }, 1500);
 	return this;
 };
 
@@ -4678,7 +4658,7 @@ vschess.load.prototype.createEditTextarea = function(){
 		_this.editTips.val(currentFen.split(" ")[0] === vschess.blankFen.split(" ")[0] ? _this.editTipsText : currentFen);
 	});
 
-	this.editTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode == 13 && _this.editTextarea.blur(); });
+	this.editTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode === 13 && _this.editTextarea.blur(); });
 	return this;
 };
 
@@ -4756,7 +4736,7 @@ vschess.load.prototype.createEditPieceArea = function(){
 			e.preventDefault();
 			return false;
 		});
-	
+
 		this.bind("dragstart", function(e){
 			e.originalEvent.dataTransfer.setData("text", e.originalEvent.target.innerHTML);
 			_this.dragPiece = currentIndex;
@@ -4767,6 +4747,10 @@ vschess.load.prototype.createEditPieceArea = function(){
 		this.bind("drop", function(e) {
 			e.stopPropagation();
 			e.preventDefault();
+			_this.editRemovePiece(_this.dragPiece);
+			_this.fillEditBoard();
+			var currentFen = vschess.situationToFen(_this.editSituation);
+			_this.editTips.val(currentFen.split(" ")[0] === vschess.blankFen.split(" ")[0] ? _this.editTipsText : currentFen);
 			return false;
 		});
 	});
@@ -4913,7 +4897,7 @@ vschess.load.prototype.editRemoveSelect = function(){
 vschess.load.prototype.createRecommendList = function(){
 	var _this = this;
 	this.recommendClass = $('<select class="vschess-recommend-class"></select>');
-	this.recommendList = $('<ul class="vschess-recommend-list"></ul>');
+	this.recommendList  = $('<ul class="vschess-recommend-list"></ul>');
 	this.DOM.append(this.recommendClass);
 	this.DOM.append(this.recommendList );
 	this.recommendClass.bind("change", function(){ _this.fillInRecommendList(this.selectedIndex); });
@@ -5082,7 +5066,7 @@ vschess.load.prototype.createNodeCancelButton = function(){
 vschess.load.prototype.createNodeEditTextarea = function(){
 	var _this = this;
 	this.editNodeTextarea = $('<textarea class="vschess-tab-body-edit-node-textarea"></textarea>').appendTo(this.editArea);
-	this.editNodeTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode == 13 && _this.editNodeTextarea.blur(); });
+	this.editNodeTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode === 13 && _this.editNodeTextarea.blur(); });
 	return this;
 };
 
@@ -5125,14 +5109,16 @@ vschess.load.prototype.createEditOtherButton = function(){
 					if (!_this.confirm("\u786e\u5b9a\u6253\u5f00\u8be5\u68cb\u8c31\u5417\uff1f\u5f53\u524d\u68cb\u8c31\u4f1a\u4e22\u5931\uff01")) {
 						return false;
 					}
-	
-					var RegExp = vschess.RegExp();
-					var fileData = new Uint8Array(this.result);
+
+					var RegExp    = vschess.RegExp();
+					var fileData  = new Uint8Array(this.result);
 					var chessData = vschess.join(fileData);
 					fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vschess.iconv2UTF8(fileData));
 					_this.setBoardByStep(0);
 					_this.node = vschess.dataToNode(chessData);
-					_this.rebuildSituation().refreshMoveSelectListNode().setBoardByStep(0);
+					_this.rebuildSituation();
+					_this.refreshMoveSelectListNode();
+					_this.setBoardByStep(0);
 					_this.chessInfo = vschess.dataToInfo(chessData, "auto");
 					_this.insertInfoByCurrent();
 					_this.refreshInfoEditor();
@@ -5164,8 +5150,8 @@ vschess.load.prototype.createEditOtherButton = function(){
 
 		_this.node = { fen: vschess.defaultFen, comment: "", next: [], defaultIndex: 0 };
 		_this.rebuildSituation();
-		_this.setBoardByStep(0);
 		_this.refreshMoveSelectListNode();
+		_this.setBoardByStep(0);
 		_this.chessInfo = {};
 		_this.insertInfoByCurrent();
 		_this.refreshInfoEditor();
@@ -5200,7 +5186,7 @@ vschess.load.prototype.bindDrag = function(){
 	this.DOM.on("dragover", function(e){
 		e.preventDefault();
 	});
-	
+
 	this.DOM.on("drop", function(e){
 		e.preventDefault();
 
@@ -5213,13 +5199,15 @@ vschess.load.prototype.bindDrag = function(){
 					return false;
 				}
 
-				var RegExp = vschess.RegExp();
-				var fileData = new Uint8Array(this.result);
+				var RegExp    = vschess.RegExp();
+				var fileData  = new Uint8Array(this.result);
 				var chessData = vschess.join(fileData);
 				fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vschess.iconv2UTF8(fileData));
 				_this.setBoardByStep(0);
 				_this.node = vschess.dataToNode(chessData);
-				_this.rebuildSituation().refreshMoveSelectListNode().setBoardByStep(0);
+				_this.rebuildSituation();
+				_this.refreshMoveSelectListNode();
+				_this.setBoardByStep(0);
 				_this.chessInfo = vschess.dataToInfo(chessData, "auto");
 				_this.insertInfoByCurrent();
 				_this.refreshInfoEditor();
@@ -5567,7 +5555,7 @@ vschess.load.prototype.createInfoEditor = function(){
 	for (var i in vschess.info.name) {
 		this.infoEditorItem[i] = $('<li class="vschess-info-editor-item vschess-info-editor-item-' + i + '"></li>');
 		this.infoEditorItemName [i] = $('<div class="vschess-info-editor-item-name vschess-info-editor-item-name-' + i + '">' + vschess.info.name[i] + '\uff1a</div></li>');
-		this.infoEditorItemValue[i] = $('<input type="' + (i == "date" ? "date" : "text") + '" class="vschess-info-editor-item-value vschess-info-editor-item-value-' + i + '" value="' + vschess.dataText(this.chessInfo[i] || "", i) + '" />');
+		this.infoEditorItemValue[i] = $('<input type="' + (i === "date" ? "date" : "text") + '" class="vschess-info-editor-item-value vschess-info-editor-item-value-' + i + '" value="' + vschess.dataText(this.chessInfo[i] || "", i) + '" />');
 		this.infoEditorItem[i].append(this.infoEditorItemName [i]);
 		this.infoEditorItem[i].append(this.infoEditorItemValue[i]);
 		this.infoEditorList.append(this.infoEditorItem[i]);
@@ -5717,7 +5705,7 @@ vschess.load.prototype.getResultByCurrent = function(){
 // 自动识别当前分支的对弈结果
 vschess.load.prototype.getAutoResultByCurrent = function(){
 	var lastSituation = this.situationList[this.lastSituationIndex()];
-	return !vschess.legalList(lastSituation).length ? lastSituation[0] == 1 ? "0-1" : "1-0" : "*";
+	return !vschess.legalList(lastSituation).length ? lastSituation[0] === 1 ? "0-1" : "1-0" : "*";
 };
 
 // 着法选择列表
@@ -6074,7 +6062,7 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 				_this.pieceRotateDeg[from] = Math.random() * 360;
 				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
 
-				typeof callback == "function" && callback();
+				typeof callback === "function" && callback();
 			};
 
 			var deltaX = this.piece.eq(to).position().left - this.piece.eq(from).position().left;
@@ -6199,8 +6187,8 @@ vschess.load.prototype.rebuildSituation = function(){
 
 		lastSituation[to  ] = lastSituation[from];
 		lastSituation[from] = 1;
-		lastSituation[0]  = 3  -   lastSituation[0];
-		lastSituation[0] == 1 && ++lastSituation[1];
+		lastSituation[0]    = 3  -   lastSituation[0];
+		lastSituation[0]  === 1 && ++lastSituation[1];
 
 		this.eatStatus.push(vschess.countPieceLength(lastSituation) !== prevPieceCount);
 		this.moveList.push(currentNode.move);
@@ -6239,7 +6227,7 @@ vschess.load.prototype.hasMoveAtNode = function(move, step){
 	var nextList = this.selectDefault(vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep())).next;
 
 	for (var i=0;i<nextList.length;++i) {
-		if (nextList[i].move == move) {
+		if (nextList[i].move === move) {
 			return true;
 		}
 	}
@@ -6259,12 +6247,12 @@ vschess.load.prototype.setMoveDefaultAtNode = function(move, step){
 	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	var currentNode = this.selectDefault(step);
 
-	if (currentNode.next.length && currentNode.next[currentNode.defaultIndex].move == move) {
+	if (currentNode.next.length && currentNode.next[currentNode.defaultIndex].move === move) {
 		return false;
 	}
 
 	for (var i=0;i<currentNode.next.length;++i) {
-		if (currentNode.next[i].move == move) {
+		if (currentNode.next[i].move === move) {
 			currentNode.defaultIndex = i;
 			this.setSaved(false);
 			return true;
@@ -6506,7 +6494,7 @@ vschess.load.prototype.createShareUBB = function(){
 	this.shareUBBTextCopy.appendTo(this.shareUBBTextBox);
 
 	this.shareUBBTextCopy.bind(this.options.click, function(){
-		_this.copy(_this.shareUBBTextInput.val(), function(){ _this.showTips("\u8bba\u575b UBB \u4ee3\u7801\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728 BBS \u8bba\u575b\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01"); });
+		_this.copy(_this.shareUBBTextInput.val(), function(){ _this.showMessage("\u8bba\u575b UBB \u4ee3\u7801\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728 BBS \u8bba\u575b\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01"); });
 	});
 
 	return this;
@@ -6517,7 +6505,7 @@ vschess.load.prototype.setBoardByStep = function(step){
 	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	var _this = this;
 	this._.currentStep = vschess.limit(step, 0, this.lastSituationIndex());
-	this.clearBoard();
+	this.clearBoard(  );
 	this.clearBoard(-1);
 	this.animating = false;
 
@@ -6649,7 +6637,7 @@ vschess.load.prototype.playSoundBySituation = function(step){
 	var   toPiece = this.situationList[step - 1][vschess.i2s[this.getMoveByStep(step).substring(2, 4)]];
 
 	// 播放将杀音效
-	if (this.legalList.length == 0) {
+	if (this.legalList.length === 0) {
 		this.playSound("lose");
 	}
 
@@ -6660,7 +6648,7 @@ vschess.load.prototype.playSoundBySituation = function(step){
 
 	// 播放炮吃子、普通吃子音效
 	else if (toPiece > 1) {
-		(fromPiece & 15) == 6 ? this.playSound("bomb") : this.playSound("eat");
+		(fromPiece & 15) === 6 ? this.playSound("bomb") : this.playSound("eat");
 	}
 
 	// 播放移动棋子音效

@@ -4,32 +4,32 @@ vs.dataToNode = function(chessData, parseType){
 	parseType = parseType || "auto";
 
 	// 鹏飞象棋 PFC 格式
-	if (parseType == "auto" && ~chessData.indexOf("n version") || parseType == "pfc") {
+	if (parseType === "auto" && ~chessData.indexOf("n version") || parseType === "pfc") {
 		return vs.dataToNode_PFC(chessData);
 	}
 
 	// 东萍象棋 DhtmlXQ 格式
-	if (parseType == "auto" && ~chessData.indexOf("[DhtmlXQ") || parseType == "DhtmlXQ") {
+	if (parseType === "auto" && ~chessData.indexOf("[DhtmlXQ") || parseType === "DhtmlXQ") {
 		return vs.dataToNode_DhtmlXQ(chessData);
 	}
 
 	// QQ新中国象棋格式
-	if (parseType == "auto" && RegExp.QQNew.test(chessData) || parseType == "qqnew") {
+	if (parseType === "auto" && RegExp.QQNew.test(chessData) || parseType === "qqnew") {
 		return vs.dataToNode_QQNew(chessData);
 	}
 
 	// 象棋世家格式
-	if (parseType == "auto" && RegExp.ShiJia.test(chessData) || parseType == "shijia") {
+	if (parseType === "auto" && RegExp.ShiJia.test(chessData) || parseType === "shijia") {
 		return vs.dataToNode_ShiJia(chessData);
 	}
 
 	// 标准 PGN 格式
-	if (parseType == "auto" && ~chessData.indexOf('[Game "Chinese Chess"]') || parseType == "pgn") {
+	if (parseType === "auto" && ~chessData.indexOf('[Game "Chinese Chess"]') || parseType === "pgn") {
 		return vs.dataToNode_PGN(chessData);
 	}
 
 	// 中国游戏中心 CCM 格式
-	if (parseType == "auto" && vs.cca(chessData) === 1 || parseType == "ccm") {
+	if (parseType === "auto" && vs.cca(chessData) === 1 || parseType === "ccm") {
 		return vs.dataToNode_CCM(chessData);
 	}
 
@@ -202,35 +202,33 @@ vs.dataToNode_PGN = function(chessData){
 	return result;
 };
 
-// 将东萍象棋 Dhtml 格式转换为棋谱节点树
+// 将东萍象棋 DhtmlXQ 格式转换为棋谱节点树
 vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 	var DhtmlXQ_Comment  = {};
 	var DhtmlXQ_Change   = {};
 	var DhtmlXQ_Start    = "";
 	var DhtmlXQ_MoveList = "";
-	var DhtmlXQ_EachLine = chessData.split("\n");
+	var DhtmlXQ_EachLine = chessData.split("[DhtmlXQ");
 
 	for (var i = 0; i < DhtmlXQ_EachLine.length; ++i) {
-		var l = DhtmlXQ_EachLine[i];
+		var l = "[DhtmlXQ" + DhtmlXQ_EachLine[i];
 
 		if (~l.indexOf("[DhtmlXQ_comment")) {
 			var start	  = l.indexOf("]");
-			var end 	  = l.indexOf("[/DhtmlXQ_comment");
 			var commentId = l.substring(16, start);
 			~commentId.indexOf("_") || (commentId = "0_" + commentId);
-			DhtmlXQ_Comment[commentId] = l.substring(start + 1, end).replace(/\|\|/g, "\n");
+			DhtmlXQ_Comment[commentId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_")).replace(/\|\|/g, "\n");
 		}
 		else if (~l.indexOf("[DhtmlXQ_binit")) {
-			DhtmlXQ_Start = l.substring(l.indexOf("[DhtmlXQ_binit") + 15, l.indexOf("[/DhtmlXQ_binit"));
+			DhtmlXQ_Start = l.substring(l.indexOf("[DhtmlXQ_binit") + 15, l.indexOf("[/DhtmlXQ_"));
 		}
 		else if (~l.indexOf("[DhtmlXQ_movelist")) {
-			DhtmlXQ_MoveList = l.substring(l.indexOf("[DhtmlXQ_movelist") + 18, l.indexOf("[/DhtmlXQ_movelist"));
+			DhtmlXQ_MoveList = l.substring(l.indexOf("[DhtmlXQ_movelist") + 18, l.indexOf("[/DhtmlXQ_"));
 		}
 		else if (~l.indexOf("[DhtmlXQ_move_")) {
 			var start	 = l.indexOf("]");
-			var end 	 = l.indexOf("[/DhtmlXQ_move_");
 			var changeId = l.substring(14, start);
-			DhtmlXQ_Change[changeId] = l.substring(start + 1, end);
+			DhtmlXQ_Change[changeId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_"));
 		}
 	}
 

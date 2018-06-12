@@ -29,8 +29,8 @@ fn.rebuildSituation = function(){
 
 		lastSituation[to  ] = lastSituation[from];
 		lastSituation[from] = 1;
-		lastSituation[0]  = 3  -   lastSituation[0];
-		lastSituation[0] == 1 && ++lastSituation[1];
+		lastSituation[0]    = 3  -   lastSituation[0];
+		lastSituation[0]  === 1 && ++lastSituation[1];
 
 		this.eatStatus.push(vs.countPieceLength(lastSituation) !== prevPieceCount);
 		this.moveList.push(currentNode.move);
@@ -69,7 +69,7 @@ fn.hasMoveAtNode = function(move, step){
 	var nextList = this.selectDefault(vs.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep())).next;
 
 	for (var i=0;i<nextList.length;++i) {
-		if (nextList[i].move == move) {
+		if (nextList[i].move === move) {
 			return true;
 		}
 	}
@@ -89,12 +89,12 @@ fn.setMoveDefaultAtNode = function(move, step){
 	step = vs.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	var currentNode = this.selectDefault(step);
 
-	if (currentNode.next.length && currentNode.next[currentNode.defaultIndex].move == move) {
+	if (currentNode.next.length && currentNode.next[currentNode.defaultIndex].move === move) {
 		return false;
 	}
 
 	for (var i=0;i<currentNode.next.length;++i) {
-		if (currentNode.next[i].move == move) {
+		if (currentNode.next[i].move === move) {
 			currentNode.defaultIndex = i;
 			this.setSaved(false);
 			return true;

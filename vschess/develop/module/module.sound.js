@@ -16,7 +16,7 @@ fn.playSoundBySituation = function(step){
 	var   toPiece = this.situationList[step - 1][vs.i2s[this.getMoveByStep(step).substring(2, 4)]];
 
 	// 播放将杀音效
-	if (this.legalList.length == 0) {
+	if (this.legalList.length === 0) {
 		this.playSound("lose");
 	}
 
@@ -27,7 +27,7 @@ fn.playSoundBySituation = function(step){
 
 	// 播放炮吃子、普通吃子音效
 	else if (toPiece > 1) {
-		(fromPiece & 15) == 6 ? this.playSound("bomb") : this.playSound("eat");
+		(fromPiece & 15) === 6 ? this.playSound("bomb") : this.playSound("eat");
 	}
 
 	// 播放移动棋子音效

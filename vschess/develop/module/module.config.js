@@ -52,13 +52,7 @@ fn.addConfigItem = function(name, text, type, defaultValue, param, action){
 			var _name  = selectList[i].split(":")[0];
 			var _value = selectList[i].split(":")[1];
 			this.configSelect[name].item.push({ name: _name, value: _value });
-
-			if (_value == this.getPlayGap()) {
-				this.configItemM[name].append('<option value="' + _value + '" selected="selected">' + _name + '</option>');
-			}
-			else {
-				this.configItemM[name].append('<option value="' + _value + '">' + _name + '</option>');
-			}
+			this.configItemM [name].append('<option value="' + _value + '">' + _name + '</option>');
 		}
 
 		this.configItemM[name].bind("change", function(){ _this.setConfigItemValue(name, this.value); typeof action === "function" && action(); });
@@ -128,7 +122,7 @@ fn.setConfigItemValue = function(name, value){
 		this.configValue[name] = value;
 
 		for (var i = 0; i < this.configSelect[name].item.length; ++i) {
-			if (this.configSelect[name].item[i].value == value) {
+			if ("" + this.configSelect[name].item[i].value === "" + value) {
 				this.configItemM[name][0].selectedIndex = i;
 				break;
 			}

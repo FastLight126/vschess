@@ -114,7 +114,7 @@ fn.createFormatBar = function(){
 	}
 
 	this.formatBarButton.copy.bind(this.options.click, function(){
-		_this.copy(_this.getCurrentFen(), function(){ _this.showTips("局面复制成功，您可以直接在象棋软件中粘贴使用！"); });
+		_this.copy(_this.getCurrentFen(), function(){ _this.showMessage("局面复制成功，您可以直接在象棋软件中粘贴使用！"); });
 	});
 
 	this.DOM.append(this.formatBar);

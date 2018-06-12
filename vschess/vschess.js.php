@@ -7,6 +7,7 @@ include 'develop/class.JavaScriptPacker.php';
 $version = '2.1.0';
 $developList = scandir('develop/module');
 unset($developList[0], $developList[1]);
+$module[] = 'start.js';
 $module[] = 'main.js';
 
 foreach ($developList as $filename) {
@@ -40,7 +41,7 @@ $jsBegin = '
  * 本程序遵循 GPL 协议
  * https://www.gnu.org/licenses/fdl.html
  *
- * ECCO 开局分类编号系统算法由象棋巫师友情提供，在此表示衷心感谢。
+ * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 '. date('Y年n月j日', $edittime). '
@@ -51,7 +52,6 @@ $jsBegin = '
 
 foreach ($module as $filename) {
 	$code = file_get_contents("develop/module/{$filename}");
-	$code = str_replace('"#RETURN FALSE#"', 'return false', $code);
 	$code = str_replace('#VERSION#', $version, $code);
 	$code = str_replace('#YEAR#', date('Y'), $code);
 	$code = str_replace('http://', 'http:##', $code);
@@ -81,7 +81,7 @@ $jsMainCovert = str_replace('http:##', 'http://', $jsMainCovert);
 $jsMainCovert = str_replace('https:##', 'https://', $jsMainCovert);
 $javascript = trim($jsBegin. "\n\n". trim($jsMainCovert). "\n\n". '})();');
 $packer = new JavaScriptPacker($javascript, 'Normal', true, false); // None, Numeric, Normal, High ASCII
-$packed = "/* Weisi Chess Player V{$version} http://www.xiaxiangqi.com/ Copyright. */\n". trim($packer->pack());
+$packed = "/* Weisi Chess Player V{$version} https://www.xiaxiangqi.com/ Copyright. */\n". trim($packer->pack());
 file_put_contents('vschess.js', $javascript);
 file_put_contents('vschess.min.js', $packed);
 $_GET['pack'] ? print($packed) : print($javascript);
@@ -96,4 +96,3 @@ function mb_str_split($str) {
 
 	return $arr;
 }
-

@@ -20,13 +20,13 @@ vs.moveListToData_PGN = function(moveList, startFen, commentList, infoList, resu
 		pgnText.push("[", vs.info.pgn[i] || vs.fieldNameToCamel(i), ' "', infoList[i], '"]\n');
 	}
 
-	startFen == vs.defaultFen || pgnText.push('[FEN "', startFen, '"]\n');
+	startFen === vs.defaultFen || pgnText.push('[FEN "', startFen, '"]\n');
 	!isICCS ? !isWXF ? null : pgnText.push('[Format "WXF"]\n') : pgnText.push('[Format "ICCS"]\n');
 	pgnText.push(commentList[0] ? "{" + commentList[0] + "}\n" : "");
 
-	if (startFenSplit[1] == "b") {
-		for (var i=0;i<moveList.length;++i) {
-			if (i == 0) {
+	if (startFenSplit[1] === "b") {
+		for (var i = 0; i < moveList.length; ++i) {
+			if (i === 0) {
 				var round = startRound;
 				round = round < 100 ? round < 10 ? "  " + round : " " + round : round;
 				pgnText.push(round, !isICCS ? !isWXF ? ". ………… " : ". .... " : ". ..... ", moveList[i], commentList[i + 1] ? "\n{" + commentList[i + 1] + "}" : "", "\n");
@@ -36,29 +36,29 @@ vs.moveListToData_PGN = function(moveList, startFen, commentList, infoList, resu
 				round = round < 100 ? round < 10 ? "  " + round : " " + round : round;
 				i % 2 && pgnText.push(round, ". ");
 				pgnText.push(moveList[i], commentList[i + 1] ? "\n{" + commentList[i + 1] + "}" : "");
-				commentList[i + 1] && i % 2 && i != moveList.length - 1 && pgnText.push("\n", round, !isICCS ? !isWXF ? ". …………" : ". ...." : ". .....");
+				commentList[i + 1] && i % 2 && i !== moveList.length - 1 && pgnText.push("\n", round, !isICCS ? !isWXF ? ". …………" : ". ...." : ". .....");
 				pgnText.push(i % 2 ? " " : "\n");
 			}
 		}
 	}
 	else {
-		for (var i=0;i<moveList.length;++i) {
+		for (var i = 0; i < moveList.length; ++i) {
 			var round = i / 2 + startRound;
 			round = round < 100 ? round < 10 ? "  " + round : " " + round : round;
 			i % 2 || pgnText.push(round, ". ");
 			pgnText.push(moveList[i], commentList[i + 1] ? "\n{" + commentList[i + 1] + "}" : "");
-			commentList[i + 1] && !(i % 2) && i != moveList.length - 1 && pgnText.push("\n", round, !isICCS ? !isWXF ? ". …………" : ". ...." : ". .....");
+			commentList[i + 1] && !(i % 2) && i !== moveList.length - 1 && pgnText.push("\n", round, !isICCS ? !isWXF ? ". …………" : ". ...." : ". .....");
 			pgnText.push(i % 2 ? "\n" : " ");
 		}
 	}
 
 	pgnText = $.trim(pgnText.join(""));
 
-	if (pgnText.split("").pop() == "}") {
+	if (pgnText.split("").pop() === "}") {
 		pgnText += "\n " + result;
 	}
 	else {
-		(startFenSplit[1] == "b") == (moveList.length % 2) && (pgnText += "\n");
+		(startFenSplit[1] === "b") === !!(moveList.length % 2) && (pgnText += "\n");
 		pgnText += " " + result;
 	}
 
@@ -85,12 +85,12 @@ vs.moveListToText = function(moveList, startFen, commentList, infoList, result){
 		text.push(vs.info.name[i], "：", vs.showText(infoList[i], i), "\n");
 	}
 
-	startFen == vs.defaultFen || text.push("开局 Fen 串：", startFen, "\n");
+	startFen === vs.defaultFen || text.push("开局 Fen 串：", startFen, "\n");
 	text.push(commentList[0] ? "（" + commentList[0] + "）\n" : "");
 
-	if (startFenSplit[1] == "b") {
-		for (var i=0;i<moveList.length;++i) {
-			if (i == 0) {
+	if (startFenSplit[1] === "b") {
+		for (var i = 0; i < moveList.length; ++i) {
+			if (i === 0) {
 				var round = startRound;
 				round = vs.strpad(round, Math.ceil((moveList.length + 1) / 2).toString().length, " ", "left");
 				text.push(round, ". ………… ", moveList[i], commentList[i + 1] ? "\n（" + commentList[i + 1] + "）" : "", "\n");
@@ -106,7 +106,7 @@ vs.moveListToText = function(moveList, startFen, commentList, infoList, result){
 		}
 	}
 	else {
-		for (var i=0;i<moveList.length;++i) {
+		for (var i = 0; i < moveList.length; ++i) {
 			var round = i / 2 + startRound;
 			round = vs.strpad(round, Math.ceil(moveList.length / 2).toString().length, " ", "left");
 			i % 2 || text.push(round, ". ");
@@ -120,11 +120,11 @@ vs.moveListToText = function(moveList, startFen, commentList, infoList, result){
 	var resultStr = vs.showText(result, "result");
 
 	if (resultStr) {
-		if (text.split("").pop() == "）") {
+		if (text.split("").pop() === "）") {
 			text += "\n" + resultStr;
 		}
 		else {
-			(startFenSplit[1] == "b") == (moveList.length % 2) && (text += "\n");
+			(startFenSplit[1] === "b") === !!(moveList.length % 2) && (text += "\n");
 			text += resultStr;
 		}
 	}
@@ -153,26 +153,26 @@ vs.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 		DhtmlXQ.push('[DhtmlXQ_' + (vs.info.DhtmlXQ[i] || i) + ']' + vs.showText(infoList[i], i) + '[/DhtmlXQ_' + (vs.info.DhtmlXQ[i] || i) + ']');
 	}
 
-	for (var i=0;i<90;++i) {
-		var position = i % 9 * 10 + ~~(i / 9);
+	for (var i = 0; i < 90; ++i) {
+		var position = i % 9 * 10 + Math.floor(i / 9);
 		position < 10 && (position = "0" + position);
 
 		switch (pieceEach[i]) {
 			case "K": DhtmlXQ_binit[ 4] = position; break;
 			case "k": DhtmlXQ_binit[20] = position; break;
-			case "R": DhtmlXQ_binit[ 0] == 99 ? DhtmlXQ_binit[ 0] = position : DhtmlXQ_binit[ 8] = position; break;
-			case "N": DhtmlXQ_binit[ 1] == 99 ? DhtmlXQ_binit[ 1] = position : DhtmlXQ_binit[ 7] = position; break;
-			case "B": DhtmlXQ_binit[ 2] == 99 ? DhtmlXQ_binit[ 2] = position : DhtmlXQ_binit[ 6] = position; break;
-			case "A": DhtmlXQ_binit[ 3] == 99 ? DhtmlXQ_binit[ 3] = position : DhtmlXQ_binit[ 5] = position; break;
-			case "C": DhtmlXQ_binit[ 9] == 99 ? DhtmlXQ_binit[ 9] = position : DhtmlXQ_binit[10] = position; break;
-			case "r": DhtmlXQ_binit[16] == 99 ? DhtmlXQ_binit[16] = position : DhtmlXQ_binit[24] = position; break;
-			case "n": DhtmlXQ_binit[17] == 99 ? DhtmlXQ_binit[17] = position : DhtmlXQ_binit[23] = position; break;
-			case "b": DhtmlXQ_binit[18] == 99 ? DhtmlXQ_binit[18] = position : DhtmlXQ_binit[22] = position; break;
-			case "a": DhtmlXQ_binit[19] == 99 ? DhtmlXQ_binit[19] = position : DhtmlXQ_binit[21] = position; break;
-			case "c": DhtmlXQ_binit[25] == 99 ? DhtmlXQ_binit[25] = position : DhtmlXQ_binit[26] = position; break;
+			case "R": DhtmlXQ_binit[ 0] === 99 ? DhtmlXQ_binit[ 0] = position : DhtmlXQ_binit[ 8] = position; break;
+			case "N": DhtmlXQ_binit[ 1] === 99 ? DhtmlXQ_binit[ 1] = position : DhtmlXQ_binit[ 7] = position; break;
+			case "B": DhtmlXQ_binit[ 2] === 99 ? DhtmlXQ_binit[ 2] = position : DhtmlXQ_binit[ 6] = position; break;
+			case "A": DhtmlXQ_binit[ 3] === 99 ? DhtmlXQ_binit[ 3] = position : DhtmlXQ_binit[ 5] = position; break;
+			case "C": DhtmlXQ_binit[ 9] === 99 ? DhtmlXQ_binit[ 9] = position : DhtmlXQ_binit[10] = position; break;
+			case "r": DhtmlXQ_binit[16] === 99 ? DhtmlXQ_binit[16] = position : DhtmlXQ_binit[24] = position; break;
+			case "n": DhtmlXQ_binit[17] === 99 ? DhtmlXQ_binit[17] = position : DhtmlXQ_binit[23] = position; break;
+			case "b": DhtmlXQ_binit[18] === 99 ? DhtmlXQ_binit[18] = position : DhtmlXQ_binit[22] = position; break;
+			case "a": DhtmlXQ_binit[19] === 99 ? DhtmlXQ_binit[19] = position : DhtmlXQ_binit[21] = position; break;
+			case "c": DhtmlXQ_binit[25] === 99 ? DhtmlXQ_binit[25] = position : DhtmlXQ_binit[26] = position; break;
 			case "P": {
-				for (var j=11;j<16;++j) {
-					if (DhtmlXQ_binit[j] == 99) {
+				for (var j = 11; j < 16; ++j) {
+					if (DhtmlXQ_binit[j] === 99) {
 						DhtmlXQ_binit[j] = position;
 						break;
 					}
@@ -181,8 +181,8 @@ vs.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 				break;
 			}
 			case "p": {
-				for (var j=27;j<32;++j) {
-					if (DhtmlXQ_binit[j] == 99) {
+				for (var j = 27; j < 32; ++j) {
+					if (DhtmlXQ_binit[j] === 99) {
 						DhtmlXQ_binit[j] = position;
 						break;
 					}
@@ -211,8 +211,8 @@ vs.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 		node.comment && commentResult.push(["[DhtmlXQ_comment", branchIndex, "_", parentSteps, "]", node.comment.replace(/\n/g, "||"), "[/DhtmlXQ_comment", branchIndex, "_", parentSteps, "]"].join(""));
 
 		while (node.next.length) {
-			for (var i=node.next.length-1;i>=0;--i) {
-				if (i != node.defaultIndex) {
+			for (var i = node.next.length - 1; i >= 0; --i) {
+				if (i !== node.defaultIndex) {
 					branchList.push(node.next[i]);
 					parentIndexList.push(branchIndex);
 					parentStepsList.push(parentSteps + step);
@@ -236,8 +236,8 @@ vs.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 		branchList.length && makeBranch();
 	}
 
-	for (var i=nodeData.next.length-1;i>=0;--i) {
-		if (i != nodeData.defaultIndex) {
+	for (var i = nodeData.next.length - 1; i >= 0; --i) {
+		if (i !== nodeData.defaultIndex) {
 			branchList.push(nodeData.next[i]);
 			parentIndexList.push(0);
 			parentStepsList.push(1);
@@ -259,22 +259,22 @@ vs.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 vs.turn_DhtmlXQ = function(chessData){
 	var DhtmlXQ_EachLine = chessData.split("\n");
 
-	for (var i=0;i<DhtmlXQ_EachLine.length;++i) {
+	for (var i = 0; i < DhtmlXQ_EachLine.length; ++i) {
 		var l = DhtmlXQ_EachLine[i];
 
 		if (~l.indexOf("[DhtmlXQ_binit")) {
-			var startSplit = l.substring(l.indexOf("[DhtmlXQ_binit") + 15, l.indexOf("[/DhtmlXQ_binit")).split("");
+			var startSplit = l.substring(l.indexOf("[DhtmlXQ_binit") + 15, l.indexOf("[/DhtmlXQ_")).split("");
 
-			for (var j=0;j<startSplit.length;j+=2) {
+			for (var j = 0; j < startSplit.length; j += 2) {
 				startSplit[j] < 9 && (startSplit[j] = 8 - startSplit[j]);
 			}
 
 			DhtmlXQ_EachLine[i] = "[DhtmlXQ_binit]" + startSplit.join("") + "[/DhtmlXQ_binit]";
 		}
 		else if (~l.indexOf("[DhtmlXQ_movelist")) {
-			var moveSplit = l.substring(l.indexOf("[DhtmlXQ_movelist") + 18, l.indexOf("[/DhtmlXQ_movelist")).split("");
+			var moveSplit = l.substring(l.indexOf("[DhtmlXQ_movelist") + 18, l.indexOf("[/DhtmlXQ_")).split("");
 
-			for (var j=0;j<moveSplit.length;j+=2) {
+			for (var j = 0; j < moveSplit.length; j += 2) {
 				moveSplit[j] < 9 && (moveSplit[j] = 8 - moveSplit[j]);
 			}
 
@@ -282,11 +282,10 @@ vs.turn_DhtmlXQ = function(chessData){
 		}
 		else if (~l.indexOf("[DhtmlXQ_move_")) {
 			var start		= l.indexOf("]");
-			var end 		= l.indexOf("[/DhtmlXQ_move_");
 			var changeId	= l.substring(14, start);
-			var changeSplit = l.substring(start + 1, end).split("");
+			var changeSplit = l.substring(start + 1, l.indexOf("[/DhtmlXQ_")).split("");
 
-			for (var j=0;j<changeSplit.length;j+=2) {
+			for (var j = 0; j < changeSplit.length; j += 2) {
 				changeSplit[j] < 9 && (changeSplit[j] = 8 - changeSplit[j]);
 			}
 
@@ -302,9 +301,9 @@ vs.nodeToData_PengFei = function(nodeData, infoList, result, isMirror){
 	function getXmlByNode(nodeData, isDefault){
 		var xmlData = ['<n m="', isMirror ? vs.turnMove(nodeData.move) : nodeData.move, '" c="', nodeData.comment.replace(/\"/g, "&quot;"), '"'];
 		isDefault && xmlData.push(' default="true"');
-		xmlData.push('>');
+		xmlData.push(">");
 
-		for (var i=0;i<nodeData.next.length;++i) {
+		for (var i = 0; i < nodeData.next.length; ++i) {
 			xmlData.push(getXmlByNode(nodeData.next[i], nodeData.defaultIndex === i));
 		}
 
@@ -318,14 +317,14 @@ vs.nodeToData_PengFei = function(nodeData, infoList, result, isMirror){
 		xmlData.push(" ", vs.info.pfc[i] || i, '="', infoList[i].replace(/\"/g, "&quot;"), '"');
 	}
 
-	xmlData.push(['>']);
+	xmlData.push(">");
 
-	for (var i=0;i<nodeData.next.length;++i) {
+	for (var i = 0; i < nodeData.next.length; ++i) {
 		xmlData.push(getXmlByNode(nodeData.next[i], nodeData.defaultIndex === i));
 	}
 
 	xmlData.push("</n>");
-	return xmlData.join("").replace(/><\/n>/g, " />");
+	return xmlData.join("").replace(/\"><\/n>/g, '" />');
 };
 
 // 翻转鹏飞象棋 PFC 格式
@@ -334,7 +333,7 @@ vs.turn_PengFei = function(chessData){
 	var end = chessData[1].indexOf('"');
 	chessData[1] = vs.turnFen(chessData[1].substring(0, end)) + chessData[1].substring(end);
 
-	for (i=2;i<chessData.length;++i) {
+	for (i = 2; i < chessData.length; ++i) {
 		chessData[i] = vs.turnMove(chessData[i].substring(0, 4)) + chessData[i].substring(4);
 	}
 
@@ -358,15 +357,14 @@ vs.moveListToData_QQ = function(moveList, isMirror){
 		23, 21, 19, 17, 16, 18, 20, 22, 24
 	];
 
-	for (var i=0;i<moveList.length;++i) {
+	for (var i = 0; i < moveList.length; ++i) {
 		var moveSplit = moveList[i].split("");
 		var from = vs.i2b[moveList[i].substring(0, 2)];
 		var to   = vs.i2b[moveList[i].substring(2, 4)];
 		srcCol = isMirror ? vs.cca(moveSplit[0]) - 97 : 105 - vs.cca(moveSplit[0]);
 		dstCol = isMirror ? vs.cca(moveSplit[2]) - 97 : 105 - vs.cca(moveSplit[2]);
 		result.push(board[from], " 32 ", 1 - i % 2, " ", moveSplit[1], " ", srcCol, " ", moveSplit[3], " ", dstCol, " 0 ", i + 1, " 0 ");
-		board[to  ] = board[from];
-		board[from] = 0;
+		board[to] = board[from];
 	}
 
 	return result.join("");

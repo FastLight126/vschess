@@ -3,7 +3,7 @@ fn.setBoardByStep = function(step){
 	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	var _this = this;
 	this._.currentStep = vs.limit(step, 0, this.lastSituationIndex());
-	this.clearBoard();
+	this.clearBoard(  );
 	this.clearBoard(-1);
 	this.animating = false;
 

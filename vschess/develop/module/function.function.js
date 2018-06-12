@@ -1,6 +1,6 @@
 // 将整数限制在一个特定的范围内
 vs.limit = function(num, min, max, defaultValue){
-	typeof num == "undefined" && typeof defaultValue != "undefined" && (num = defaultValue);
+	typeof num === "undefined" && typeof defaultValue !== "undefined" && (num = defaultValue);
 	min = parseInt(min); isNaN(min) && (min = -Infinity);
 	max = parseInt(max); isNaN(max) && (max =  Infinity);
 	num = parseInt(num); isNaN(num) && (num = 0);
@@ -219,11 +219,11 @@ vs.fieldNameToCamel = function(fieldName){
 	var key = fieldName || "";
 	var keySplit = key.split("");
 
-	if (key.length > 3 && key.substring(0, 3) == "red") {
+	if (key.length > 3 && key.substring(0, 3) === "red") {
 		keySplit[0] = "R";
 		keySplit[3] = keySplit[3].toUpperCase();
 	}
-	else if (key.length > 5 && key.substring(0, 5) == "black") {
+	else if (key.length > 5 && key.substring(0, 5) === "black") {
 		keySplit[0] = "B";
 		keySplit[5] = keySplit[5].toUpperCase();
 	}

@@ -186,7 +186,7 @@ fn.createEditTextarea = function(){
 		_this.editTips.val(currentFen.split(" ")[0] === vs.blankFen.split(" ")[0] ? _this.editTipsText : currentFen);
 	});
 
-	this.editTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode == 13 && _this.editTextarea.blur(); });
+	this.editTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode === 13 && _this.editTextarea.blur(); });
 	return this;
 };
 
@@ -264,7 +264,7 @@ fn.createEditPieceArea = function(){
 			e.preventDefault();
 			return false;
 		});
-	
+
 		this.bind("dragstart", function(e){
 			e.originalEvent.dataTransfer.setData("text", e.originalEvent.target.innerHTML);
 			_this.dragPiece = currentIndex;
@@ -275,6 +275,10 @@ fn.createEditPieceArea = function(){
 		this.bind("drop", function(e) {
 			e.stopPropagation();
 			e.preventDefault();
+			_this.editRemovePiece(_this.dragPiece);
+			_this.fillEditBoard();
+			var currentFen = vs.situationToFen(_this.editSituation);
+			_this.editTips.val(currentFen.split(" ")[0] === vs.blankFen.split(" ")[0] ? _this.editTipsText : currentFen);
 			return false;
 		});
 	});
@@ -421,7 +425,7 @@ fn.editRemoveSelect = function(){
 fn.createRecommendList = function(){
 	var _this = this;
 	this.recommendClass = $('<select class="vschess-recommend-class"></select>');
-	this.recommendList = $('<ul class="vschess-recommend-list"></ul>');
+	this.recommendList  = $('<ul class="vschess-recommend-list"></ul>');
 	this.DOM.append(this.recommendClass);
 	this.DOM.append(this.recommendList );
 	this.recommendClass.bind("change", function(){ _this.fillInRecommendList(this.selectedIndex); });
@@ -590,7 +594,7 @@ fn.createNodeCancelButton = function(){
 fn.createNodeEditTextarea = function(){
 	var _this = this;
 	this.editNodeTextarea = $('<textarea class="vschess-tab-body-edit-node-textarea"></textarea>').appendTo(this.editArea);
-	this.editNodeTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode == 13 && _this.editNodeTextarea.blur(); });
+	this.editNodeTextarea.bind("keydown", function(e){ e.ctrlKey && e.keyCode === 13 && _this.editNodeTextarea.blur(); });
 	return this;
 };
 
@@ -633,14 +637,16 @@ fn.createEditOtherButton = function(){
 					if (!_this.confirm("确定打开该棋谱吗？当前棋谱会丢失！")) {
 						return false;
 					}
-	
-					var RegExp = vs.RegExp();
-					var fileData = new Uint8Array(this.result);
+
+					var RegExp    = vs.RegExp();
+					var fileData  = new Uint8Array(this.result);
 					var chessData = vs.join(fileData);
 					fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vs.iconv2UTF8(fileData));
 					_this.setBoardByStep(0);
 					_this.node = vs.dataToNode(chessData);
-					_this.rebuildSituation().refreshMoveSelectListNode().setBoardByStep(0);
+					_this.rebuildSituation();
+					_this.refreshMoveSelectListNode();
+					_this.setBoardByStep(0);
 					_this.chessInfo = vs.dataToInfo(chessData, "auto");
 					_this.insertInfoByCurrent();
 					_this.refreshInfoEditor();
@@ -672,8 +678,8 @@ fn.createEditOtherButton = function(){
 
 		_this.node = { fen: vs.defaultFen, comment: "", next: [], defaultIndex: 0 };
 		_this.rebuildSituation();
-		_this.setBoardByStep(0);
 		_this.refreshMoveSelectListNode();
+		_this.setBoardByStep(0);
 		_this.chessInfo = {};
 		_this.insertInfoByCurrent();
 		_this.refreshInfoEditor();
@@ -708,7 +714,7 @@ fn.bindDrag = function(){
 	this.DOM.on("dragover", function(e){
 		e.preventDefault();
 	});
-	
+
 	this.DOM.on("drop", function(e){
 		e.preventDefault();
 
@@ -721,13 +727,15 @@ fn.bindDrag = function(){
 					return false;
 				}
 
-				var RegExp = vs.RegExp();
-				var fileData = new Uint8Array(this.result);
+				var RegExp    = vs.RegExp();
+				var fileData  = new Uint8Array(this.result);
 				var chessData = vs.join(fileData);
 				fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vs.iconv2UTF8(fileData));
 				_this.setBoardByStep(0);
 				_this.node = vs.dataToNode(chessData);
-				_this.rebuildSituation().refreshMoveSelectListNode().setBoardByStep(0);
+				_this.rebuildSituation();
+				_this.refreshMoveSelectListNode();
+				_this.setBoardByStep(0);
 				_this.chessInfo = vs.dataToInfo(chessData, "auto");
 				_this.insertInfoByCurrent();
 				_this.refreshInfoEditor();

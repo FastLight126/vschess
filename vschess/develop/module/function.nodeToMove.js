@@ -4,7 +4,7 @@ vs.Node2Chinese = function(move, fen, options){
 	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
 	typeof options === "undefined" && (options = vs.defaultOptions);
 	var w2i = [{ "+": 0, ".": 1, "-": 2 }, { "+": 3, "-": 4, ".": 5 }];
-	var isB = fen.split(" ")[1] == "b", result = "";
+	var isB = fen.split(" ")[1] === "b", result = "";
 	var isWXFMove = ~"+-.".indexOf(move.charAt(2));
 
 	if (isWXFMove) {
@@ -37,10 +37,11 @@ vs.Node2Chinese = function(move, fen, options){
 vs.Node2WXF = function(move, fen){
 	var RegExp = vs.RegExp();
 	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
+	var isB = fen.split(" ")[1] === "b";
 	move = move.toLowerCase();
 
 	// 黑方旋转处理
-	if (fen.split(" ")[1] === "b") {
+	if (isB) {
 		var step	  = vs.roundMove(move);
 		var situation = vs.fenToSituation(vs.roundFen(fen));
 	}
@@ -112,7 +113,7 @@ vs.Node2WXF = function(move, fen){
 		var offset = to - from;
 
 		if (Math.abs(offset) > 15) {
-			result += (offset > 0 ? "-" : "+") + Math.abs(offset) / 16;
+			result += (offset > 0 ? "-" : "+") + Math.abs(offset >> 4);
 		}
 		else {
 			result += "." + toCol;
@@ -124,12 +125,7 @@ vs.Node2WXF = function(move, fen){
 		situation[from]   = 1;
 		situation[0   ]   = 3    - situation[0];
 		situation[0   ] === 1 && ++situation[1];
-
-		if (fen.split(" ")[1] === "b") {
-			return { move: result, movedFen: vs.roundFen(vs.situationToFen(situation)) };
-		}
-
-		return { move: result, movedFen: vs.situationToFen(situation) };
+		return { move: result, movedFen: isB ? vs.roundFen(vs.situationToFen(situation)) : vs.situationToFen(situation) };
 	}
 
 	return { move: "None", movedFen: vs.defaultFen };

@@ -56,7 +56,7 @@ fn.createShareUBB = function(){
 	this.shareUBBTextCopy.appendTo(this.shareUBBTextBox);
 
 	this.shareUBBTextCopy.bind(this.options.click, function(){
-		_this.copy(_this.shareUBBTextInput.val(), function(){ _this.showTips("论坛 UBB 代码复制成功，您可以直接在 BBS 论坛中粘贴使用！"); });
+		_this.copy(_this.shareUBBTextInput.val(), function(){ _this.showMessage("论坛 UBB 代码复制成功，您可以直接在 BBS 论坛中粘贴使用！"); });
 	});
 
 	return this;

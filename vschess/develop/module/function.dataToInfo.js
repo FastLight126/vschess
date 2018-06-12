@@ -83,7 +83,7 @@ vs.dataToInfo_PGN = function(chessData){
 	return resultA;
 };
 
-// 从东萍象棋 Dhtml 格式中抽取棋局信息
+// 从东萍象棋 DhtmlXQ 格式中抽取棋局信息
 vs.dataToInfo_DhtmlXQ = function(chessData){
 	var result = {};
 
@@ -98,12 +98,6 @@ vs.dataToInfo_DhtmlXQ = function(chessData){
 		}
 	}
 
-	switch (result.result) {
-		case "红胜": result.result = "1-0"    ; break;
-		case "黑胜": result.result = "0-1"    ; break;
-		case "和棋": result.result = "1/2-1/2"; break;
-		default    : result.result = "*"      ; break;
-	}
-
+	result.result = vs.dataText(result.result, "result");
 	return result;
 };

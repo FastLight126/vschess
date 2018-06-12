@@ -67,7 +67,7 @@ fn.createInfoEditor = function(){
 	for (var i in vs.info.name) {
 		this.infoEditorItem[i] = $('<li class="vschess-info-editor-item vschess-info-editor-item-' + i + '"></li>');
 		this.infoEditorItemName [i] = $('<div class="vschess-info-editor-item-name vschess-info-editor-item-name-' + i + '">' + vs.info.name[i] + '：</div></li>');
-		this.infoEditorItemValue[i] = $('<input type="' + (i == "date" ? "date" : "text") + '" class="vschess-info-editor-item-value vschess-info-editor-item-value-' + i + '" value="' + vs.dataText(this.chessInfo[i] || "", i) + '" />');
+		this.infoEditorItemValue[i] = $('<input type="' + (i === "date" ? "date" : "text") + '" class="vschess-info-editor-item-value vschess-info-editor-item-value-' + i + '" value="' + vs.dataText(this.chessInfo[i] || "", i) + '" />');
 		this.infoEditorItem[i].append(this.infoEditorItemName [i]);
 		this.infoEditorItem[i].append(this.infoEditorItemValue[i]);
 		this.infoEditorList.append(this.infoEditorItem[i]);
@@ -217,5 +217,5 @@ fn.getResultByCurrent = function(){
 // 自动识别当前分支的对弈结果
 fn.getAutoResultByCurrent = function(){
 	var lastSituation = this.situationList[this.lastSituationIndex()];
-	return !vs.legalList(lastSituation).length ? lastSituation[0] == 1 ? "0-1" : "1-0" : "*";
+	return !vs.legalList(lastSituation).length ? lastSituation[0] === 1 ? "0-1" : "1-0" : "*";
 };

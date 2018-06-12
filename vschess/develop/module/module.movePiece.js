@@ -116,7 +116,7 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 				_this.pieceRotateDeg[from] = Math.random() * 360;
 				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
 
-				typeof callback == "function" && callback();
+				typeof callback === "function" && callback();
 			};
 
 			var deltaX = this.piece.eq(to).position().left - this.piece.eq(from).position().left;

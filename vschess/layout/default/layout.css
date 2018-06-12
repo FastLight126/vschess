@@ -3,7 +3,7 @@
 .vschess-layout-default .vschess-button { width:48px; height:24px; position:relative; display:block; font-size:12px; cursor:pointer; -webkit-appearance:none; border:1px solid #bfbfbf; background-color:#f5f5f5; text-align:center; }
 .vschess-layout-default .vschess-button:hover { border-color:#0078d7; background-color:#e5f1fb; }
 .vschess-layout-default .vschess-loading { width:754px; height:519px; position:absolute; top:0px; left:0px; text-align:center; line-height:519px; font-size:20px; }
-.vschess-layout-default .vschess-copy  { position:absolute; top:-1px; left:-1px; z-index: 0; width:760px; height:30px; border:none; opacity:0; }
+.vschess-layout-default .vschess-copy  { position:absolute; top:-1px; left:-1px; z-index: 0; width:760px; height:30px; border:none; opacity:0; resize:none; }
 .vschess-layout-default .vschess-title { position:absolute; top:-1px; left:-1px; z-index:10; width:760px; height:30px; font-size:16px; color:#fff; line-height:26px; +line-height:28px; background:url(title-bg.png) repeat-x 0px 0px; text-align:center; }
 .vschess-layout-default .vschess-board      { position:absolute; top:53px; left: 2px; z-index:10; }
 .vschess-layout-default .vschess-board-edit { position:absolute; top:53px; left: 2px; z-index:20; display:none; }

@@ -11,7 +11,7 @@ fn.copy = function(str, success){
 	if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported('copy')) {
 		this.copyTextarea.val(str);
 		this.copyTextarea[0].select();
-	
+
 		if (document.execCommand("copy")) {
 			success();
 		}
@@ -36,15 +36,15 @@ fn.copy = function(str, success){
 
 // 创建信息提示框
 fn.createMessageBox = function(){
-	this.copyFinishTips = $('<div class="vschess-message-box"></div>');
-	this.DOM.append(this.copyFinishTips);
+	this.messageBox = $('<div class="vschess-message-box"></div>');
+	this.DOM.append(this.messageBox);
 	return this;
 };
 
 // 显示提示框
-fn.showTips = function(msg){
+fn.showMessage = function(msg){
 	var _this = this;
-	this.copyFinishTips.text(msg).addClass("vschess-message-box-show");
-	setTimeout(function(){ _this.copyFinishTips.removeClass("vschess-message-box-show"); }, 1500);
+	this.messageBox.text(msg).addClass("vschess-message-box-show");
+	setTimeout(function(){ _this.messageBox.removeClass("vschess-message-box-show"); }, 1500);
 	return this;
 };
