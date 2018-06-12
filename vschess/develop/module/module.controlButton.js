@@ -69,7 +69,7 @@ fn.createFormatBar = function(){
 		wxf			: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
 		iccs		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
 		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" class="vschess-format-bar-save-format" />'),
-		saveInput	: $('<textarea name="data" class="vschess-format-bar-save-input"></textarea>')
+		saveInput	: $('<input type="hidden" name="data" class="vschess-format-bar-save-input" />')
 	};
 
 	this.formatBarButton.format.bind(this.options.click, function(){
@@ -114,45 +114,10 @@ fn.createFormatBar = function(){
 	}
 
 	this.formatBarButton.copy.bind(this.options.click, function(){
-		if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported('copy')) {
-			_this.formatBarButton.saveInput.val(_this.getCurrentFen());
-			_this.formatBarButton.saveInput[0].select();
-
-			if (document.execCommand("copy")) {
-				_this.copyFenFinish();
-			}
-			else {
-				prompt("请按 Ctrl+C 复制：", _this.getCurrentFen());
-			}
-		}
-		else if (window.clipboardData) {
-			if (window.clipboardData.setData("Text", _this.getCurrentFen())) {
-				_this.copyFenFinish();
-			}
-			else {
-				prompt("请按 Ctrl+C 复制：", _this.getCurrentFen());
-			}
-		}
-		else {
-			prompt("请按 Ctrl+C 复制：", _this.getCurrentFen());
-		}
+		_this.copy(_this.getCurrentFen(), function(){ _this.showTips("局面复制成功，您可以直接在象棋软件中粘贴使用！"); });
 	});
 
 	this.DOM.append(this.formatBar);
-	return this.createCopyFinishTips().createHelp();
-};
-
-fn.createCopyFinishTips = function(){
-	this.copyFinishTips = $('<div class="vschess-copy-finish">局面复制成功，您可以直接在象棋软件中粘贴使用！</div>');
-	this.DOM.append(this.copyFinishTips);
-	return this;
-};
-
-// 复制成功提示
-fn.copyFenFinish = function(){
-	var _this = this;
-	this.copyFinishTips.addClass("vschess-copy-finish-show");
-	setTimeout(function(){ _this.copyFinishTips.removeClass("vschess-copy-finish-show"); }, 1500);
 	return this;
 };
 

@@ -72,11 +72,14 @@ fn.createBoard = function(){
 	this.initPieceRotateDeg();
 
 	// 其他组件
+	this.createChangeSelectList();
+	this.createMoveSelectList();
+	this.createCopyTextarea();
 	this.createColumnIndex();
 	this.createControlBar();
-	this.createMoveSelectList();
-	this.createChangeSelectList();
+	this.createMessageBox();
 	this.createFormatBar();
+	this.createHelp();
 	this.createTab();
 	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
 	this.chessId  = vs.chessList.length;
