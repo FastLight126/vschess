@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年6月13日
- * Wed, 13 Jun 2018 03:48:59 +0800
+ * Wed, 13 Jun 2018 17:36:26 +0800
  */
 
 (function(){
@@ -904,10 +904,11 @@ vschess.dataToNode_PGN = function(chessData){
 
 // 将东萍象棋 DhtmlXQ 格式转换为棋谱节点树
 vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
-	var DhtmlXQ_Comment  = {};
-	var DhtmlXQ_Change   = {};
-	var DhtmlXQ_Start    = "";
+	var DhtmlXQ_Comment	 = {};
+	var DhtmlXQ_Change	 = {};
+	var DhtmlXQ_Start	 = "";
 	var DhtmlXQ_MoveList = "";
+	var DhtmlXQ_Fen		 = "";
 	var DhtmlXQ_EachLine = chessData.split("[DhtmlXQ");
 
 	for (var i = 0; i < DhtmlXQ_EachLine.length; ++i) {
@@ -930,33 +931,42 @@ vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 			var changeId = l.substring(14, start);
 			DhtmlXQ_Change[changeId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_"));
 		}
+		else if (~l.indexOf("[DhtmlXQ_fen")) {
+			DhtmlXQ_Fen = l.substring(l.indexOf("[DhtmlXQ_fen") + 13, l.indexOf("[/DhtmlXQ_"));
+		}
 	}
 
+	// Fen 串优先
+	if (DhtmlXQ_Fen) {
+		var DhtmlXQ_ToFenFinal = DhtmlXQ_Fen;
+	}
 	// 抽取起始局面，生成起始 Fen 串
-	if (DhtmlXQ_Start) {
-		var DhtmlXQ_ToFen = new Array(91).join("*").split(""), DhtmlXQ_ToFenFinal = [];
-		var DhtmlXQ_ToFenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp".split("");
+	else {
+		if (DhtmlXQ_Start) {
+			var DhtmlXQ_ToFen = new Array(91).join("*").split(""), DhtmlXQ_ToFenFinal = [];
+			var DhtmlXQ_ToFenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp".split("");
 
-		for (var i = 0; i < 32; ++i) {
-			var move = DhtmlXQ_Start.substring(i * 2, i * 2 + 2).split("");
-			DhtmlXQ_ToFen[+move[0] + move[1] * 9] = DhtmlXQ_ToFenPiece[i];
+			for (var i = 0; i < 32; ++i) {
+				var move = DhtmlXQ_Start.substring(i * 2, i * 2 + 2).split("");
+				DhtmlXQ_ToFen[+move[0] + move[1] * 9] = DhtmlXQ_ToFenPiece[i];
+			}
+
+			DhtmlXQ_ToFenFinal = vschess.arrayToFen(DhtmlXQ_ToFen);
+		}
+		else {
+			var DhtmlXQ_ToFenFinal = vschess.defaultFen.split(" ")[0];
+			var DhtmlXQ_ToFen = vschess.fenToArray(DhtmlXQ_ToFenFinal);
 		}
 
-		DhtmlXQ_ToFenFinal = vschess.arrayToFen(DhtmlXQ_ToFen);
-	}
-	else {
-		var DhtmlXQ_ToFenFinal = vschess.defaultFen.split(" ")[0];
-		var DhtmlXQ_ToFen = vschess.fenToArray(DhtmlXQ_ToFenFinal);
-	}
-
-	if (DhtmlXQ_MoveList) {
-		var firstMovePos = DhtmlXQ_MoveList.substring(0, 2).split("");
-		DhtmlXQ_ToFenFinal += vschess.cca(DhtmlXQ_ToFen[+firstMovePos[0] + firstMovePos[1] * 9]) > 96 ? " b - - 0 1" : " w - - 0 1";
-	}
-	else {
-		var checkW = DhtmlXQ_ToFenFinal + " w - - 0 1";
-		var checkB = DhtmlXQ_ToFenFinal + " b - - 0 1";
-		DhtmlXQ_ToFenFinal = vschess.checkFen(checkB).length < vschess.checkFen(checkW).length ? checkB : checkW;
+		if (DhtmlXQ_MoveList) {
+			var firstMovePos = DhtmlXQ_MoveList.substring(0, 2).split("");
+			DhtmlXQ_ToFenFinal += vschess.cca(DhtmlXQ_ToFen[+firstMovePos[0] + firstMovePos[1] * 9]) > 96 ? " b - - 0 1" : " w - - 0 1";
+		}
+		else {
+			var checkW = DhtmlXQ_ToFenFinal + " w - - 0 1";
+			var checkB = DhtmlXQ_ToFenFinal + " b - - 0 1";
+			DhtmlXQ_ToFenFinal = vschess.checkFen(checkB).length < vschess.checkFen(checkW).length ? checkB : checkW;
+		}
 	}
 
 	if (onlyFen) {
@@ -2599,6 +2609,7 @@ vschess.nodeToData_DhtmlXQ = function(nodeData, infoList, isMirror){
 		}
 	}
 
+	DhtmlXQ.push("[DhtmlXQ_fen]"   + nodeData.fen           + "[/DhtmlXQ_fen]"  );
 	DhtmlXQ.push("[DhtmlXQ_binit]" + DhtmlXQ_binit.join("") + "[/DhtmlXQ_binit]");
 	var branchList = [], parentIndexList = [], parentStepsList = [], resultList = [], commentResult = [], branchIndex = 0;
 
