@@ -328,9 +328,10 @@ var vschess = {
 		PGN_WXF : "WXF PGN 格式",
 		PGN_ICCS : "ICCS PGN 格式",
 		PengFei: "鹏飞 PFC 格式",
-		DhtmlXQ: "东萍 DhtmlXQ 格式",
+		DhtmlXQ: "东萍 DhtmlXQ UBB 格式",
 		Text : "文本 TXT 格式",
-		QQ : "ＱＱ CHE 格式"
+		QQ : "ＱＱ CHE 格式",
+		TextBoard: "文字棋盘"
 	},
 
 	// 必须为起始局面才可以导出的棋谱格式列表

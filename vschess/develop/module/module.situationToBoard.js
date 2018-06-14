@@ -19,6 +19,7 @@ fn.setBoardByStep = function(step){
 	this.refreshMoveSelectListNodeColor();
 	this.refreshChangeSelectListNode();
 	this.setCommentByStep();
+	this.getExportFormat() === "TextBoard" && this.setExportFormat("TextBoard");
 	return this;
 };
 

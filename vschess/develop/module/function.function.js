@@ -344,3 +344,61 @@ vs.degToRotateCSS = function(deg){
 		return css;
 	}
 };
+
+// 文字棋盘
+vs.textBoard = function(fen, options) {
+	var RegExp = vs.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
+	typeof options === "undefined" && (options = vs.defaultOptions);
+
+	function piece(f){
+		var pieceId = vs.f2n[f];
+
+		if (pieceId > 32) {
+			return "[" + options.ChineseChar.Piece[(pieceId & 15) + 6] + "]";
+		}
+
+		if (pieceId > 16) {
+			return "(" + options.ChineseChar.Piece[(pieceId & 15) - 1] + ")";
+		}
+
+		return "----";
+	}
+
+	var isB = fen.split(" ")[1] === "b";
+	var board = vs.fenToArray(fen);
+	var text = [isB ? "黑方 走棋方\n\n" : "黑方\n\n"];
+
+	var boardText = [
+		" ┌-", "-┬-", "-┬-", "-┬-", "-┬-", "-┬-", "-┬-", "-┬-", "-┐ ",
+		" ├-", "-┼-", "-┼-", "-┼-", "-※-", "-┼-", "-┼-", "-┼-", "-┤ ",
+		" ├-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┤ ",
+		" ├-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┤ ",
+		" ├-", "-┴-", "-┴-", "-┴-", "-┴-", "-┴-", "-┴-", "-┴-", "-┤ ",
+		" ├-", "-┬-", "-┬-", "-┬-", "-┬-", "-┬-", "-┬-", "-┬-", "-┤ ",
+		" ├-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┤ ",
+		" ├-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┼-", "-┤ ",
+		" ├-", "-┼-", "-┼-", "-┼-", "-※-", "-┼-", "-┼-", "-┼-", "-┤ ",
+		" └-", "-┴-", "-┴-", "-┴-", "-┴-", "-┴-", "-┴-", "-┴-", "-┘ "
+	];
+
+	var insertLine = ["",
+		"\n │  │  │  │＼│／│  │  │  │ \n",
+		"\n │  │  │  │／│＼│  │  │  │ \n",
+		"\n │  │  │  │  │  │  │  │  │ \n",
+		"\n │  │  │  │  │  │  │  │  │ \n",
+		"\n │    楚  河          汉  界    │ \n",
+		"\n │  │  │  │  │  │  │  │  │ \n",
+		"\n │  │  │  │  │  │  │  │  │ \n",
+		"\n │  │  │  │＼│／│  │  │  │ \n",
+		"\n │  │  │  │／│＼│  │  │  │ \n"
+	];
+
+	for (var i = 0; i < 90; ++i) {
+		i % 9 === 0 && text.push(insertLine[i / 9]);
+		text.push(board[i] === "*" ? boardText[i] : piece(board[i]));
+	}
+
+	text.push(isB ? "\n\n红方" : "\n\n红方 走棋方");
+	return text.join("").replace(/--/g, "─");
+};

@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月13日
- * Wed, 13 Jun 2018 17:36:26 +0800
+ * 最后修改日期：北京时间 2018年6月15日
+ * Fri, 15 Jun 2018 02:35:27 +0800
  */
 
 (function(){
@@ -369,9 +369,10 @@ var vschess = {
 		PGN_WXF : "WXF PGN \u683c\u5f0f",
 		PGN_ICCS : "ICCS PGN \u683c\u5f0f",
 		PengFei: "\u9e4f\u98de PFC \u683c\u5f0f",
-		DhtmlXQ: "\u4e1c\u840d DhtmlXQ \u683c\u5f0f",
+		DhtmlXQ: "\u4e1c\u840d DhtmlXQ UBB \u683c\u5f0f",
 		Text : "\u6587\u672c TXT \u683c\u5f0f",
-		QQ : "\uff31\uff31 CHE \u683c\u5f0f"
+		QQ : "\uff31\uff31 CHE \u683c\u5f0f",
+		TextBoard: "\u6587\u5b57\u68cb\u76d8"
 	},
 
 	// 必须为起始局面才可以导出的棋谱格式列表
@@ -1432,6 +1433,64 @@ vschess.degToRotateCSS = function(deg){
 		css += "-webkit-transform:rotate(" + deg + "deg);";
 		return css;
 	}
+};
+
+// 文字棋盘
+vschess.textBoard = function(fen, options) {
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
+	typeof options === "undefined" && (options = vschess.defaultOptions);
+
+	function piece(f){
+		var pieceId = vschess.f2n[f];
+
+		if (pieceId > 32) {
+			return "[" + options.ChineseChar.Piece[(pieceId & 15) + 6] + "]";
+		}
+
+		if (pieceId > 16) {
+			return "(" + options.ChineseChar.Piece[(pieceId & 15) - 1] + ")";
+		}
+
+		return "----";
+	}
+
+	var isB = fen.split(" ")[1] === "b";
+	var board = vschess.fenToArray(fen);
+	var text = [isB ? "\u9ed1\u65b9 \u8d70\u68cb\u65b9\n\n" : "\u9ed1\u65b9\n\n"];
+
+	var boardText = [
+		" \u250c-", "-\u252c-", "-\u252c-", "-\u252c-", "-\u252c-", "-\u252c-", "-\u252c-", "-\u252c-", "-\u2510 ",
+		" \u251c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u203b-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u2524 ",
+		" \u251c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u2524 ",
+		" \u251c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u2524 ",
+		" \u251c-", "-\u2534-", "-\u2534-", "-\u2534-", "-\u2534-", "-\u2534-", "-\u2534-", "-\u2534-", "-\u2524 ",
+		" \u251c-", "-\u252c-", "-\u252c-", "-\u252c-", "-\u252c-", "-\u252c-", "-\u252c-", "-\u252c-", "-\u2524 ",
+		" \u251c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u2524 ",
+		" \u251c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u2524 ",
+		" \u251c-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u203b-", "-\u253c-", "-\u253c-", "-\u253c-", "-\u2524 ",
+		" \u2514-", "-\u2534-", "-\u2534-", "-\u2534-", "-\u2534-", "-\u2534-", "-\u2534-", "-\u2534-", "-\u2518 "
+	];
+
+	var insertLine = ["",
+		"\n \u2502  \u2502  \u2502  \u2502\uff3c\u2502\uff0f\u2502  \u2502  \u2502  \u2502 \n",
+		"\n \u2502  \u2502  \u2502  \u2502\uff0f\u2502\uff3c\u2502  \u2502  \u2502  \u2502 \n",
+		"\n \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502 \n",
+		"\n \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502 \n",
+		"\n \u2502    \u695a  \u6cb3          \u6c49  \u754c    \u2502 \n",
+		"\n \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502 \n",
+		"\n \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502  \u2502 \n",
+		"\n \u2502  \u2502  \u2502  \u2502\uff3c\u2502\uff0f\u2502  \u2502  \u2502  \u2502 \n",
+		"\n \u2502  \u2502  \u2502  \u2502\uff0f\u2502\uff3c\u2502  \u2502  \u2502  \u2502 \n"
+	];
+
+	for (var i = 0; i < 90; ++i) {
+		i % 9 === 0 && text.push(insertLine[i / 9]);
+		text.push(board[i] === "*" ? boardText[i] : piece(board[i]));
+	}
+
+	text.push(isB ? "\n\n\u7ea2\u65b9" : "\n\n\u7ea2\u65b9 \u8d70\u68cb\u65b9");
+	return text.join("").replace(/--/g, "\u2500");
 };
 
 // GBK 转 UTF-8
@@ -5276,8 +5335,9 @@ vschess.load.prototype.createExport = function(){
 	this.exportArea     = $('<form method="post" action="' + this.options.cloudApi.saveBook + '" class="vschess-tab-body vschess-tab-body-export"></form>');
 	this.exportTextarea = $('<textarea class="vschess-tab-body-export-textarea" readonly="readonly" name="data"></textarea>').appendTo(this.exportArea);
 	this.exportFormat   = $('<select class="vschess-tab-body-export-format" name="format"></select>').appendTo(this.exportArea);
-	this.exportGenerate = $('<input type="button" class="vschess-button vschess-tab-body-export-generate" value="\u751f \u6210" />').appendTo(this.exportArea);
-	this.exportDownload = $('<input type="submit" class="vschess-button vschess-tab-body-export-download vschess-tab-body-export-current" value="\u4fdd \u5b58" />').appendTo(this.exportArea);
+	this.exportGenerate = $('<input type="button" class="vschess-button vschess-tab-body-export-generate" value="\u751f\u6210\u68cb\u8c31" />').appendTo(this.exportArea);
+	this.exportCopy     = $('<input type="button" class="vschess-button vschess-tab-body-export-copy     vschess-tab-body-export-current" value="\u590d\u5236" />').appendTo(this.exportArea);
+	this.exportDownload = $('<input type="submit" class="vschess-button vschess-tab-body-export-download vschess-tab-body-export-current" value="\u4fdd\u5b58" />').appendTo(this.exportArea);
 	this.exportData     = {};
 	this.tabArea.children(".vschess-tab-title-export, .vschess-tab-body-export").remove();
 	this.tabArea.append(this.exportTitle);
@@ -5302,11 +5362,13 @@ vschess.load.prototype.createExportList = function(){
 	this.exportFormat.bind("change", function(){
 		if (_this.getNodeLength() >= 10000 && (this.value === "PengFei" || this.value === "DhtmlXQ")) {
 			_this.exportDownload.removeClass("vschess-tab-body-export-current");
+			_this.exportCopy    .removeClass("vschess-tab-body-export-current");
 			_this.exportGenerate.   addClass("vschess-tab-body-export-current");
 			_this.setExportFormat(this.value, "");
 		}
 		else {
 			_this.exportGenerate.removeClass("vschess-tab-body-export-current");
+			_this.exportCopy    .   addClass("vschess-tab-body-export-current");
 			_this.exportDownload.   addClass("vschess-tab-body-export-current");
 			_this.setExportFormat(this.value);
 		}
@@ -5325,11 +5387,16 @@ vschess.load.prototype.createExportList = function(){
 				case "PengFei": _this.rebuildExportPengFei(); _this.setExportFormat("PengFei", true); break;
 				default       : _this.rebuildExportDhtmlXQ(); _this.setExportFormat("DhtmlXQ", true); break;
 			}
-	
+
 			_this.exportGenerate.removeClass("vschess-tab-body-export-current");
 			_this.exportDownload.   addClass("vschess-tab-body-export-current");
+			_this.exportCopy    .   addClass("vschess-tab-body-export-current");
 			generating = false;
 		}, vschess.threadTimeout);
+	});
+
+	this.exportCopy.bind(this.options.click, function(){
+		_this.copy(_this.exportTextarea.val(), function(){ _this.showMessage("\u68cb\u8c31\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u7c98\u8d34\u4f7f\u7528\uff01"); });
 	});
 
 	return this;
@@ -5344,15 +5411,24 @@ vschess.load.prototype.getExportFormat = function(){
 vschess.load.prototype.setExportFormat = function(format, force){
 	format = format || this.getExportFormat();
 	this._.exportFormat = vschess.exportFormatList[format] ? format : this.getExportFormat();
+	this.exportTextarea.removeClass().addClass("vschess-tab-body-export-textarea vschess-tab-body-export-textarea-format-" + format);
 
-	if (this.getNodeLength() >= 10000 && (format === "PengFei" || format === "DhtmlXQ") && !force) {
+	if (format === "TextBoard") {
+		this.exportGenerate.removeClass("vschess-tab-body-export-current");
+		this.exportCopy    .   addClass("vschess-tab-body-export-current");
+		this.exportDownload.   addClass("vschess-tab-body-export-current");
+		this.exportTextarea.val(vschess.textBoard(this.getCurrentFen(), this.options));
+	}
+	else if ((format === "PengFei" || format === "DhtmlXQ") && !force && this.getNodeLength() >= 10000) {
 		// 大棋谱需要加参数才同步
+		this.exportCopy    .removeClass("vschess-tab-body-export-current");
 		this.exportDownload.removeClass("vschess-tab-body-export-current");
 		this.exportGenerate.   addClass("vschess-tab-body-export-current");
 		this.exportTextarea.val("\u8bf7\u70b9\u51fb\u201d\u751f\u6210\u201c\u6309\u94ae\u751f\u6210\u68cb\u8c31\u3002");
 	}
 	else {
 		this.exportGenerate.removeClass("vschess-tab-body-export-current");
+		this.exportCopy    .   addClass("vschess-tab-body-export-current");
 		this.exportDownload.   addClass("vschess-tab-body-export-current");
 		this.exportTextarea.val(this.exportData[this.getExportFormat() + (this.getTurnForMove() ? "M" : "")]);
 	}
@@ -5457,7 +5533,7 @@ vschess.load.prototype.hideExportFormatIfNeedStart = function(){
 		}
 	}
 	else {
-		for (var i=0;i<vschess.exportFormatListIfNeedStart.length;++i) {
+		for (var i = 0; i < vschess.exportFormatListIfNeedStart.length; ++i) {
 			this.exportFormatOptions[vschess.exportFormatListIfNeedStart[i]].hide();
 		}
 	}
@@ -6237,7 +6313,7 @@ vschess.load.prototype.selectDefault = function(step){
 vschess.load.prototype.hasMoveAtNode = function(move, step){
 	var nextList = this.selectDefault(vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep())).next;
 
-	for (var i=0;i<nextList.length;++i) {
+	for (var i = 0; i < nextList.length; ++i) {
 		if (nextList[i].move === move) {
 			return true;
 		}
@@ -6532,6 +6608,7 @@ vschess.load.prototype.setBoardByStep = function(step){
 	this.refreshMoveSelectListNodeColor();
 	this.refreshChangeSelectListNode();
 	this.setCommentByStep();
+	this.getExportFormat() === "TextBoard" && this.setExportFormat("TextBoard");
 	return this;
 };
 

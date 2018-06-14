@@ -68,7 +68,7 @@ fn.selectDefault = function(step){
 fn.hasMoveAtNode = function(move, step){
 	var nextList = this.selectDefault(vs.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep())).next;
 
-	for (var i=0;i<nextList.length;++i) {
+	for (var i = 0; i < nextList.length; ++i) {
 		if (nextList[i].move === move) {
 			return true;
 		}

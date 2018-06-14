@@ -82,10 +82,13 @@
 .vschess-layout-default .vschess-tab-body-edit-area       { position:absolute; width:160px; height:160px; top: 95px; left:  7px; display:none; }
 .vschess-layout-default .vschess-tab-body-edit-area .vschess-piece { -khtml-user-drag:element; -moz-user-select:none; }
 .vschess-layout-default .vschess-tab-body-edit-current    { display:block; }
-.vschess-layout-default .vschess-tab-body-export-format   { position:absolute; width:134px; height: 24px; top:  2px; left:  0px; font-size:12px; }
-.vschess-layout-default .vschess-tab-body-export-generate { position:absolute; width: 48px; height: 24px; top:  2px; left:136px; font-size:12px; display:none; }
-.vschess-layout-default .vschess-tab-body-export-download { position:absolute; width: 48px; height: 24px; top:  2px; left:136px; font-size:12px; display:none; }
-.vschess-layout-default .vschess-tab-body-export-textarea { position:absolute; width:174px; height:282px; top: 28px; left:  0px; font-size:12px; background-color:transparent; border:none; +border:1px solid none; outline:none; resize:none; overflow-x:hidden; overflow-y:auto; +margin-top:-1px; +margin-bottom:-1px; padding:5px; line-height:20px; }
+.vschess-layout-default .vschess-tab-body-export          { overflow:visible; }
+.vschess-layout-default .vschess-tab-body-export-format   { position:absolute; width:108px; height: 24px; top:  2px; left:  0px; font-size:12px; }
+.vschess-layout-default .vschess-tab-body-export-copy     { position:absolute; width: 36px; height: 24px; top:  2px; left:110px; font-size:12px; z-index:1; display:none; }
+.vschess-layout-default .vschess-tab-body-export-generate { position:absolute; width: 74px; height: 24px; top:  2px; left:110px; font-size:12px; z-index:1; display:none; }
+.vschess-layout-default .vschess-tab-body-export-download { position:absolute; width: 36px; height: 24px; top:  2px; left:148px; font-size:12px; z-index:1; display:none; }
+.vschess-layout-default .vschess-tab-body-export-textarea { position:absolute; width:174px; height:282px; top: 28px; left:  0px; font-size:12px; z-index:0; background-color:transparent; border:none; +border:1px solid none; outline:none; resize:none; overflow-x:hidden; overflow-y:auto; +margin-top:-1px; +margin-bottom:-1px; padding:5px; line-height:20px; }
+.vschess-layout-default .vschess-tab-body-export-textarea-format-TextBoard { font-family:SimSun; width:230px; height:276px; line-height:12px; top:25px; padding:11px 0; text-align:center; overflow:hidden; background:#fff url(export-textboard-line.png) no-repeat right center; }
 .vschess-layout-default .vschess-tab-body-export-current  { display:block; }
 .vschess-layout-default .vschess-tab-body-config-list { position:absolute; width:174px; height:312px; top:0px; left:0px; padding:5px; overflow-y:auto; }
 .vschess-layout-default .vschess-tab-body-config-item { position:relative; width:174px; height: 20px; line-height:20px; font-size:12px; margin-bottom:5px; }
@@ -174,4 +177,5 @@
 .vschess-layout-default[data-vschess-dpr="2"] .vschess-tab-body-edit-start-player span { width:111px; height:19px; background-image:url(start-dpr-2.png); background-size:100% 100%; }
 .vschess-layout-default[data-vschess-dpr="2"] .vschess-tab-body-edit-start-player-black span { background-position:-43px 0px; }
 .vschess-layout-default[data-vschess-dpr="2"] .vschess-tab-body-share-text-input { height:23.5px; border-bottom-width:0.5px; }
+.vschess-layout-default[data-vschess-dpr="2"] .vschess-tab-body-export-textarea-format-TextBoard { background-image:url(export-textboard-line-dpr-2.png); background-size:auto 100%; }
 .vschess-layout-default[data-vschess-dpr="2"] .vschess-message-box { top:243px; }
