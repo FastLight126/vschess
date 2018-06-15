@@ -30,7 +30,7 @@ fn.createExportList = function(){
 	}
 
 	this.exportFormat.bind("change", function(){
-		if (_this.getNodeLength() >= 10000 && (this.value === "PengFei" || this.value === "DhtmlXQ")) {
+		if (_this.getNodeLength() >= vs.bigBookCritical && (this.value === "PengFei" || this.value === "DhtmlXQ")) {
 			_this.exportDownload.removeClass("vschess-tab-body-export-current");
 			_this.exportCopy    .removeClass("vschess-tab-body-export-current");
 			_this.exportGenerate.   addClass("vschess-tab-body-export-current");
@@ -89,12 +89,12 @@ fn.setExportFormat = function(format, force){
 		this.exportDownload.   addClass("vschess-tab-body-export-current");
 		this.exportTextarea.val(vs.textBoard(this.getCurrentFen(), this.options));
 	}
-	else if ((format === "PengFei" || format === "DhtmlXQ") && !force && this.getNodeLength() >= 10000) {
+	else if ((format === "PengFei" || format === "DhtmlXQ") && !force && this.getNodeLength() >= vs.bigBookCritical) {
 		// 大棋谱需要加参数才同步
 		this.exportCopy    .removeClass("vschess-tab-body-export-current");
 		this.exportDownload.removeClass("vschess-tab-body-export-current");
 		this.exportGenerate.   addClass("vschess-tab-body-export-current");
-		this.exportTextarea.val("请点击”生成“按钮生成棋谱。");
+		this.exportTextarea.val("请点击“生成”按钮生成棋谱。");
 	}
 	else {
 		this.exportGenerate.removeClass("vschess-tab-body-export-current");
@@ -114,8 +114,8 @@ fn.rebuildExportAll = function(all){
 	this.rebuildExportQQ();
 
 	// 大棋谱生成东萍 DhtmlXQ 格式和鹏飞 PFC 格式比较拖性能
-	(nodeLength < 10000 || all) && this.rebuildExportPengFei();
-	(nodeLength < 10000 || all) && this.rebuildExportDhtmlXQ();
+	(nodeLength < vs.bigBookCritical || all) && this.rebuildExportPengFei();
+	(nodeLength < vs.bigBookCritical || all) && this.rebuildExportDhtmlXQ();
 
 	this.hideExportFormatIfNeedStart();
 	return this;
@@ -141,7 +141,7 @@ fn.rebuildExportPGN_Chinese = function(){
 };
 
 // 重建 WXF PGN 格式棋谱
-fn.rebuildExportPGN_WXF = function(turn){
+fn.rebuildExportPGN_WXF = function(){
 	var moveList  = this.moveNameList.WXF .slice(0);
 	var moveListM = this.moveNameList.WXFM.slice(0);
 	var startFen  = moveList .shift();
@@ -152,7 +152,7 @@ fn.rebuildExportPGN_WXF = function(turn){
 };
 
 // 重建 ICCS PGN 格式棋谱
-fn.rebuildExportPGN_ICCS = function(turn){
+fn.rebuildExportPGN_ICCS = function(){
 	var moveList  = this.moveNameList.ICCS .slice(0);
 	var moveListM = this.moveNameList.ICCSM.slice(0);
 	var startFen  = moveList .shift();

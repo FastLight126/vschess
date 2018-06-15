@@ -148,23 +148,23 @@ vs.WXF2Node = function(move, fen){
 			case "-1": to = 171; from && (from = 137); break;
 			case "+9": to = 163; from && (from = 197); break;
 			case "-9": to = 163; from && (from = 133); break;
-			case "+3": to = 137; break;
-			case "-3": to = 201; break;
-			case "+7": to = 133; break;
-			case "-7": to = 197; break;
-			case "+5": to = 167; from && from < 195 && (from += 64); break;
-			case "-5": to = 167; from && from > 139 && (from -= 64); break;
+			case "+3": to = 137; from && (from = from === 167 ? 167 : 171); break;
+			case "-3": to = 201; from && (from = from === 167 ? 167 : 171); break;
+			case "+7": to = 133; from && (from = from === 167 ? 167 : 163); break;
+			case "-7": to = 197; from && (from = from === 167 ? 167 : 163); break;
+			case "+5": to = 167; from &&  from < 195 && (from += 64); break;
+			case "-5": to = 167; from &&  from > 139 && (from -= 64); break;
 		}
 	}
 	// 仕士
 	else if (situation[from] === A) {
 		switch (moveSplit[2] + moveSplit[3]) {
-			case "+4": to = 168; break;
-			case "-4": to = 200; break;
-			case "+6": to = 166; break;
-			case "-6": to = 198; break;
-			case "+5": to = 183; from && from < 195 && (from += 32); break;
-			case "-5": to = 183; from && from > 171 && (from -= 32); break;
+			case "+4": to = 168; from && (from = 183); break;
+			case "-4": to = 200; from && (from = 183); break;
+			case "+6": to = 166; from && (from = 183); break;
+			case "-6": to = 198; from && (from = 183); break;
+			case "+5": to = 183; from &&  from < 195 && (from += 32); break;
+			case "-5": to = 183; from &&  from > 171 && (from -= 32); break;
 		}
 	}
 	// 车帅将炮兵卒

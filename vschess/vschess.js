@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年6月15日
- * Fri, 15 Jun 2018 02:35:27 +0800
+ * Fri, 15 Jun 2018 17:55:53 +0800
  */
 
 (function(){
@@ -313,6 +313,9 @@ var vschess = {
 	// 伪线程延时，20 为宜
 	threadTimeout: 20,
 
+	// 大棋谱生成东萍和鹏飞格式节点数临界点
+	bigBookCritical: 10000,
+
 	// 页面 Device Pixel Ratio
 	dpr: window.devicePixelRatio || 1,
 
@@ -563,6 +566,7 @@ vschess.defaultOptions.help += '<h2>9.&ensp;&ensp;\u7f16\u8f91\u5c40\u9762\u4f1a
 vschess.defaultOptions.help += '<h2>10.&ensp;\u7f16\u8f91\u5c40\u9762\u6807\u7b7e\u4e2d\uff0c\u53ef\u4ee5\u76f4\u63a5\u6253\u5f00\u7535\u8111\u4e2d\u7684\u68cb\u8c31\uff0c\u4e5f\u53ef\u4ee5\u76f4\u63a5\u5c06\u68cb\u8c31\u6587\u4ef6\u62d6\u62fd\u5230\u672c\u68cb\u76d8\u4e0a\u3002</h2>';
 vschess.defaultOptions.help += '<h2>11.&ensp;\u652f\u6301\u4e1c\u840d\u3001\u9e4f\u98de\u3001\u8c61\u68cb\u4e16\u5bb6\u3001\u6807\u51c6PGN\u3001\u4e2d\u56fd\u6e38\u620f\u4e2d\u5fc3\u3001QQ\u8c61\u68cb\u7b49\u683c\u5f0f\uff0c\u5176\u4ed6\u683c\u5f0f\u7a0b\u5e8f\u4e5f\u4f1a\u5c1d\u8bd5\u81ea\u52a8\u8bc6\u522b\u3002</h2>';
 vschess.defaultOptions.help += '<h2>12.&ensp;\u68cb\u76d8\u9009\u9879\u4e2d\uff0c\u53ef\u4ee5\u63a7\u5236\u68cb\u76d8\u65b9\u5411\u3001\u64ad\u653e\u901f\u5ea6\u3001\u8d70\u5b50\u58f0\u97f3\u7b49\u3002</h2>';
+vschess.defaultOptions.help += '<h2>13.&ensp;\u68cb\u8c31\u5206\u4eab\u529f\u80fd\u751f\u6210\u7684\u8bba\u575b UBB \u4ee3\u7801\uff0c\u53ef\u4ee5\u5728\u652f\u6301\u8be5\u4ee3\u7801\u7684\u8bba\u575b\u4e2d\u4f7f\u7528\u3002<a href="https://www.xiaxiangqi.com/" target="_blank">\u3010\u67e5\u770b\u90fd\u6709\u54ea\u4e9b\u8bba\u575b\u652f\u6301\u8be5\u4ee3\u7801\u3011</a></h2>';
 vschess.defaultOptions.help += '<hr />';
 vschess.defaultOptions.help += '<h2><a href="https://www.xiaxiangqi.com/" target="_blank">\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V' + vschess.version + '</a> <a href="https://margin.top/" target="_blank">Margin.Top &copy; \u7248\u6743\u6240\u6709</a></h2>';
 
@@ -1499,7 +1503,7 @@ vschess.GBK2UTF8 = function(array){
 
 	var result = [];
 
-	for (var i=0;i<array.length;) {
+	for (var i = 0; i < array.length; ) {
 		var k = array[i];
 
 		if (k < 128) {
@@ -1523,7 +1527,7 @@ vschess.GBK2UTF8 = function(array){
 vschess.UTF8 = function(array){
 	var result = [];
 
-	for (var i=0;i<array.length;++i) {
+	for (var i = 0; i < array.length; ++i) {
 		if (array[i] < 16) {
 			result.push("%0", array[i].toString(16));
 		}
@@ -1537,7 +1541,7 @@ vschess.UTF8 = function(array){
 
 // 检测是否为 UTF-8 编码
 vschess.detectUTF8 = function(array){
-	for (var i=0;i<array.length;) {
+	for (var i = 0; i < array.length; ) {
 		var k = array[i];
 
 		if (k < 128 || k === 255) {
@@ -1546,12 +1550,12 @@ vschess.detectUTF8 = function(array){
 		else {
 			var length = k.toString(2).indexOf("0");
 
-			for (var j=1;j<length;++j) {
+			for (var j = 1; j < length; ++j) {
 				if (array[i + j] >> 6 !== 2) {
 					return false;
 				}
 			}
-	
+
 			i += length;
 		}
 	}
@@ -1561,19 +1565,14 @@ vschess.detectUTF8 = function(array){
 
 // 将 ArrayBuffer 转换为 UTF-8 字符串
 vschess.iconv2UTF8 = function(array){
-	if (vschess.detectUTF8(array)) {
-		return vschess.UTF8(array);
-	}
-	else {
-		return vschess.GBK2UTF8(array);
-	}
+	return vschess.detectUTF8(array) ? vschess.UTF8(array) : vschess.GBK2UTF8(array);
 };
 
 // 简单合并，不做处理
 vschess.join = function(array){
 	var result = [];
 
-	for (var i=0;i<array.length;++i) {
+	for (var i = 0; i < array.length; ++i) {
 		result.push(vschess.fcc(array[i]));
 	}
 
@@ -2359,23 +2358,23 @@ vschess.WXF2Node = function(move, fen){
 			case "-1": to = 171; from && (from = 137); break;
 			case "+9": to = 163; from && (from = 197); break;
 			case "-9": to = 163; from && (from = 133); break;
-			case "+3": to = 137; break;
-			case "-3": to = 201; break;
-			case "+7": to = 133; break;
-			case "-7": to = 197; break;
-			case "+5": to = 167; from && from < 195 && (from += 64); break;
-			case "-5": to = 167; from && from > 139 && (from -= 64); break;
+			case "+3": to = 137; from && (from = from === 167 ? 167 : 171); break;
+			case "-3": to = 201; from && (from = from === 167 ? 167 : 171); break;
+			case "+7": to = 133; from && (from = from === 167 ? 167 : 163); break;
+			case "-7": to = 197; from && (from = from === 167 ? 167 : 163); break;
+			case "+5": to = 167; from &&  from < 195 && (from += 64); break;
+			case "-5": to = 167; from &&  from > 139 && (from -= 64); break;
 		}
 	}
 	// 仕士
 	else if (situation[from] === A) {
 		switch (moveSplit[2] + moveSplit[3]) {
-			case "+4": to = 168; break;
-			case "-4": to = 200; break;
-			case "+6": to = 166; break;
-			case "-6": to = 198; break;
-			case "+5": to = 183; from && from < 195 && (from += 32); break;
-			case "-5": to = 183; from && from > 171 && (from -= 32); break;
+			case "+4": to = 168; from && (from = 183); break;
+			case "-4": to = 200; from && (from = 183); break;
+			case "+6": to = 166; from && (from = 183); break;
+			case "-6": to = 198; from && (from = 183); break;
+			case "+5": to = 183; from &&  from < 195 && (from += 32); break;
+			case "-5": to = 183; from &&  from > 171 && (from -= 32); break;
 		}
 	}
 	// 车帅将炮兵卒
@@ -5360,7 +5359,7 @@ vschess.load.prototype.createExportList = function(){
 	}
 
 	this.exportFormat.bind("change", function(){
-		if (_this.getNodeLength() >= 10000 && (this.value === "PengFei" || this.value === "DhtmlXQ")) {
+		if (_this.getNodeLength() >= vschess.bigBookCritical && (this.value === "PengFei" || this.value === "DhtmlXQ")) {
 			_this.exportDownload.removeClass("vschess-tab-body-export-current");
 			_this.exportCopy    .removeClass("vschess-tab-body-export-current");
 			_this.exportGenerate.   addClass("vschess-tab-body-export-current");
@@ -5419,12 +5418,12 @@ vschess.load.prototype.setExportFormat = function(format, force){
 		this.exportDownload.   addClass("vschess-tab-body-export-current");
 		this.exportTextarea.val(vschess.textBoard(this.getCurrentFen(), this.options));
 	}
-	else if ((format === "PengFei" || format === "DhtmlXQ") && !force && this.getNodeLength() >= 10000) {
+	else if ((format === "PengFei" || format === "DhtmlXQ") && !force && this.getNodeLength() >= vschess.bigBookCritical) {
 		// 大棋谱需要加参数才同步
 		this.exportCopy    .removeClass("vschess-tab-body-export-current");
 		this.exportDownload.removeClass("vschess-tab-body-export-current");
 		this.exportGenerate.   addClass("vschess-tab-body-export-current");
-		this.exportTextarea.val("\u8bf7\u70b9\u51fb\u201d\u751f\u6210\u201c\u6309\u94ae\u751f\u6210\u68cb\u8c31\u3002");
+		this.exportTextarea.val("\u8bf7\u70b9\u51fb\u201c\u751f\u6210\u201d\u6309\u94ae\u751f\u6210\u68cb\u8c31\u3002");
 	}
 	else {
 		this.exportGenerate.removeClass("vschess-tab-body-export-current");
@@ -5444,8 +5443,8 @@ vschess.load.prototype.rebuildExportAll = function(all){
 	this.rebuildExportQQ();
 
 	// 大棋谱生成东萍 DhtmlXQ 格式和鹏飞 PFC 格式比较拖性能
-	(nodeLength < 10000 || all) && this.rebuildExportPengFei();
-	(nodeLength < 10000 || all) && this.rebuildExportDhtmlXQ();
+	(nodeLength < vschess.bigBookCritical || all) && this.rebuildExportPengFei();
+	(nodeLength < vschess.bigBookCritical || all) && this.rebuildExportDhtmlXQ();
 
 	this.hideExportFormatIfNeedStart();
 	return this;
@@ -5471,7 +5470,7 @@ vschess.load.prototype.rebuildExportPGN_Chinese = function(){
 };
 
 // 重建 WXF PGN 格式棋谱
-vschess.load.prototype.rebuildExportPGN_WXF = function(turn){
+vschess.load.prototype.rebuildExportPGN_WXF = function(){
 	var moveList  = this.moveNameList.WXF .slice(0);
 	var moveListM = this.moveNameList.WXFM.slice(0);
 	var startFen  = moveList .shift();
@@ -5482,7 +5481,7 @@ vschess.load.prototype.rebuildExportPGN_WXF = function(turn){
 };
 
 // 重建 ICCS PGN 格式棋谱
-vschess.load.prototype.rebuildExportPGN_ICCS = function(turn){
+vschess.load.prototype.rebuildExportPGN_ICCS = function(){
 	var moveList  = this.moveNameList.ICCS .slice(0);
 	var moveListM = this.moveNameList.ICCSM.slice(0);
 	var startFen  = moveList .shift();

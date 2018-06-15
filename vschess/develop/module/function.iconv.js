@@ -4,7 +4,7 @@ vs.GBK2UTF8 = function(array){
 
 	var result = [];
 
-	for (var i=0;i<array.length;) {
+	for (var i = 0; i < array.length; ) {
 		var k = array[i];
 
 		if (k < 128) {
@@ -28,7 +28,7 @@ vs.GBK2UTF8 = function(array){
 vs.UTF8 = function(array){
 	var result = [];
 
-	for (var i=0;i<array.length;++i) {
+	for (var i = 0; i < array.length; ++i) {
 		if (array[i] < 16) {
 			result.push("%0", array[i].toString(16));
 		}
@@ -42,7 +42,7 @@ vs.UTF8 = function(array){
 
 // 检测是否为 UTF-8 编码
 vs.detectUTF8 = function(array){
-	for (var i=0;i<array.length;) {
+	for (var i = 0; i < array.length; ) {
 		var k = array[i];
 
 		if (k < 128 || k === 255) {
@@ -51,12 +51,12 @@ vs.detectUTF8 = function(array){
 		else {
 			var length = k.toString(2).indexOf("0");
 
-			for (var j=1;j<length;++j) {
+			for (var j = 1; j < length; ++j) {
 				if (array[i + j] >> 6 !== 2) {
 					return false;
 				}
 			}
-	
+
 			i += length;
 		}
 	}
@@ -66,19 +66,14 @@ vs.detectUTF8 = function(array){
 
 // 将 ArrayBuffer 转换为 UTF-8 字符串
 vs.iconv2UTF8 = function(array){
-	if (vs.detectUTF8(array)) {
-		return vs.UTF8(array);
-	}
-	else {
-		return vs.GBK2UTF8(array);
-	}
+	return vs.detectUTF8(array) ? vs.UTF8(array) : vs.GBK2UTF8(array);
 };
 
 // 简单合并，不做处理
 vs.join = function(array){
 	var result = [];
 
-	for (var i=0;i<array.length;++i) {
+	for (var i = 0; i < array.length; ++i) {
 		result.push(vs.fcc(array[i]));
 	}
 
