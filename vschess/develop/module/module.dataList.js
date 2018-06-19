@@ -71,3 +71,8 @@ fn.getUCCIList = function(step){
 	result = result.concat(this.moveList.slice(startIndex + 1, step + 1));
 	return result;
 };
+
+// 取得重复长打着法（棋规判负）
+fn.getRepeatLongThreatMove = function(){
+	return vs.repeatLongThreatMove(this.getUCCIList());
+};

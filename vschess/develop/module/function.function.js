@@ -33,6 +33,8 @@ vs.RegExp = function(){
 
 // Fen 串改变走棋方
 vs.fenChangePlayer = function(fen){
+	var RegExp = vs.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
 	var fenSplit = fen.split(" ");
 	fenSplit[1]  = fenSplit[1] === "b" ? "w" : "b";
 	return fenSplit.join(" ");
@@ -68,6 +70,8 @@ vs.situationToFen = function(situation){
 
 // 翻转 FEN 串
 vs.turnFen = function(fen){
+	var RegExp = vs.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
 	var fenSplit = fen        .split(" ");
 	var lines    = fenSplit[0].split("/");
 
@@ -82,6 +86,8 @@ vs.turnFen = function(fen){
 
 // 旋转 FEN 串
 vs.roundFen = function(fen){
+	var RegExp = vs.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
 	var fenSplit = fen        .split(" ");
 	fenSplit[0]  = fenSplit[0].split("").reverse().join("");
 	fenSplit.length <= 2 && (fenSplit.push("- - 0 1"));
@@ -176,6 +182,18 @@ vs.compareFen = function(fromFen, toFen, format){
 		case "wxf" : return "None";
 		default    : return "无效着法";
 	}
+};
+
+// Fen 串移动一枚棋子
+vs.fenMovePiece = function(fen, move){
+	var RegExp = vs.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
+	var situation = vs.fenToSituation(fen);
+	situation[vs.i2s[move.substring(2, 4)]] = situation[vs.i2s[move.substring(0, 2)]];
+	situation[vs.i2s[move.substring(0, 2)]] = 1;
+	situation[0]   = 3    - situation[0];
+	situation[0] === 1 && ++situation[1];
+	return vs.situationToFen(situation);
 };
 
 // 获取棋局信息显示文本

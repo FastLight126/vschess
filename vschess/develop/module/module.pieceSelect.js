@@ -9,7 +9,7 @@ fn.setLegalByPieceIndex = function(index){
 fn.getLegalByPieceIndex = function(startIndex, targetIndex){
 	 startIndex = vs.limit( startIndex, 0, 89, this.getCurrentSelect());
 	targetIndex = vs.limit(targetIndex, 0, 89, this.getCurrentSelect());
-	return ~$.inArray(targetIndex, this.getLegalByStartPieceIndex(startIndex));
+	return !!~$.inArray(targetIndex, this.getLegalByStartPieceIndex(startIndex));
 };
 
 // 设置指定棋子选中状态，-1 表示动画棋子

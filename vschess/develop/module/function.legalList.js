@@ -26,7 +26,7 @@ vs.checkThreat = function(situation){
 				if (((situation[i] & 15) === 1 || (situation[i] & 15) === 5) && situation[i] >> 4 === enermy) {
 					return true;
 				}
-	
+
 				break;
 			}
 		}
@@ -52,14 +52,14 @@ vs.checkThreat = function(situation){
 	// 炮
 	for (var k = 0; k < 4; ++k) {
 		var barbette = false;
-	
+
 		for (var i = kingIndex + vs.kingDelta[k]; situation[i]; i += vs.kingDelta[k]) {
 			if (barbette) {
 				if (situation[i] > 1) {
 					if ((situation[i] & 15) === 6 && situation[i] >> 4 === enermy) {
 						return true;
 					}
-	
+
 					break;
 				}
 			}
@@ -153,7 +153,7 @@ vs.legalList = function(situation){
 					}
 				}
 			}
-	
+
 			// 黑方象
 			else {
 				for (var j = 0; j < 4; ++j) {
@@ -185,13 +185,13 @@ vs.legalList = function(situation){
 		else if (piece === 6) {
 			for (var k = 0; k < 4; ++k) {
 				var barbette = false;
-	
+
 				for (var j = i + vs.kingDelta[k]; situation[j]; j += vs.kingDelta[k]) {
 					if (barbette) {
 						if (situation[j] === 1) {
 							continue;
 						}
-	
+
 						situation[j] >> 4 === enermy && checkPush([i, j]);
 						break;
 					}
@@ -210,7 +210,7 @@ vs.legalList = function(situation){
 				situation[i +  1] && situation[i +  1] >> 4 !== 1 && i < 128 &&	checkPush([i, i +  1]);
 				situation[i -  1] && situation[i -  1] >> 4 !== 1 && i < 128 &&	checkPush([i, i -  1]);
 			}
-	
+
 			// 黑方卒
 			else {
 				situation[i + 16] && situation[i + 16] >> 4 !== 2 &&			checkPush([i, i + 16]);
@@ -314,3 +314,78 @@ vs.checkFen = function(fen){
 	return errorList;
 };
 
+// 杀祺着法生成器
+vs.killMove = function(fen){
+	var RegExp = vs.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
+	var legalList = vs.legalMoveList(fen);
+	var result    = [];
+
+	for (var i = 0; i < legalList.length; ++i) {
+		var movedFen = vs.fenMovePiece(fen, legalList[i]);
+
+		if (vs.legalList(movedFen).length === 0) {
+			result.push(legalList[i]);
+		}
+	}
+
+	return result;
+};
+
+// 计算长打着法
+vs.repeatLongThreatMove = function(moveList){
+	if (moveList.length < 13) {
+		return false;
+	}
+
+	var fenList = [moveList[0]];
+
+	for (var i = 1; i < moveList.length; ++i) {
+		fenList.push(vs.fenMovePiece(fenList[fenList.length - 1], moveList[i]))
+	}
+
+	var m_4  = moveList[moveList.length -  4];
+	var m_8  = moveList[moveList.length -  8];
+	var m_12 = moveList[moveList.length - 12];
+
+	if (m_4 === m_8 && m_4 === m_12) {
+		for (var i = fenList.length - 2; i >= fenList.length - 12; i -= 2) {
+			if (!vs.checkThreat(fenList[i])) {
+				return false;
+			}
+		}
+
+		return m_4;
+	}
+
+	return false;
+};
+
+// 计算连续一将一要杀着法
+vs.repeatLongKillMove = function(moveList){
+	if (moveList.length < 13) {
+		return false;
+	}
+
+	var fenList = [moveList[0]];
+
+	for (var i = 1; i < moveList.length; ++i) {
+		fenList.push(vs.fenMovePiece(fenList[fenList.length - 1], moveList[i]))
+	}
+
+	var f_4  = fenList[fenList.length -  4].split(" ", 2).join(" ");
+	var f_8  = fenList[fenList.length -  8].split(" ", 2).join(" ");
+	var f_12 = fenList[fenList.length - 12].split(" ", 2).join(" ");
+
+	if (f_4 === f_8 && f_4 === f_12 && vs.checkThreat(f_4)) {
+		for (var i = fenList.length - 4; i >= fenList.length - 10; i -= 4) {
+			if (vs.killMove(vs.fenChangePlayer(fenList[i])) === 0) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	return false;
+};

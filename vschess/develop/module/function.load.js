@@ -102,16 +102,17 @@ fn.initData = function(){
 
 // 初始化参数
 fn.initArguments = function(){
-	this.setClickResponse	(this.options.clickResponse		);
-	this.setAnimationTime	(this.options.animationTime		);
-	this.setQuickStepOffset	(this.options.quickStepOffset	);
-	this.setMoveFormat		(this.options.moveFormat		);
-	this.setMoveTips		(this.options.moveTips			);
-	this.setSaveTips		(this.options.saveTips			);
-	this.setSound			(this.options.sound				);
-	this.setVolume			(this.options.volume			);
-	this.setPlayGap			(this.options.playGap			);
-	this.setPieceRotate		(this.options.pieceRotate		);
+	this.setBanRepeatLongThreat	(this.options.banRepeatLongThreat	);
+	this.setQuickStepOffset		(this.options.quickStepOffset		);
+	this.setClickResponse		(this.options.clickResponse			);
+	this.setAnimationTime		(this.options.animationTime			);
+	this.setPieceRotate			(this.options.pieceRotate			);
+	this.setMoveFormat			(this.options.moveFormat			);
+	this.setMoveTips			(this.options.moveTips				);
+	this.setSaveTips			(this.options.saveTips				);
+	this.setPlayGap				(this.options.playGap				);
+	this.setVolume				(this.options.volume				);
+	this.setSound				(this.options.sound					);
 	return this;
 };
 

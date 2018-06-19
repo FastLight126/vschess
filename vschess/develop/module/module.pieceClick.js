@@ -53,3 +53,15 @@ fn.setMoveTips = function(moveTips){
 fn.getMoveTips = function(){
 	return this._.moveTips;
 };
+
+// 设置禁止长打状态
+fn.setBanRepeatLongThreat = function(banRepeatLongThreat){
+	this._.banRepeatLongThreat = !!banRepeatLongThreat;
+	this.setConfigItemValue("banRepeatLongThreat", this._.banRepeatLongThreat);
+	return this;
+};
+
+// 取得禁止长打状态
+fn.getBanRepeatLongThreat = function(){
+	return this._.banRepeatLongThreat;
+};

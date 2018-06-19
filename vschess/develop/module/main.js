@@ -459,6 +459,9 @@ vs.defaultOptions = {
 	// 棋子随机旋转
 	pieceRotate: false,
 
+	// 禁止长打
+	banRepeatLongThreat: true,
+
 	// 起始局面提示信息
 	startTips: [
 		"蓝色的着法含有变着",

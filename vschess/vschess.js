@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月15日
- * Fri, 15 Jun 2018 17:55:53 +0800
+ * 最后修改日期：北京时间 2018年6月20日
+ * Wed, 20 Jun 2018 02:21:29 +0800
  */
 
 (function(){
@@ -499,6 +499,9 @@ vschess.defaultOptions = {
 
 	// 棋子随机旋转
 	pieceRotate: false,
+
+	// 禁止长打
+	banRepeatLongThreat: true,
 
 	// 起始局面提示信息
 	startTips: [
@@ -1127,6 +1130,8 @@ vschess.RegExp = function(){
 
 // Fen 串改变走棋方
 vschess.fenChangePlayer = function(fen){
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
 	var fenSplit = fen.split(" ");
 	fenSplit[1]  = fenSplit[1] === "b" ? "w" : "b";
 	return fenSplit.join(" ");
@@ -1162,6 +1167,8 @@ vschess.situationToFen = function(situation){
 
 // 翻转 FEN 串
 vschess.turnFen = function(fen){
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
 	var fenSplit = fen        .split(" ");
 	var lines    = fenSplit[0].split("/");
 
@@ -1176,6 +1183,8 @@ vschess.turnFen = function(fen){
 
 // 旋转 FEN 串
 vschess.roundFen = function(fen){
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
 	var fenSplit = fen        .split(" ");
 	fenSplit[0]  = fenSplit[0].split("").reverse().join("");
 	fenSplit.length <= 2 && (fenSplit.push("- - 0 1"));
@@ -1270,6 +1279,18 @@ vschess.compareFen = function(fromFen, toFen, format){
 		case "wxf" : return "None";
 		default    : return "\u65e0\u6548\u7740\u6cd5";
 	}
+};
+
+// Fen 串移动一枚棋子
+vschess.fenMovePiece = function(fen, move){
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
+	var situation = vschess.fenToSituation(fen);
+	situation[vschess.i2s[move.substring(2, 4)]] = situation[vschess.i2s[move.substring(0, 2)]];
+	situation[vschess.i2s[move.substring(0, 2)]] = 1;
+	situation[0]   = 3    - situation[0];
+	situation[0] === 1 && ++situation[1];
+	return vschess.situationToFen(situation);
 };
 
 // 获取棋局信息显示文本
@@ -1733,7 +1754,7 @@ vschess.checkThreat = function(situation){
 				if (((situation[i] & 15) === 1 || (situation[i] & 15) === 5) && situation[i] >> 4 === enermy) {
 					return true;
 				}
-	
+
 				break;
 			}
 		}
@@ -1759,14 +1780,14 @@ vschess.checkThreat = function(situation){
 	// 炮
 	for (var k = 0; k < 4; ++k) {
 		var barbette = false;
-	
+
 		for (var i = kingIndex + vschess.kingDelta[k]; situation[i]; i += vschess.kingDelta[k]) {
 			if (barbette) {
 				if (situation[i] > 1) {
 					if ((situation[i] & 15) === 6 && situation[i] >> 4 === enermy) {
 						return true;
 					}
-	
+
 					break;
 				}
 			}
@@ -1860,7 +1881,7 @@ vschess.legalList = function(situation){
 					}
 				}
 			}
-	
+
 			// 黑方象
 			else {
 				for (var j = 0; j < 4; ++j) {
@@ -1892,13 +1913,13 @@ vschess.legalList = function(situation){
 		else if (piece === 6) {
 			for (var k = 0; k < 4; ++k) {
 				var barbette = false;
-	
+
 				for (var j = i + vschess.kingDelta[k]; situation[j]; j += vschess.kingDelta[k]) {
 					if (barbette) {
 						if (situation[j] === 1) {
 							continue;
 						}
-	
+
 						situation[j] >> 4 === enermy && checkPush([i, j]);
 						break;
 					}
@@ -1917,7 +1938,7 @@ vschess.legalList = function(situation){
 				situation[i +  1] && situation[i +  1] >> 4 !== 1 && i < 128 &&	checkPush([i, i +  1]);
 				situation[i -  1] && situation[i -  1] >> 4 !== 1 && i < 128 &&	checkPush([i, i -  1]);
 			}
-	
+
 			// 黑方卒
 			else {
 				situation[i + 16] && situation[i + 16] >> 4 !== 2 &&			checkPush([i, i + 16]);
@@ -2019,6 +2040,82 @@ vschess.checkFen = function(fen){
 	}
 
 	return errorList;
+};
+
+// 杀祺着法生成器
+vschess.killMove = function(fen){
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
+	var legalList = vschess.legalMoveList(fen);
+	var result    = [];
+
+	for (var i = 0; i < legalList.length; ++i) {
+		var movedFen = vschess.fenMovePiece(fen, legalList[i]);
+
+		if (vschess.legalList(movedFen).length === 0) {
+			result.push(legalList[i]);
+		}
+	}
+
+	return result;
+};
+
+// 计算长打着法
+vschess.repeatLongThreatMove = function(moveList){
+	if (moveList.length < 13) {
+		return false;
+	}
+
+	var fenList = [moveList[0]];
+
+	for (var i = 1; i < moveList.length; ++i) {
+		fenList.push(vschess.fenMovePiece(fenList[fenList.length - 1], moveList[i]))
+	}
+
+	var m_4  = moveList[moveList.length -  4];
+	var m_8  = moveList[moveList.length -  8];
+	var m_12 = moveList[moveList.length - 12];
+
+	if (m_4 === m_8 && m_4 === m_12) {
+		for (var i = fenList.length - 2; i >= fenList.length - 12; i -= 2) {
+			if (!vschess.checkThreat(fenList[i])) {
+				return false;
+			}
+		}
+
+		return m_4;
+	}
+
+	return false;
+};
+
+// 计算连续一将一要杀着法
+vschess.repeatLongKillMove = function(moveList){
+	if (moveList.length < 13) {
+		return false;
+	}
+
+	var fenList = [moveList[0]];
+
+	for (var i = 1; i < moveList.length; ++i) {
+		fenList.push(vschess.fenMovePiece(fenList[fenList.length - 1], moveList[i]))
+	}
+
+	var f_4  = fenList[fenList.length -  4].split(" ", 2).join(" ");
+	var f_8  = fenList[fenList.length -  8].split(" ", 2).join(" ");
+	var f_12 = fenList[fenList.length - 12].split(" ", 2).join(" ");
+
+	if (f_4 === f_8 && f_4 === f_12 && vschess.checkThreat(f_4)) {
+		for (var i = fenList.length - 4; i >= fenList.length - 10; i -= 4) {
+			if (vschess.killMove(vschess.fenChangePlayer(fenList[i])) === 0) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	return false;
 };
 
 // 创建象棋组件，兼容两种创建模式：实例模式和方法模式
@@ -2125,16 +2222,17 @@ vschess.load.prototype.initData = function(){
 
 // 初始化参数
 vschess.load.prototype.initArguments = function(){
-	this.setClickResponse	(this.options.clickResponse		);
-	this.setAnimationTime	(this.options.animationTime		);
-	this.setQuickStepOffset	(this.options.quickStepOffset	);
-	this.setMoveFormat		(this.options.moveFormat		);
-	this.setMoveTips		(this.options.moveTips			);
-	this.setSaveTips		(this.options.saveTips			);
-	this.setSound			(this.options.sound				);
-	this.setVolume			(this.options.volume			);
-	this.setPlayGap			(this.options.playGap			);
-	this.setPieceRotate		(this.options.pieceRotate		);
+	this.setBanRepeatLongThreat	(this.options.banRepeatLongThreat	);
+	this.setQuickStepOffset		(this.options.quickStepOffset		);
+	this.setClickResponse		(this.options.clickResponse			);
+	this.setAnimationTime		(this.options.animationTime			);
+	this.setPieceRotate			(this.options.pieceRotate			);
+	this.setMoveFormat			(this.options.moveFormat			);
+	this.setMoveTips			(this.options.moveTips				);
+	this.setSaveTips			(this.options.saveTips				);
+	this.setPlayGap				(this.options.playGap				);
+	this.setVolume				(this.options.volume				);
+	this.setSound				(this.options.sound					);
 	return this;
 };
 
@@ -3989,35 +4087,35 @@ vschess.ECCOIndex2Name = function(index){
 	return vschess.eccoDir[k][i] ? vschess.eccoDir[k][i] : vschess.eccoDir.A[0];
 };
 
-// 检查指定局面号下指定棋子是否为红方棋子
+// 检查指定局面号下指定位置是否为红方棋子
 vschess.load.prototype.isR = function(index, step){
 	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	index = vschess.turn[this.getTurn()][vschess.limit(index, 0, 89)];
 	return this.situationList[step][vschess.b2s[index]] >> 4 === 1;
 };
 
-// 检查指定局面号下指定棋子是否为黑方棋子
+// 检查指定局面号下指定位置是否为黑方棋子
 vschess.load.prototype.isB = function(index, step){
 	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	index = vschess.turn[this.getTurn()][vschess.limit(index, 0, 89)];
 	return this.situationList[step][vschess.b2s[index]] >> 4 === 2;
 };
 
-// 检查指定局面号下指定棋子是否无棋子
+// 检查指定局面号下指定位置是否无棋子
 vschess.load.prototype.isN = function(index, step){
 	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	index = vschess.turn[this.getTurn()][vschess.limit(index, 0, 89)];
 	return this.situationList[step][vschess.b2s[index]] === 1;
 };
 
-// 检查指定局面号下指定棋子是否为己方棋子
+// 检查指定局面号下指定位置是否为己方棋子
 vschess.load.prototype.isPlayer = function(index, step){
 	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	index = vschess.turn[this.getTurn()][vschess.limit(index, 0, 89)];
 	return this.situationList[step][vschess.b2s[index]] >> 4 === this.situationList[step][0];
 };
 
-// 检查指定局面号下指定棋子是否为敌方棋子
+// 检查指定局面号下指定位置是否为敌方棋子
 vschess.load.prototype.isEnermy = function(index, step){
 	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	index = vschess.turn[this.getTurn()][vschess.limit(index, 0, 89)];
@@ -4028,9 +4126,12 @@ vschess.load.prototype.isEnermy = function(index, step){
 vschess.load.prototype.getLegalByStartPieceIndex = function(startIndex){
 	startIndex = vschess.b2s[vschess.turn[this.getTurn()][vschess.limit(startIndex, 0, 89)]];
 	var legalList = [];
+	var banMove = this.getBanRepeatLongThreat() ? vschess.repeatLongThreatMove(this.getUCCIList()) : false;
 
 	for (var i = 0; i < this.legalList.length; ++i) {
-		this.legalList[i][0] === startIndex && legalList.push(vschess.turn[this.getTurn()][vschess.s2b[this.legalList[i][1]]]);
+		var move = vschess.s2i[this.legalList[i][0]] + vschess.s2i[this.legalList[i][1]];
+		var targetIndex = vschess.turn[this.getTurn()][vschess.s2b[this.legalList[i][1]]];
+		this.legalList[i][0] === startIndex && move !== banMove && legalList.push(targetIndex);
 	}
 
 	return legalList;
@@ -4151,14 +4252,15 @@ vschess.load.prototype.createConfigSwitch = function(){
 	this.configValue  = {};
 	this.configRange  = {};
 	this.configSelect = {};
-	this.addConfigItem("turnX"		, "\u5de6\u53f3\u7ffb\u8f6c", "boolean", true, ""											, function(){ _this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);		});
-	this.addConfigItem("turnY"		, "\u4e0a\u4e0b\u7ffb\u8f6c", "boolean", true, ""											, function(){ _this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);		});
-	this.addConfigItem("moveTips"	, "\u8d70\u5b50\u63d0\u793a", "boolean", true, ""											, function(){ _this._.moveTips		= _this.configValue["moveTips"		];							});
-	this.addConfigItem("sound"		, "\u8d70\u5b50\u97f3\u6548", "boolean", true, ""											, function(){ _this._.sound			= _this.configValue["sound"			];					 		});
-	this.addConfigItem("saveTips"	, "\u4fdd\u5b58\u63d0\u793a", "boolean", true, ""											, function(){ _this._.saveTips		= _this.configValue["saveTips"		];							});
-	this.addConfigItem("pieceRotate", "\u68cb\u5b50\u65cb\u8f6c", "boolean", true, ""											, function(){ _this._.pieceRotate	= _this.configValue["pieceRotate"	]; _this.setBoardByStep();	});
-	this.addConfigItem("playGap"	, "\u64ad\u653e\u95f4\u9694", "select" , 5   , "0.1\u79d2:1,0.2\u79d2:2,0.5\u79d2:5,1\u79d2:10,2\u79d2:20,5\u79d2:50"	, function(){ _this._.playGap		= _this.configValue["playGap"		];							});
-	this.addConfigItem("volume"		, "\u97f3\u6548\u97f3\u91cf", "range"  , 100 , "0,100"										, function(){ _this._.volume		= _this.configValue["volume"		];							});
+	this.addConfigItem("turnX"					, "\u5de6\u53f3\u7ffb\u8f6c", "boolean", true, ""											, function(){ _this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);					 });
+	this.addConfigItem("turnY"					, "\u4e0a\u4e0b\u7ffb\u8f6c", "boolean", true, ""											, function(){ _this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);					 });
+	this.addConfigItem("moveTips"				, "\u8d70\u5b50\u63d0\u793a", "boolean", true, ""											, function(){ _this._.moveTips			  = _this.configValue["moveTips"			 ];							 });
+	this.addConfigItem("sound"					, "\u8d70\u5b50\u97f3\u6548", "boolean", true, ""											, function(){ _this._.sound				  = _this.configValue["sound"				 ];							 });
+	this.addConfigItem("saveTips"				, "\u4fdd\u5b58\u63d0\u793a", "boolean", true, ""											, function(){ _this._.saveTips			  = _this.configValue["saveTips"			 ];							 });
+	this.addConfigItem("pieceRotate"			, "\u68cb\u5b50\u65cb\u8f6c", "boolean", true, ""											, function(){ _this._.pieceRotate		  = _this.configValue["pieceRotate"			 ]; _this.setBoardByStep();	 });
+	this.addConfigItem("banRepeatLongThreat"	, "\u7981\u6b62\u957f\u6253", "boolean", true, ""											, function(){ _this._.banRepeatLongThreat = _this.configValue["banRepeatLongThreat"	 ];							 });
+	this.addConfigItem("playGap"				, "\u64ad\u653e\u95f4\u9694", "select" , 5   , "0.1\u79d2:1,0.2\u79d2:2,0.5\u79d2:5,1\u79d2:10,2\u79d2:20,5\u79d2:50", function(){ _this._.playGap			 = _this.configValue["playGap"				];							});
+	this.addConfigItem("volume"					, "\u97f3\u6548\u97f3\u91cf", "range"  , 100 , "0,100"										, function(){ _this._.volume			  = _this.configValue["volume"				 ];							 });
 	return this;
 };
 
@@ -4537,6 +4639,11 @@ vschess.load.prototype.getUCCIList = function(step){
 	result.push(this.fenList[startIndex]);
 	result = result.concat(this.moveList.slice(startIndex + 1, step + 1));
 	return result;
+};
+
+// 取得重复长打着法（棋规判负）
+vschess.load.prototype.getRepeatLongThreatMove = function(){
+	return vschess.repeatLongThreatMove(this.getUCCIList());
 };
 
 // 创建编辑局面区域
@@ -6442,6 +6549,18 @@ vschess.load.prototype.getMoveTips = function(){
 	return this._.moveTips;
 };
 
+// 设置禁止长打状态
+vschess.load.prototype.setBanRepeatLongThreat = function(banRepeatLongThreat){
+	this._.banRepeatLongThreat = !!banRepeatLongThreat;
+	this.setConfigItemValue("banRepeatLongThreat", this._.banRepeatLongThreat);
+	return this;
+};
+
+// 取得禁止长打状态
+vschess.load.prototype.getBanRepeatLongThreat = function(){
+	return this._.banRepeatLongThreat;
+};
+
 // 设置指定棋子合法目标格状态，-1 表示动画棋子
 vschess.load.prototype.setLegalByPieceIndex = function(index){
 	index = vschess.limit(index, -1, 89);
@@ -6453,7 +6572,7 @@ vschess.load.prototype.setLegalByPieceIndex = function(index){
 vschess.load.prototype.getLegalByPieceIndex = function(startIndex, targetIndex){
 	 startIndex = vschess.limit( startIndex, 0, 89, this.getCurrentSelect());
 	targetIndex = vschess.limit(targetIndex, 0, 89, this.getCurrentSelect());
-	return ~$.inArray(targetIndex, this.getLegalByStartPieceIndex(startIndex));
+	return !!~$.inArray(targetIndex, this.getLegalByStartPieceIndex(startIndex));
 };
 
 // 设置指定棋子选中状态，-1 表示动画棋子
