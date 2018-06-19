@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年6月20日
- * Wed, 20 Jun 2018 02:21:29 +0800
+ * Wed, 20 Jun 2018 02:30:15 +0800
  */
 
 (function(){
@@ -2089,7 +2089,7 @@ vschess.repeatLongThreatMove = function(moveList){
 	return false;
 };
 
-// 计算连续一将一要杀着法
+// 判断是否为连续一将一要杀
 vschess.repeatLongKillMove = function(moveList){
 	if (moveList.length < 13) {
 		return false;
