@@ -361,7 +361,7 @@ vs.repeatLongThreatMove = function(moveList){
 	return false;
 };
 
-// 计算连续一将一要杀着法
+// 判断是否为连续一将一要杀
 vs.repeatLongKillMove = function(moveList){
 	if (moveList.length < 13) {
 		return false;
