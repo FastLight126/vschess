@@ -15,6 +15,7 @@ fn.setBoardByStep = function(step){
 	this.getPieceRotate() ? this.loadPieceRotate() : this.clearPieceRotate();
 	this.legalList     = vs.legalList    (this.situationList[this.getCurrentStep()]);
 	this.legalMoveList = vs.legalMoveList(this.situationList[this.getCurrentStep()]);
+	this.repeatLongThreatMoveList = this.getRepeatLongThreatMove();
 	this.setSelectByStep();
 	this.refreshMoveSelectListNodeColor();
 	this.refreshChangeSelectListNode();

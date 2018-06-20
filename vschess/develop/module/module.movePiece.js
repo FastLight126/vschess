@@ -19,8 +19,8 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 	var To   = vs.b2i[vs.turn[this.getTurn()][to  ]];
 	var Move = From + To;
 
-	// 着法不合法，不移动棋子
-	if (!~this.legalMoveList.indexOf(Move)) {
+	// 着法不合法，不移动棋子（包含开启禁止长打时的长打着法）
+	if (!~this.legalMoveList.indexOf(Move) || this.getBanRepeatLongThreat() && ~this.repeatLongThreatMoveList.indexOf(Move)) {
 		typeof callbackIllegal === "function" && callbackIllegal();
 		return this;
 	}
@@ -208,4 +208,28 @@ fn.setAnimationTime = function(animationTime){
 // 取得动画时间
 fn.getAnimationTime = function(animationTime){
 	return this._.animationTime >= this._.playGap * 100 ? this._.playGap * 50 : this._.animationTime;
+};
+
+// 设置禁止长打状态
+fn.setBanRepeatLongThreat = function(banRepeatLongThreat){
+	this._.banRepeatLongThreat = !!banRepeatLongThreat;
+	this.setConfigItemValue("banRepeatLongThreat", this._.banRepeatLongThreat);
+	return this;
+};
+
+// 取得禁止长打状态
+fn.getBanRepeatLongThreat = function(){
+	return this._.banRepeatLongThreat;
+};
+
+// 设置违例提示状态
+fn.setIllegalTips = function(illegalTips){
+	this._.illegalTips = !!illegalTips;
+	this.setConfigItemValue("illegalTips", this._.illegalTips);
+	return this;
+};
+
+// 取得违例提示状态
+fn.getIllegalTips = function(){
+	return this._.illegalTips;
 };

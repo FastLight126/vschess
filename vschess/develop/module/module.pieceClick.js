@@ -14,6 +14,17 @@ fn.pieceClick = function(){
 
 			// 不是本方棋子，即为走子目标或空白点
 			else {
+				// 违例提示
+				if (_this.getIllegalTips() && _this.getBanRepeatLongThreat()) {
+					var From = vs.b2i[vs.turn[_this.getTurn()][_this.getCurrentSelect()]];
+					var To   = vs.b2i[vs.turn[_this.getTurn()][index]];
+					var Move = From + To;
+
+					if (~_this.repeatLongThreatMoveList.indexOf(Move)) {
+						alert("禁止长打！");
+					}
+				}
+
 				// 合法着法，移动棋子
 				if (_this.getLegalByPieceIndex(_this.getCurrentSelect(), index)) {
 					_this.callback_beforeClickAnimate();
@@ -52,16 +63,4 @@ fn.setMoveTips = function(moveTips){
 // 取得走子提示状态
 fn.getMoveTips = function(){
 	return this._.moveTips;
-};
-
-// 设置禁止长打状态
-fn.setBanRepeatLongThreat = function(banRepeatLongThreat){
-	this._.banRepeatLongThreat = !!banRepeatLongThreat;
-	this.setConfigItemValue("banRepeatLongThreat", this._.banRepeatLongThreat);
-	return this;
-};
-
-// 取得禁止长打状态
-fn.getBanRepeatLongThreat = function(){
-	return this._.banRepeatLongThreat;
 };

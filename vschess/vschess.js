@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月20日
- * Wed, 20 Jun 2018 02:30:15 +0800
+ * 最后修改日期：北京时间 2018年6月21日
+ * Thu, 21 Jun 2018 02:40:06 +0800
  */
 
 (function(){
@@ -502,6 +502,9 @@ vschess.defaultOptions = {
 
 	// 禁止长打
 	banRepeatLongThreat: true,
+
+	// 违例提示
+	illegalTips: true,
 
 	// 起始局面提示信息
 	startTips: [
@@ -2062,31 +2065,36 @@ vschess.killMove = function(fen){
 
 // 计算长打着法
 vschess.repeatLongThreatMove = function(moveList){
-	if (moveList.length < 13) {
-		return false;
-	}
-
 	var fenList = [moveList[0]];
 
 	for (var i = 1; i < moveList.length; ++i) {
-		fenList.push(vschess.fenMovePiece(fenList[fenList.length - 1], moveList[i]))
+		fenList.push(vschess.fenMovePiece(fenList[i - 1], moveList[i]))
 	}
 
-	var m_4  = moveList[moveList.length -  4];
-	var m_8  = moveList[moveList.length -  8];
-	var m_12 = moveList[moveList.length - 12];
+	var threatFenList = {};
 
-	if (m_4 === m_8 && m_4 === m_12) {
-		for (var i = fenList.length - 2; i >= fenList.length - 12; i -= 2) {
-			if (!vschess.checkThreat(fenList[i])) {
-				return false;
-			}
+	for (var i = fenList.length - 2; i >= 0; i -= 2) {
+		if (vschess.checkThreat(fenList[i])) {
+			var shortFen = fenList[i].split(" ", 2).join(" ");
+			shortFen in threatFenList ? ++threatFenList[shortFen] : (threatFenList[shortFen] = 1);
 		}
-
-		return m_4;
+		else {
+			break;
+		}
 	}
 
-	return false;
+	var lastFen		= fenList[fenList.length - 1];
+	var legalList	= vschess.legalMoveList(lastFen);
+	var banMoveList	= [];
+	var canMoveList	= [];
+
+	for (var i = 0; i < legalList.length; ++i) {
+		var move     = legalList[i];
+		var movedFen = vschess.fenMovePiece(lastFen, move).split(" ", 2).join(" ");
+		threatFenList[movedFen] >= 3 ? banMoveList.push(move) : canMoveList.push(move);
+	}
+
+	return canMoveList.length ? banMoveList : [];
 };
 
 // 判断是否为连续一将一要杀
@@ -2227,6 +2235,7 @@ vschess.load.prototype.initArguments = function(){
 	this.setClickResponse		(this.options.clickResponse			);
 	this.setAnimationTime		(this.options.animationTime			);
 	this.setPieceRotate			(this.options.pieceRotate			);
+	this.setIllegalTips			(this.options.illegalTips			);
 	this.setMoveFormat			(this.options.moveFormat			);
 	this.setMoveTips			(this.options.moveTips				);
 	this.setSaveTips			(this.options.saveTips				);
@@ -4126,12 +4135,10 @@ vschess.load.prototype.isEnermy = function(index, step){
 vschess.load.prototype.getLegalByStartPieceIndex = function(startIndex){
 	startIndex = vschess.b2s[vschess.turn[this.getTurn()][vschess.limit(startIndex, 0, 89)]];
 	var legalList = [];
-	var banMove = this.getBanRepeatLongThreat() ? vschess.repeatLongThreatMove(this.getUCCIList()) : false;
 
 	for (var i = 0; i < this.legalList.length; ++i) {
-		var move = vschess.s2i[this.legalList[i][0]] + vschess.s2i[this.legalList[i][1]];
 		var targetIndex = vschess.turn[this.getTurn()][vschess.s2b[this.legalList[i][1]]];
-		this.legalList[i][0] === startIndex && move !== banMove && legalList.push(targetIndex);
+		this.legalList[i][0] === startIndex && legalList.push(targetIndex);
 	}
 
 	return legalList;
@@ -4259,6 +4266,7 @@ vschess.load.prototype.createConfigSwitch = function(){
 	this.addConfigItem("saveTips"				, "\u4fdd\u5b58\u63d0\u793a", "boolean", true, ""											, function(){ _this._.saveTips			  = _this.configValue["saveTips"			 ];							 });
 	this.addConfigItem("pieceRotate"			, "\u68cb\u5b50\u65cb\u8f6c", "boolean", true, ""											, function(){ _this._.pieceRotate		  = _this.configValue["pieceRotate"			 ]; _this.setBoardByStep();	 });
 	this.addConfigItem("banRepeatLongThreat"	, "\u7981\u6b62\u957f\u6253", "boolean", true, ""											, function(){ _this._.banRepeatLongThreat = _this.configValue["banRepeatLongThreat"	 ];							 });
+	this.addConfigItem("illegalTips"			, "\u8fdd\u4f8b\u63d0\u793a", "boolean", true, ""											, function(){ _this._.illegalTips		  = _this.configValue["illegalTips"			 ];							 });
 	this.addConfigItem("playGap"				, "\u64ad\u653e\u95f4\u9694", "select" , 5   , "0.1\u79d2:1,0.2\u79d2:2,0.5\u79d2:5,1\u79d2:10,2\u79d2:20,5\u79d2:50", function(){ _this._.playGap			 = _this.configValue["playGap"				];							});
 	this.addConfigItem("volume"					, "\u97f3\u6548\u97f3\u91cf", "range"  , 100 , "0,100"										, function(){ _this._.volume			  = _this.configValue["volume"				 ];							 });
 	return this;
@@ -6158,8 +6166,8 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 	var To   = vschess.b2i[vschess.turn[this.getTurn()][to  ]];
 	var Move = From + To;
 
-	// 着法不合法，不移动棋子
-	if (!~this.legalMoveList.indexOf(Move)) {
+	// 着法不合法，不移动棋子（包含开启禁止长打时的长打着法）
+	if (!~this.legalMoveList.indexOf(Move) || this.getBanRepeatLongThreat() && ~this.repeatLongThreatMoveList.indexOf(Move)) {
 		typeof callbackIllegal === "function" && callbackIllegal();
 		return this;
 	}
@@ -6349,6 +6357,30 @@ vschess.load.prototype.getAnimationTime = function(animationTime){
 	return this._.animationTime >= this._.playGap * 100 ? this._.playGap * 50 : this._.animationTime;
 };
 
+// 设置禁止长打状态
+vschess.load.prototype.setBanRepeatLongThreat = function(banRepeatLongThreat){
+	this._.banRepeatLongThreat = !!banRepeatLongThreat;
+	this.setConfigItemValue("banRepeatLongThreat", this._.banRepeatLongThreat);
+	return this;
+};
+
+// 取得禁止长打状态
+vschess.load.prototype.getBanRepeatLongThreat = function(){
+	return this._.banRepeatLongThreat;
+};
+
+// 设置违例提示状态
+vschess.load.prototype.setIllegalTips = function(illegalTips){
+	this._.illegalTips = !!illegalTips;
+	this.setConfigItemValue("illegalTips", this._.illegalTips);
+	return this;
+};
+
+// 取得违例提示状态
+vschess.load.prototype.getIllegalTips = function(){
+	return this._.illegalTips;
+};
+
 // 重建所有局面，一般用于变招切换和节点发生变化
 vschess.load.prototype.rebuildSituation = function(){
 	this.situationList = [vschess.fenToSituation(this.node.fen)];
@@ -6509,6 +6541,17 @@ vschess.load.prototype.pieceClick = function(){
 
 			// 不是本方棋子，即为走子目标或空白点
 			else {
+				// 违例提示
+				if (_this.getIllegalTips() && _this.getBanRepeatLongThreat()) {
+					var From = vschess.b2i[vschess.turn[_this.getTurn()][_this.getCurrentSelect()]];
+					var To   = vschess.b2i[vschess.turn[_this.getTurn()][index]];
+					var Move = From + To;
+
+					if (~_this.repeatLongThreatMoveList.indexOf(Move)) {
+						alert("\u7981\u6b62\u957f\u6253\uff01");
+					}
+				}
+
 				// 合法着法，移动棋子
 				if (_this.getLegalByPieceIndex(_this.getCurrentSelect(), index)) {
 					_this.callback_beforeClickAnimate();
@@ -6549,18 +6592,6 @@ vschess.load.prototype.getMoveTips = function(){
 	return this._.moveTips;
 };
 
-// 设置禁止长打状态
-vschess.load.prototype.setBanRepeatLongThreat = function(banRepeatLongThreat){
-	this._.banRepeatLongThreat = !!banRepeatLongThreat;
-	this.setConfigItemValue("banRepeatLongThreat", this._.banRepeatLongThreat);
-	return this;
-};
-
-// 取得禁止长打状态
-vschess.load.prototype.getBanRepeatLongThreat = function(){
-	return this._.banRepeatLongThreat;
-};
-
 // 设置指定棋子合法目标格状态，-1 表示动画棋子
 vschess.load.prototype.setLegalByPieceIndex = function(index){
 	index = vschess.limit(index, -1, 89);
@@ -6570,9 +6601,17 @@ vschess.load.prototype.setLegalByPieceIndex = function(index){
 
 // 获取指定棋子合法目标格状态
 vschess.load.prototype.getLegalByPieceIndex = function(startIndex, targetIndex){
-	 startIndex = vschess.limit( startIndex, 0, 89, this.getCurrentSelect());
-	targetIndex = vschess.limit(targetIndex, 0, 89, this.getCurrentSelect());
-	return !!~$.inArray(targetIndex, this.getLegalByStartPieceIndex(startIndex));
+	 startIndex		= vschess.limit( startIndex, 0, 89, this.getCurrentSelect());
+	targetIndex		= vschess.limit(targetIndex, 0, 89, this.getCurrentSelect());
+	var  startPos	= vschess.b2i[vschess.turn[this.getTurn()][vschess.limit( startIndex, 0, 89)]];
+	var targetPos	= vschess.b2i[vschess.turn[this.getTurn()][vschess.limit(targetIndex, 0, 89)]];
+	var move		= startPos + targetPos;
+
+	if (this.getBanRepeatLongThreat() && ~this.repeatLongThreatMoveList.indexOf(move)) {
+		return false;
+	}
+
+	return !!~this.legalMoveList.indexOf(startPos + targetPos);
 };
 
 // 设置指定棋子选中状态，-1 表示动画棋子
@@ -6722,6 +6761,7 @@ vschess.load.prototype.setBoardByStep = function(step){
 	this.getPieceRotate() ? this.loadPieceRotate() : this.clearPieceRotate();
 	this.legalList     = vschess.legalList    (this.situationList[this.getCurrentStep()]);
 	this.legalMoveList = vschess.legalMoveList(this.situationList[this.getCurrentStep()]);
+	this.repeatLongThreatMoveList = this.getRepeatLongThreatMove();
 	this.setSelectByStep();
 	this.refreshMoveSelectListNodeColor();
 	this.refreshChangeSelectListNode();

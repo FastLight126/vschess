@@ -37,12 +37,10 @@ fn.isEnermy = function(index, step){
 fn.getLegalByStartPieceIndex = function(startIndex){
 	startIndex = vs.b2s[vs.turn[this.getTurn()][vs.limit(startIndex, 0, 89)]];
 	var legalList = [];
-	var banMove = this.getBanRepeatLongThreat() ? vs.repeatLongThreatMove(this.getUCCIList()) : false;
 
 	for (var i = 0; i < this.legalList.length; ++i) {
-		var move = vs.s2i[this.legalList[i][0]] + vs.s2i[this.legalList[i][1]];
 		var targetIndex = vs.turn[this.getTurn()][vs.s2b[this.legalList[i][1]]];
-		this.legalList[i][0] === startIndex && move !== banMove && legalList.push(targetIndex);
+		this.legalList[i][0] === startIndex && legalList.push(targetIndex);
 	}
 
 	return legalList;

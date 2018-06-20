@@ -7,9 +7,17 @@ fn.setLegalByPieceIndex = function(index){
 
 // 获取指定棋子合法目标格状态
 fn.getLegalByPieceIndex = function(startIndex, targetIndex){
-	 startIndex = vs.limit( startIndex, 0, 89, this.getCurrentSelect());
-	targetIndex = vs.limit(targetIndex, 0, 89, this.getCurrentSelect());
-	return !!~$.inArray(targetIndex, this.getLegalByStartPieceIndex(startIndex));
+	 startIndex		= vs.limit( startIndex, 0, 89, this.getCurrentSelect());
+	targetIndex		= vs.limit(targetIndex, 0, 89, this.getCurrentSelect());
+	var  startPos	= vs.b2i[vs.turn[this.getTurn()][vs.limit( startIndex, 0, 89)]];
+	var targetPos	= vs.b2i[vs.turn[this.getTurn()][vs.limit(targetIndex, 0, 89)]];
+	var move		= startPos + targetPos;
+
+	if (this.getBanRepeatLongThreat() && ~this.repeatLongThreatMoveList.indexOf(move)) {
+		return false;
+	}
+
+	return !!~this.legalMoveList.indexOf(startPos + targetPos);
 };
 
 // 设置指定棋子选中状态，-1 表示动画棋子

@@ -334,31 +334,36 @@ vs.killMove = function(fen){
 
 // 计算长打着法
 vs.repeatLongThreatMove = function(moveList){
-	if (moveList.length < 13) {
-		return false;
-	}
-
 	var fenList = [moveList[0]];
 
 	for (var i = 1; i < moveList.length; ++i) {
-		fenList.push(vs.fenMovePiece(fenList[fenList.length - 1], moveList[i]))
+		fenList.push(vs.fenMovePiece(fenList[i - 1], moveList[i]))
 	}
 
-	var m_4  = moveList[moveList.length -  4];
-	var m_8  = moveList[moveList.length -  8];
-	var m_12 = moveList[moveList.length - 12];
+	var threatFenList = {};
 
-	if (m_4 === m_8 && m_4 === m_12) {
-		for (var i = fenList.length - 2; i >= fenList.length - 12; i -= 2) {
-			if (!vs.checkThreat(fenList[i])) {
-				return false;
-			}
+	for (var i = fenList.length - 2; i >= 0; i -= 2) {
+		if (vs.checkThreat(fenList[i])) {
+			var shortFen = fenList[i].split(" ", 2).join(" ");
+			shortFen in threatFenList ? ++threatFenList[shortFen] : (threatFenList[shortFen] = 1);
 		}
-
-		return m_4;
+		else {
+			break;
+		}
 	}
 
-	return false;
+	var lastFen		= fenList[fenList.length - 1];
+	var legalList	= vs.legalMoveList(lastFen);
+	var banMoveList	= [];
+	var canMoveList	= [];
+
+	for (var i = 0; i < legalList.length; ++i) {
+		var move     = legalList[i];
+		var movedFen = vs.fenMovePiece(lastFen, move).split(" ", 2).join(" ");
+		threatFenList[movedFen] >= 3 ? banMoveList.push(move) : canMoveList.push(move);
+	}
+
+	return canMoveList.length ? banMoveList : [];
 };
 
 // 判断是否为连续一将一要杀

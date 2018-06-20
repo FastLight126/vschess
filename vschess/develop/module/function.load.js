@@ -107,6 +107,7 @@ fn.initArguments = function(){
 	this.setClickResponse		(this.options.clickResponse			);
 	this.setAnimationTime		(this.options.animationTime			);
 	this.setPieceRotate			(this.options.pieceRotate			);
+	this.setIllegalTips			(this.options.illegalTips			);
 	this.setMoveFormat			(this.options.moveFormat			);
 	this.setMoveTips			(this.options.moveTips				);
 	this.setSaveTips			(this.options.saveTips				);

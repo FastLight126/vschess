@@ -462,6 +462,9 @@ vs.defaultOptions = {
 	// 禁止长打
 	banRepeatLongThreat: true,
 
+	// 违例提示
+	illegalTips: true,
+
 	// 起始局面提示信息
 	startTips: [
 		"蓝色的着法含有变着",

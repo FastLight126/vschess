@@ -28,6 +28,7 @@ fn.createConfigSwitch = function(){
 	this.addConfigItem("saveTips"				, "保存提示", "boolean", true, ""											, function(){ _this._.saveTips			  = _this.configValue["saveTips"			 ];							 });
 	this.addConfigItem("pieceRotate"			, "棋子旋转", "boolean", true, ""											, function(){ _this._.pieceRotate		  = _this.configValue["pieceRotate"			 ]; _this.setBoardByStep();	 });
 	this.addConfigItem("banRepeatLongThreat"	, "禁止长打", "boolean", true, ""											, function(){ _this._.banRepeatLongThreat = _this.configValue["banRepeatLongThreat"	 ];							 });
+	this.addConfigItem("illegalTips"			, "违例提示", "boolean", true, ""											, function(){ _this._.illegalTips		  = _this.configValue["illegalTips"			 ];							 });
 	this.addConfigItem("playGap"				, "播放间隔", "select" , 5   , "0.1秒:1,0.2秒:2,0.5秒:5,1秒:10,2秒:20,5秒:50", function(){ _this._.playGap			 = _this.configValue["playGap"				];							});
 	this.addConfigItem("volume"					, "音效音量", "range"  , 100 , "0,100"										, function(){ _this._.volume			  = _this.configValue["volume"				 ];							 });
 	return this;
