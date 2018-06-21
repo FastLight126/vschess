@@ -15,13 +15,17 @@ fn.pieceClick = function(){
 			// 不是本方棋子，即为走子目标或空白点
 			else {
 				// 违例提示
-				if (_this.getIllegalTips() && _this.getBanRepeatLongThreat()) {
+				if (_this.getIllegalTips()) {
 					var From = vs.b2i[vs.turn[_this.getTurn()][_this.getCurrentSelect()]];
 					var To   = vs.b2i[vs.turn[_this.getTurn()][index]];
 					var Move = From + To;
 
-					if (~_this.repeatLongThreatMoveList.indexOf(Move)) {
-						alert("禁止长打！");
+					if (_this.getBanRepeatLongThreat() && ~_this.repeatLongThreatMoveList.indexOf(Move)) {
+						alert("禁止重复长打！");
+					}
+
+					if (_this.getBanRepeatLongKill() && ~_this.repeatLongKillMoveList.indexOf(Move)) {
+						alert("禁止重复一将一杀！");
 					}
 				}
 

@@ -16,7 +16,7 @@ fn.rebuildSituation = function(){
 		Chinese	: [this.node.fen], ChineseM	: [turnFen]
 	};
 
-	for (var currentNode=this.node;currentNode.next.length;) {
+	for (var currentNode = this.node; currentNode.next.length; ) {
 		this.changeLengthList.push(currentNode.next.length);
 		this.currentNodeList.push(currentNode.defaultIndex);
 		currentNode = currentNode.next[currentNode.defaultIndex];

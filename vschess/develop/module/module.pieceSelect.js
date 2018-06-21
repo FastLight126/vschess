@@ -17,6 +17,10 @@ fn.getLegalByPieceIndex = function(startIndex, targetIndex){
 		return false;
 	}
 
+	if (this.getBanRepeatLongKill() && ~this.repeatLongKillMoveList.indexOf(move)) {
+		return false;
+	}
+
 	return !!~this.legalMoveList.indexOf(startPos + targetPos);
 };
 

@@ -103,6 +103,7 @@ fn.initData = function(){
 // 初始化参数
 fn.initArguments = function(){
 	this.setBanRepeatLongThreat	(this.options.banRepeatLongThreat	);
+	this.setBanRepeatLongKill	(this.options.banRepeatLongKill		);
 	this.setQuickStepOffset		(this.options.quickStepOffset		);
 	this.setClickResponse		(this.options.clickResponse			);
 	this.setAnimationTime		(this.options.animationTime			);
@@ -131,8 +132,8 @@ fn.createLoading = function(selector){
 fn.initStart = function(){
 	this.node = vs.dataToNode(this.chessData, this.options.parseType);
 	this.rebuildSituation();
-	this.setTurn		 (this.options.turn			);
-	this.setBoardByStep	 (this.options.currentStep	);
+	this.setTurn		 (this.options.turn);
+	this.setBoardByStep	 (this.options.currentStep);
 	this.setExportFormat ("PGN_Chinese");
 	return this;
 };

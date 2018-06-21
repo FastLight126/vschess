@@ -324,7 +324,7 @@ vs.killMove = function(fen){
 	for (var i = 0; i < legalList.length; ++i) {
 		var movedFen = vs.fenMovePiece(fen, legalList[i]);
 
-		if (vs.legalList(movedFen).length === 0) {
+		if (vs.checkThreat(movedFen) && vs.legalList(movedFen).length === 0) {
 			result.push(legalList[i]);
 		}
 	}
@@ -332,8 +332,36 @@ vs.killMove = function(fen){
 	return result;
 };
 
+// 是否有杀祺着法
+vs.hasKillMove = function(fen){
+	var RegExp = vs.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
+	var legalList = vs.legalMoveList(fen);
+
+	for (var i = 0; i < legalList.length; ++i) {
+		var movedFen = vs.fenMovePiece(fen, legalList[i]);
+
+		if (vs.checkThreat(movedFen) && vs.legalList(movedFen).length === 0) {
+			return true;
+		}
+	}
+
+	return false;
+};
+
+// 叫杀检查器
+vs.checkKill = function(fen){
+	var RegExp = vs.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
+	return vs.checkThreat(fen) ? false : vs.hasKillMove(vs.fenChangePlayer(fen));
+};
+
 // 计算长打着法
 vs.repeatLongThreatMove = function(moveList){
+	if (moveList.length < 13) {
+		return [];
+	}
+
 	var fenList = [moveList[0]];
 
 	for (var i = 1; i < moveList.length; ++i) {
@@ -366,31 +394,49 @@ vs.repeatLongThreatMove = function(moveList){
 	return canMoveList.length ? banMoveList : [];
 };
 
-// 判断是否为连续一将一要杀
+// 计算一将一杀着法
 vs.repeatLongKillMove = function(moveList){
 	if (moveList.length < 13) {
-		return false;
+		return [];
 	}
 
 	var fenList = [moveList[0]];
 
 	for (var i = 1; i < moveList.length; ++i) {
-		fenList.push(vs.fenMovePiece(fenList[fenList.length - 1], moveList[i]))
+		fenList.push(vs.fenMovePiece(fenList[i - 1], moveList[i]))
 	}
 
-	var f_4  = fenList[fenList.length -  4].split(" ", 2).join(" ");
-	var f_8  = fenList[fenList.length -  8].split(" ", 2).join(" ");
-	var f_12 = fenList[fenList.length - 12].split(" ", 2).join(" ");
+	var killFenList = {};
 
-	if (f_4 === f_8 && f_4 === f_12 && vs.checkThreat(f_4)) {
-		for (var i = fenList.length - 4; i >= fenList.length - 10; i -= 4) {
-			if (vs.killMove(vs.fenChangePlayer(fenList[i])) === 0) {
-				return false;
-			}
+	for (var i = fenList.length - 2; i >= 0; i -= 2) {
+		if (vs.checkThreat(fenList[i])) {
+			var shortFen = fenList[i].split(" ", 2).join(" ");
+			shortFen in killFenList ? ++killFenList[shortFen] : (killFenList[shortFen] = 1);
 		}
-
-		return true;
+		else if (vs.checkKill(fenList[i])) {
+			"kill" in killFenList ? ++killFenList["kill"] : (killFenList["kill"] = 1);
+		}
+		else {
+			break;
+		}
 	}
 
-	return false;
+	var lastFen		= fenList[fenList.length - 1];
+	var legalList	= vs.legalMoveList(lastFen);
+	var banMoveList	= [];
+	var canMoveList	= [];
+
+	for (var i = 0; i < legalList.length; ++i) {
+		var move     = legalList[i];
+		var movedFen = vs.fenMovePiece(lastFen, move).split(" ", 2).join(" ");
+
+		if (vs.checkKill(movedFen)) {
+			killFenList["kill"] >= 3 ? banMoveList.push(move) : canMoveList.push(move);
+		}
+		else {
+			killFenList[movedFen] >= 3 ? banMoveList.push(move) : canMoveList.push(move);
+		}
+	}
+
+	return canMoveList.length ? banMoveList : [];
 };

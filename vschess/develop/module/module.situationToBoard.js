@@ -1,5 +1,5 @@
 // 显示指定索引号的局面，负值表示从最后一个局面向前
-fn.setBoardByStep = function(step){
+fn.setBoardByStep = function(step, indexUnChange){
 	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	var _this = this;
 	this._.currentStep = vs.limit(step, 0, this.lastSituationIndex());
@@ -13,9 +13,19 @@ fn.setBoardByStep = function(step){
 	});
 
 	this.getPieceRotate() ? this.loadPieceRotate() : this.clearPieceRotate();
-	this.legalList     = vs.legalList    (this.situationList[this.getCurrentStep()]);
-	this.legalMoveList = vs.legalMoveList(this.situationList[this.getCurrentStep()]);
-	this.repeatLongThreatMoveList = this.getRepeatLongThreatMove();
+
+	// 从 setTurn 方法过来的无需更新合法列表，提高执行速度
+	if (!indexUnChange) {
+		this.legalList     = vs.legalList    (this.situationList[this.getCurrentStep()]);
+		this.legalMoveList = vs.legalMoveList(this.situationList[this.getCurrentStep()]);
+		this.repeatLongThreatMoveList = this.getBanRepeatLongThreat() ? this.getRepeatLongThreatMove() : [];
+
+		// 一将一杀稍微拖性能，单开伪线程不拖慢界面
+		this.getBanRepeatLongKill() ?
+		setTimeout(function(){ _this.repeatLongKillMoveList = _this.getRepeatLongKillMove(); }, vs.threadTimeout) :
+		(_this.repeatLongKillMoveList = []);
+	}
+
 	this.setSelectByStep();
 	this.refreshMoveSelectListNodeColor();
 	this.refreshChangeSelectListNode();
@@ -30,8 +40,8 @@ fn.setBoardByOffset = function(offset){
 };
 
 // 刷新棋盘，一般用于设置棋盘方向之后
-fn.refreshBoard = function(){
-	return this.setBoardByStep(this.getCurrentStep()).refreshMoveListNode();
+fn.refreshBoard = function(indexUnChange){
+	return this.setBoardByStep(this.getCurrentStep(), indexUnChange).refreshMoveListNode();
 };
 
 // 设置棋盘方向，0(0x00) 不翻转，1(0x01) 左右翻转，2(0x10) 上下翻转，3(0x11) 上下翻转 + 左右翻转
@@ -39,8 +49,7 @@ fn.setTurn = function(turn){
 	this._.turn = vs.limit(turn, 0, 3, 0);
 	arguments[1] || this.setConfigItemValue("turnX", !!(turn & 1));
 	arguments[1] || this.setConfigItemValue("turnY",    turn > 1 );
-	this.setExportFormat();
-	return this.refreshBoard().refreshColumnIndex();
+	return this.refreshBoard(true).setExportFormat().refreshColumnIndex();
 };
 
 // 取得棋盘方向

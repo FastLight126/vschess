@@ -19,8 +19,11 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 	var To   = vs.b2i[vs.turn[this.getTurn()][to  ]];
 	var Move = From + To;
 
-	// 着法不合法，不移动棋子（包含开启禁止长打时的长打着法）
-	if (!~this.legalMoveList.indexOf(Move) || this.getBanRepeatLongThreat() && ~this.repeatLongThreatMoveList.indexOf(Move)) {
+	// 着法不合法，不移动棋子
+	var isBanRepeatLongThreat = this.getBanRepeatLongThreat() && ~this.repeatLongThreatMoveList.indexOf(Move);
+	var isBanRepeatLongKill   = this.getBanRepeatLongKill  () && ~this.repeatLongKillMoveList  .indexOf(Move);
+
+	if (!~this.legalMoveList.indexOf(Move) || isBanRepeatLongThreat || isBanRepeatLongKill) {
 		typeof callbackIllegal === "function" && callbackIllegal();
 		return this;
 	}
@@ -210,18 +213,29 @@ fn.getAnimationTime = function(animationTime){
 	return this._.animationTime >= this._.playGap * 100 ? this._.playGap * 50 : this._.animationTime;
 };
 
-// 设置禁止长打状态
+// 设置禁止重复长打状态
 fn.setBanRepeatLongThreat = function(banRepeatLongThreat){
 	this._.banRepeatLongThreat = !!banRepeatLongThreat;
 	this.setConfigItemValue("banRepeatLongThreat", this._.banRepeatLongThreat);
 	return this;
 };
 
-// 取得禁止长打状态
+// 取得禁止重复长打状态
 fn.getBanRepeatLongThreat = function(){
 	return this._.banRepeatLongThreat;
 };
 
+// 设置禁止重复一将一杀状态
+fn.setBanRepeatLongKill = function(banRepeatLongKill){
+	this._.banRepeatLongKill = !!banRepeatLongKill;
+	this.setConfigItemValue("banRepeatLongKill", this._.banRepeatLongKill);
+	return this;
+};
+
+// 取得禁止重复一将一杀状态
+fn.getBanRepeatLongKill = function(){
+	return this._.banRepeatLongKill;
+};
 // 设置违例提示状态
 fn.setIllegalTips = function(illegalTips){
 	this._.illegalTips = !!illegalTips;

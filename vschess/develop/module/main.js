@@ -459,8 +459,11 @@ vs.defaultOptions = {
 	// 棋子随机旋转
 	pieceRotate: false,
 
-	// 禁止长打
+	// 禁止重复长打
 	banRepeatLongThreat: true,
+
+	// 禁止重复一将一杀
+	banRepeatLongKill: false,
 
 	// 违例提示
 	illegalTips: true,

@@ -76,3 +76,8 @@ fn.getUCCIList = function(step){
 fn.getRepeatLongThreatMove = function(){
 	return vs.repeatLongThreatMove(this.getUCCIList());
 };
+
+// 取得重复一将一杀着法（中国棋规判负）
+fn.getRepeatLongKillMove = function(){
+	return vs.repeatLongKillMove(this.getUCCIList());
+};

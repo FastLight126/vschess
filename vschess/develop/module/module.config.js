@@ -21,16 +21,53 @@ fn.createConfigSwitch = function(){
 	this.configValue  = {};
 	this.configRange  = {};
 	this.configSelect = {};
-	this.addConfigItem("turnX"					, "左右翻转", "boolean", true, ""											, function(){ _this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);					 });
-	this.addConfigItem("turnY"					, "上下翻转", "boolean", true, ""											, function(){ _this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);					 });
-	this.addConfigItem("moveTips"				, "走子提示", "boolean", true, ""											, function(){ _this._.moveTips			  = _this.configValue["moveTips"			 ];							 });
-	this.addConfigItem("sound"					, "走子音效", "boolean", true, ""											, function(){ _this._.sound				  = _this.configValue["sound"				 ];							 });
-	this.addConfigItem("saveTips"				, "保存提示", "boolean", true, ""											, function(){ _this._.saveTips			  = _this.configValue["saveTips"			 ];							 });
-	this.addConfigItem("pieceRotate"			, "棋子旋转", "boolean", true, ""											, function(){ _this._.pieceRotate		  = _this.configValue["pieceRotate"			 ]; _this.setBoardByStep();	 });
-	this.addConfigItem("banRepeatLongThreat"	, "禁止长打", "boolean", true, ""											, function(){ _this._.banRepeatLongThreat = _this.configValue["banRepeatLongThreat"	 ];							 });
-	this.addConfigItem("illegalTips"			, "违例提示", "boolean", true, ""											, function(){ _this._.illegalTips		  = _this.configValue["illegalTips"			 ];							 });
-	this.addConfigItem("playGap"				, "播放间隔", "select" , 5   , "0.1秒:1,0.2秒:2,0.5秒:5,1秒:10,2秒:20,5秒:50", function(){ _this._.playGap			 = _this.configValue["playGap"				];							});
-	this.addConfigItem("volume"					, "音效音量", "range"  , 100 , "0,100"										, function(){ _this._.volume			  = _this.configValue["volume"				 ];							 });
+
+	this.addConfigItem("turnX", "左右翻转", "boolean", true, "", function(){
+		_this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);
+	});
+
+	this.addConfigItem("turnY", "上下翻转", "boolean", true, "", function(){
+		_this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);
+	});
+
+	this.addConfigItem("moveTips", "走子提示", "boolean", true, "", function(){
+		_this._.moveTips = _this.configValue["moveTips"];
+	});
+
+	this.addConfigItem("sound", "走子音效", "boolean", true, "", function(){
+		_this._.sound = _this.configValue["sound"];
+	});
+
+	this.addConfigItem("saveTips", "保存提示", "boolean", true, "", function(){
+		_this._.saveTips = _this.configValue["saveTips"];
+	});
+
+	this.addConfigItem("pieceRotate", "棋子旋转", "boolean", true, "", function(){
+		_this._.pieceRotate = _this.configValue["pieceRotate"];
+		_this.setBoardByStep();
+	});
+
+	this.addConfigItem("banRepeatLongThreat", "禁止重复长打", "boolean", true, "", function(){
+		_this._.banRepeatLongThreat = _this.configValue["banRepeatLongThreat"];
+	});
+
+	this.addConfigItem("banRepeatLongKill", "禁止重复一将一杀" , "boolean", true, "", function(){
+		_this._.banRepeatLongKill = _this.configValue["banRepeatLongKill"];
+		_this.repeatLongKillMoveList = _this._.banRepeatLongKill ? _this.getRepeatLongKillMove() : [];
+	});
+
+	this.addConfigItem("illegalTips", "违例提示", "boolean", true, "", function(){
+		_this._.illegalTips = _this.configValue["illegalTips"];
+	});
+
+	this.addConfigItem("playGap", "播放间隔", "select" , 5, "0.1秒:1,0.2秒:2,0.5秒:5,1秒:10,2秒:20,5秒:50", function(){
+		_this._.playGap = _this.configValue["playGap"];
+	});
+
+	this.addConfigItem("volume", "音效音量", "range", 100, "0,100", function(){
+		_this._.volume = _this.configValue["volume"];
+	});
+
 	return this;
 };
 

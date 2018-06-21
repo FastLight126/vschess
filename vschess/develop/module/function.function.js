@@ -189,8 +189,10 @@ vs.fenMovePiece = function(fen, move){
 	var RegExp = vs.RegExp();
 	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
 	var situation = vs.fenToSituation(fen);
-	situation[vs.i2s[move.substring(2, 4)]] = situation[vs.i2s[move.substring(0, 2)]];
-	situation[vs.i2s[move.substring(0, 2)]] = 1;
+	var src = vs.i2s[move.substring(0, 2)];
+	var dst = vs.i2s[move.substring(2, 4)];
+	situation[dst] = situation[src];
+	situation[src] = 1;
 	situation[0]   = 3    - situation[0];
 	situation[0] === 1 && ++situation[1];
 	return vs.situationToFen(situation);

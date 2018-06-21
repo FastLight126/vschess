@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年6月21日
- * Thu, 21 Jun 2018 02:40:06 +0800
+ * Thu, 21 Jun 2018 17:49:40 +0800
  */
 
 (function(){
@@ -500,8 +500,11 @@ vschess.defaultOptions = {
 	// 棋子随机旋转
 	pieceRotate: false,
 
-	// 禁止长打
+	// 禁止重复长打
 	banRepeatLongThreat: true,
+
+	// 禁止重复一将一杀
+	banRepeatLongKill: false,
 
 	// 违例提示
 	illegalTips: true,
@@ -1289,8 +1292,10 @@ vschess.fenMovePiece = function(fen, move){
 	var RegExp = vschess.RegExp();
 	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
 	var situation = vschess.fenToSituation(fen);
-	situation[vschess.i2s[move.substring(2, 4)]] = situation[vschess.i2s[move.substring(0, 2)]];
-	situation[vschess.i2s[move.substring(0, 2)]] = 1;
+	var src = vschess.i2s[move.substring(0, 2)];
+	var dst = vschess.i2s[move.substring(2, 4)];
+	situation[dst] = situation[src];
+	situation[src] = 1;
 	situation[0]   = 3    - situation[0];
 	situation[0] === 1 && ++situation[1];
 	return vschess.situationToFen(situation);
@@ -2055,7 +2060,7 @@ vschess.killMove = function(fen){
 	for (var i = 0; i < legalList.length; ++i) {
 		var movedFen = vschess.fenMovePiece(fen, legalList[i]);
 
-		if (vschess.legalList(movedFen).length === 0) {
+		if (vschess.checkThreat(movedFen) && vschess.legalList(movedFen).length === 0) {
 			result.push(legalList[i]);
 		}
 	}
@@ -2063,8 +2068,36 @@ vschess.killMove = function(fen){
 	return result;
 };
 
+// 是否有杀祺着法
+vschess.hasKillMove = function(fen){
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
+	var legalList = vschess.legalMoveList(fen);
+
+	for (var i = 0; i < legalList.length; ++i) {
+		var movedFen = vschess.fenMovePiece(fen, legalList[i]);
+
+		if (vschess.checkThreat(movedFen) && vschess.legalList(movedFen).length === 0) {
+			return true;
+		}
+	}
+
+	return false;
+};
+
+// 叫杀检查器
+vschess.checkKill = function(fen){
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
+	return vschess.checkThreat(fen) ? false : vschess.hasKillMove(vschess.fenChangePlayer(fen));
+};
+
 // 计算长打着法
 vschess.repeatLongThreatMove = function(moveList){
+	if (moveList.length < 13) {
+		return [];
+	}
+
 	var fenList = [moveList[0]];
 
 	for (var i = 1; i < moveList.length; ++i) {
@@ -2097,33 +2130,51 @@ vschess.repeatLongThreatMove = function(moveList){
 	return canMoveList.length ? banMoveList : [];
 };
 
-// 判断是否为连续一将一要杀
+// 计算一将一杀着法
 vschess.repeatLongKillMove = function(moveList){
 	if (moveList.length < 13) {
-		return false;
+		return [];
 	}
 
 	var fenList = [moveList[0]];
 
 	for (var i = 1; i < moveList.length; ++i) {
-		fenList.push(vschess.fenMovePiece(fenList[fenList.length - 1], moveList[i]))
+		fenList.push(vschess.fenMovePiece(fenList[i - 1], moveList[i]))
 	}
 
-	var f_4  = fenList[fenList.length -  4].split(" ", 2).join(" ");
-	var f_8  = fenList[fenList.length -  8].split(" ", 2).join(" ");
-	var f_12 = fenList[fenList.length - 12].split(" ", 2).join(" ");
+	var killFenList = {};
 
-	if (f_4 === f_8 && f_4 === f_12 && vschess.checkThreat(f_4)) {
-		for (var i = fenList.length - 4; i >= fenList.length - 10; i -= 4) {
-			if (vschess.killMove(vschess.fenChangePlayer(fenList[i])) === 0) {
-				return false;
-			}
+	for (var i = fenList.length - 2; i >= 0; i -= 2) {
+		if (vschess.checkThreat(fenList[i])) {
+			var shortFen = fenList[i].split(" ", 2).join(" ");
+			shortFen in killFenList ? ++killFenList[shortFen] : (killFenList[shortFen] = 1);
 		}
-
-		return true;
+		else if (vschess.checkKill(fenList[i])) {
+			"kill" in killFenList ? ++killFenList["kill"] : (killFenList["kill"] = 1);
+		}
+		else {
+			break;
+		}
 	}
 
-	return false;
+	var lastFen		= fenList[fenList.length - 1];
+	var legalList	= vschess.legalMoveList(lastFen);
+	var banMoveList	= [];
+	var canMoveList	= [];
+
+	for (var i = 0; i < legalList.length; ++i) {
+		var move     = legalList[i];
+		var movedFen = vschess.fenMovePiece(lastFen, move).split(" ", 2).join(" ");
+
+		if (vschess.checkKill(movedFen)) {
+			killFenList["kill"] >= 3 ? banMoveList.push(move) : canMoveList.push(move);
+		}
+		else {
+			killFenList[movedFen] >= 3 ? banMoveList.push(move) : canMoveList.push(move);
+		}
+	}
+
+	return canMoveList.length ? banMoveList : [];
 };
 
 // 创建象棋组件，兼容两种创建模式：实例模式和方法模式
@@ -2231,6 +2282,7 @@ vschess.load.prototype.initData = function(){
 // 初始化参数
 vschess.load.prototype.initArguments = function(){
 	this.setBanRepeatLongThreat	(this.options.banRepeatLongThreat	);
+	this.setBanRepeatLongKill	(this.options.banRepeatLongKill		);
 	this.setQuickStepOffset		(this.options.quickStepOffset		);
 	this.setClickResponse		(this.options.clickResponse			);
 	this.setAnimationTime		(this.options.animationTime			);
@@ -2259,8 +2311,8 @@ vschess.load.prototype.createLoading = function(selector){
 vschess.load.prototype.initStart = function(){
 	this.node = vschess.dataToNode(this.chessData, this.options.parseType);
 	this.rebuildSituation();
-	this.setTurn		 (this.options.turn			);
-	this.setBoardByStep	 (this.options.currentStep	);
+	this.setTurn		 (this.options.turn);
+	this.setBoardByStep	 (this.options.currentStep);
 	this.setExportFormat ("PGN_Chinese");
 	return this;
 };
@@ -4259,16 +4311,53 @@ vschess.load.prototype.createConfigSwitch = function(){
 	this.configValue  = {};
 	this.configRange  = {};
 	this.configSelect = {};
-	this.addConfigItem("turnX"					, "\u5de6\u53f3\u7ffb\u8f6c", "boolean", true, ""											, function(){ _this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);					 });
-	this.addConfigItem("turnY"					, "\u4e0a\u4e0b\u7ffb\u8f6c", "boolean", true, ""											, function(){ _this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);					 });
-	this.addConfigItem("moveTips"				, "\u8d70\u5b50\u63d0\u793a", "boolean", true, ""											, function(){ _this._.moveTips			  = _this.configValue["moveTips"			 ];							 });
-	this.addConfigItem("sound"					, "\u8d70\u5b50\u97f3\u6548", "boolean", true, ""											, function(){ _this._.sound				  = _this.configValue["sound"				 ];							 });
-	this.addConfigItem("saveTips"				, "\u4fdd\u5b58\u63d0\u793a", "boolean", true, ""											, function(){ _this._.saveTips			  = _this.configValue["saveTips"			 ];							 });
-	this.addConfigItem("pieceRotate"			, "\u68cb\u5b50\u65cb\u8f6c", "boolean", true, ""											, function(){ _this._.pieceRotate		  = _this.configValue["pieceRotate"			 ]; _this.setBoardByStep();	 });
-	this.addConfigItem("banRepeatLongThreat"	, "\u7981\u6b62\u957f\u6253", "boolean", true, ""											, function(){ _this._.banRepeatLongThreat = _this.configValue["banRepeatLongThreat"	 ];							 });
-	this.addConfigItem("illegalTips"			, "\u8fdd\u4f8b\u63d0\u793a", "boolean", true, ""											, function(){ _this._.illegalTips		  = _this.configValue["illegalTips"			 ];							 });
-	this.addConfigItem("playGap"				, "\u64ad\u653e\u95f4\u9694", "select" , 5   , "0.1\u79d2:1,0.2\u79d2:2,0.5\u79d2:5,1\u79d2:10,2\u79d2:20,5\u79d2:50", function(){ _this._.playGap			 = _this.configValue["playGap"				];							});
-	this.addConfigItem("volume"					, "\u97f3\u6548\u97f3\u91cf", "range"  , 100 , "0,100"										, function(){ _this._.volume			  = _this.configValue["volume"				 ];							 });
+
+	this.addConfigItem("turnX", "\u5de6\u53f3\u7ffb\u8f6c", "boolean", true, "", function(){
+		_this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);
+	});
+
+	this.addConfigItem("turnY", "\u4e0a\u4e0b\u7ffb\u8f6c", "boolean", true, "", function(){
+		_this.setTurn(_this.configValue["turnY"] * 2 + _this.configValue["turnX"], 1);
+	});
+
+	this.addConfigItem("moveTips", "\u8d70\u5b50\u63d0\u793a", "boolean", true, "", function(){
+		_this._.moveTips = _this.configValue["moveTips"];
+	});
+
+	this.addConfigItem("sound", "\u8d70\u5b50\u97f3\u6548", "boolean", true, "", function(){
+		_this._.sound = _this.configValue["sound"];
+	});
+
+	this.addConfigItem("saveTips", "\u4fdd\u5b58\u63d0\u793a", "boolean", true, "", function(){
+		_this._.saveTips = _this.configValue["saveTips"];
+	});
+
+	this.addConfigItem("pieceRotate", "\u68cb\u5b50\u65cb\u8f6c", "boolean", true, "", function(){
+		_this._.pieceRotate = _this.configValue["pieceRotate"];
+		_this.setBoardByStep();
+	});
+
+	this.addConfigItem("banRepeatLongThreat", "\u7981\u6b62\u91cd\u590d\u957f\u6253", "boolean", true, "", function(){
+		_this._.banRepeatLongThreat = _this.configValue["banRepeatLongThreat"];
+	});
+
+	this.addConfigItem("banRepeatLongKill", "\u7981\u6b62\u91cd\u590d\u4e00\u5c06\u4e00\u6740" , "boolean", true, "", function(){
+		_this._.banRepeatLongKill = _this.configValue["banRepeatLongKill"];
+		_this.repeatLongKillMoveList = _this._.banRepeatLongKill ? _this.getRepeatLongKillMove() : [];
+	});
+
+	this.addConfigItem("illegalTips", "\u8fdd\u4f8b\u63d0\u793a", "boolean", true, "", function(){
+		_this._.illegalTips = _this.configValue["illegalTips"];
+	});
+
+	this.addConfigItem("playGap", "\u64ad\u653e\u95f4\u9694", "select" , 5, "0.1\u79d2:1,0.2\u79d2:2,0.5\u79d2:5,1\u79d2:10,2\u79d2:20,5\u79d2:50", function(){
+		_this._.playGap = _this.configValue["playGap"];
+	});
+
+	this.addConfigItem("volume", "\u97f3\u6548\u97f3\u91cf", "range", 100, "0,100", function(){
+		_this._.volume = _this.configValue["volume"];
+	});
+
 	return this;
 };
 
@@ -4652,6 +4741,11 @@ vschess.load.prototype.getUCCIList = function(step){
 // 取得重复长打着法（棋规判负）
 vschess.load.prototype.getRepeatLongThreatMove = function(){
 	return vschess.repeatLongThreatMove(this.getUCCIList());
+};
+
+// 取得重复一将一杀着法（中国棋规判负）
+vschess.load.prototype.getRepeatLongKillMove = function(){
+	return vschess.repeatLongKillMove(this.getUCCIList());
 };
 
 // 创建编辑局面区域
@@ -6166,8 +6260,11 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 	var To   = vschess.b2i[vschess.turn[this.getTurn()][to  ]];
 	var Move = From + To;
 
-	// 着法不合法，不移动棋子（包含开启禁止长打时的长打着法）
-	if (!~this.legalMoveList.indexOf(Move) || this.getBanRepeatLongThreat() && ~this.repeatLongThreatMoveList.indexOf(Move)) {
+	// 着法不合法，不移动棋子
+	var isBanRepeatLongThreat = this.getBanRepeatLongThreat() && ~this.repeatLongThreatMoveList.indexOf(Move);
+	var isBanRepeatLongKill   = this.getBanRepeatLongKill  () && ~this.repeatLongKillMoveList  .indexOf(Move);
+
+	if (!~this.legalMoveList.indexOf(Move) || isBanRepeatLongThreat || isBanRepeatLongKill) {
 		typeof callbackIllegal === "function" && callbackIllegal();
 		return this;
 	}
@@ -6357,18 +6454,29 @@ vschess.load.prototype.getAnimationTime = function(animationTime){
 	return this._.animationTime >= this._.playGap * 100 ? this._.playGap * 50 : this._.animationTime;
 };
 
-// 设置禁止长打状态
+// 设置禁止重复长打状态
 vschess.load.prototype.setBanRepeatLongThreat = function(banRepeatLongThreat){
 	this._.banRepeatLongThreat = !!banRepeatLongThreat;
 	this.setConfigItemValue("banRepeatLongThreat", this._.banRepeatLongThreat);
 	return this;
 };
 
-// 取得禁止长打状态
+// 取得禁止重复长打状态
 vschess.load.prototype.getBanRepeatLongThreat = function(){
 	return this._.banRepeatLongThreat;
 };
 
+// 设置禁止重复一将一杀状态
+vschess.load.prototype.setBanRepeatLongKill = function(banRepeatLongKill){
+	this._.banRepeatLongKill = !!banRepeatLongKill;
+	this.setConfigItemValue("banRepeatLongKill", this._.banRepeatLongKill);
+	return this;
+};
+
+// 取得禁止重复一将一杀状态
+vschess.load.prototype.getBanRepeatLongKill = function(){
+	return this._.banRepeatLongKill;
+};
 // 设置违例提示状态
 vschess.load.prototype.setIllegalTips = function(illegalTips){
 	this._.illegalTips = !!illegalTips;
@@ -6399,7 +6507,7 @@ vschess.load.prototype.rebuildSituation = function(){
 		Chinese	: [this.node.fen], ChineseM	: [turnFen]
 	};
 
-	for (var currentNode=this.node;currentNode.next.length;) {
+	for (var currentNode = this.node; currentNode.next.length; ) {
 		this.changeLengthList.push(currentNode.next.length);
 		this.currentNodeList.push(currentNode.defaultIndex);
 		currentNode = currentNode.next[currentNode.defaultIndex];
@@ -6542,13 +6650,17 @@ vschess.load.prototype.pieceClick = function(){
 			// 不是本方棋子，即为走子目标或空白点
 			else {
 				// 违例提示
-				if (_this.getIllegalTips() && _this.getBanRepeatLongThreat()) {
+				if (_this.getIllegalTips()) {
 					var From = vschess.b2i[vschess.turn[_this.getTurn()][_this.getCurrentSelect()]];
 					var To   = vschess.b2i[vschess.turn[_this.getTurn()][index]];
 					var Move = From + To;
 
-					if (~_this.repeatLongThreatMoveList.indexOf(Move)) {
-						alert("\u7981\u6b62\u957f\u6253\uff01");
+					if (_this.getBanRepeatLongThreat() && ~_this.repeatLongThreatMoveList.indexOf(Move)) {
+						alert("\u7981\u6b62\u91cd\u590d\u957f\u6253\uff01");
+					}
+
+					if (_this.getBanRepeatLongKill() && ~_this.repeatLongKillMoveList.indexOf(Move)) {
+						alert("\u7981\u6b62\u91cd\u590d\u4e00\u5c06\u4e00\u6740\uff01");
 					}
 				}
 
@@ -6608,6 +6720,10 @@ vschess.load.prototype.getLegalByPieceIndex = function(startIndex, targetIndex){
 	var move		= startPos + targetPos;
 
 	if (this.getBanRepeatLongThreat() && ~this.repeatLongThreatMoveList.indexOf(move)) {
+		return false;
+	}
+
+	if (this.getBanRepeatLongKill() && ~this.repeatLongKillMoveList.indexOf(move)) {
 		return false;
 	}
 
@@ -6745,7 +6861,7 @@ vschess.load.prototype.createShareUBB = function(){
 };
 
 // 显示指定索引号的局面，负值表示从最后一个局面向前
-vschess.load.prototype.setBoardByStep = function(step){
+vschess.load.prototype.setBoardByStep = function(step, indexUnChange){
 	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	var _this = this;
 	this._.currentStep = vschess.limit(step, 0, this.lastSituationIndex());
@@ -6759,9 +6875,19 @@ vschess.load.prototype.setBoardByStep = function(step){
 	});
 
 	this.getPieceRotate() ? this.loadPieceRotate() : this.clearPieceRotate();
-	this.legalList     = vschess.legalList    (this.situationList[this.getCurrentStep()]);
-	this.legalMoveList = vschess.legalMoveList(this.situationList[this.getCurrentStep()]);
-	this.repeatLongThreatMoveList = this.getRepeatLongThreatMove();
+
+	// 从 setTurn 方法过来的无需更新合法列表，提高执行速度
+	if (!indexUnChange) {
+		this.legalList     = vschess.legalList    (this.situationList[this.getCurrentStep()]);
+		this.legalMoveList = vschess.legalMoveList(this.situationList[this.getCurrentStep()]);
+		this.repeatLongThreatMoveList = this.getBanRepeatLongThreat() ? this.getRepeatLongThreatMove() : [];
+
+		// 一将一杀稍微拖性能，单开伪线程不拖慢界面
+		this.getBanRepeatLongKill() ?
+		setTimeout(function(){ _this.repeatLongKillMoveList = _this.getRepeatLongKillMove(); }, vschess.threadTimeout) :
+		(_this.repeatLongKillMoveList = []);
+	}
+
 	this.setSelectByStep();
 	this.refreshMoveSelectListNodeColor();
 	this.refreshChangeSelectListNode();
@@ -6776,8 +6902,8 @@ vschess.load.prototype.setBoardByOffset = function(offset){
 };
 
 // 刷新棋盘，一般用于设置棋盘方向之后
-vschess.load.prototype.refreshBoard = function(){
-	return this.setBoardByStep(this.getCurrentStep()).refreshMoveListNode();
+vschess.load.prototype.refreshBoard = function(indexUnChange){
+	return this.setBoardByStep(this.getCurrentStep(), indexUnChange).refreshMoveListNode();
 };
 
 // 设置棋盘方向，0(0x00) 不翻转，1(0x01) 左右翻转，2(0x10) 上下翻转，3(0x11) 上下翻转 + 左右翻转
@@ -6785,8 +6911,7 @@ vschess.load.prototype.setTurn = function(turn){
 	this._.turn = vschess.limit(turn, 0, 3, 0);
 	arguments[1] || this.setConfigItemValue("turnX", !!(turn & 1));
 	arguments[1] || this.setConfigItemValue("turnY",    turn > 1 );
-	this.setExportFormat();
-	return this.refreshBoard().refreshColumnIndex();
+	return this.refreshBoard(true).setExportFormat().refreshColumnIndex();
 };
 
 // 取得棋盘方向
