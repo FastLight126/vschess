@@ -332,7 +332,7 @@ vs.killMove = function(fen){
 	return result;
 };
 
-// 是否有杀祺着法
+// 是否有杀棋着法
 vs.hasKillMove = function(fen){
 	var RegExp = vs.RegExp();
 	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);

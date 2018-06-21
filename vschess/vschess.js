@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年6月21日
- * Thu, 21 Jun 2018 17:49:40 +0800
+ * Thu, 21 Jun 2018 17:57:47 +0800
  */
 
 (function(){
@@ -2068,7 +2068,7 @@ vschess.killMove = function(fen){
 	return result;
 };
 
-// 是否有杀祺着法
+// 是否有杀棋着法
 vschess.hasKillMove = function(fen){
 	var RegExp = vschess.RegExp();
 	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
