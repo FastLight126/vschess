@@ -19,11 +19,7 @@ fn.setBoardByStep = function(step, indexUnChange){
 		this.legalList     = vs.legalList    (this.situationList[this.getCurrentStep()]);
 		this.legalMoveList = vs.legalMoveList(this.situationList[this.getCurrentStep()]);
 		this.repeatLongThreatMoveList = this.getBanRepeatLongThreat() ? this.getRepeatLongThreatMove() : [];
-
-		// 一将一杀稍微拖性能，单开伪线程不拖慢界面
-		this.getBanRepeatLongKill() ?
-		setTimeout(function(){ _this.repeatLongKillMoveList = _this.getRepeatLongKillMove(); }, vs.threadTimeout) :
-		(_this.repeatLongKillMoveList = []);
+		this.repeatLongKillMoveList   = this.getBanRepeatLongKill  () ? this.getRepeatLongKillMove  () : [];
 	}
 
 	this.setSelectByStep();

@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月21日
- * Thu, 21 Jun 2018 17:57:47 +0800
+ * 最后修改日期：北京时间 2018年6月22日
+ * Fri, 22 Jun 2018 02:04:11 +0800
  */
 
 (function(){
@@ -1828,6 +1828,142 @@ vschess.checkThreat = function(situation){
 	return false;
 };
 
+// 检查局面是否有合法着法（未被将杀或困毙）
+vschess.hasLegalMove = function(situation){
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	var legalList = [];
+	var player = situation[0];
+	var enermy = 3 - player;
+
+	function checkMove(src, dst) {
+		var s  = situation.slice(0);
+		s[dst] = s[src];
+		s[src] = 1;
+		return !vschess.checkThreat(s);
+	}
+
+	// 棋盘搜索边界
+	for (var i = 51; i < 204; ++i) {
+		if (situation[i] >> 4 !== player) {
+			continue;
+		}
+
+		var piece = situation[i] & 15;
+
+		// 车
+		if (piece === 1) {
+			for (var k = 0; k < 4; ++k) {
+				for (var j = i + vschess.kingDelta[k]; situation[j]; j += vschess.kingDelta[k]) {
+					if (situation[j] === 1) {
+						if (checkMove(i, j)) return true;
+						continue;
+					}
+
+					if (situation[j] >> 4 === enermy && checkMove(i, j)) return true;
+					break;
+				}
+			}
+		}
+
+		// 马
+		else if (piece === 2) {
+			for (var j = 0; j < 4; ++j) {
+				if (situation[i + vschess.kingDelta[j]] === 1) {
+					var targetIndex0 = i + vschess.knightDelta[j][0];
+					var targetIndex1 = i + vschess.knightDelta[j][1];
+					if (situation[targetIndex0] && situation[targetIndex0] >> 4 !== player && checkMove(i, targetIndex0)) return true;
+					if (situation[targetIndex1] && situation[targetIndex1] >> 4 !== player && checkMove(i, targetIndex1)) return true;
+				}
+			}
+		}
+
+		// 相、象
+		else if (piece === 3) {
+			// 红方相
+			if (player === 1) {
+				for (var j = 0; j < 4; ++j) {
+					if (situation[i + vschess.advisorDelta[j]] === 1) {
+						var targetIndex = i + (vschess.advisorDelta[j] << 1);
+						if (situation[targetIndex] >> 4 !== player && targetIndex > 127 && checkMove(i, targetIndex)) return true;
+					}
+				}
+			}
+
+			// 黑方象
+			else {
+				for (var j = 0; j < 4; ++j) {
+					if (situation[i + vschess.advisorDelta[j]] === 1) {
+						var targetIndex = i + (vschess.advisorDelta[j] << 1);
+						if (situation[targetIndex] >> 4 !== player && targetIndex < 127 && checkMove(i, targetIndex)) return true;
+					}
+				}
+			}
+		}
+
+		// 仕、士
+		else if (piece === 4) {
+			for (var j = 0; j < 4; ++j) {
+				var targetIndex = i + vschess.advisorDelta[j];
+				if (vschess.castle[targetIndex] && situation[targetIndex] >> 4 !== player && checkMove(i, targetIndex)) return true;
+			}
+		}
+
+		// 帅、将
+		else if (piece === 5) {
+			for (var k = 0; k < 4; ++k) {
+				var targetIndex = i + vschess.kingDelta[k];
+				if (vschess.castle[targetIndex] && situation[targetIndex] >> 4 !== player && checkMove(i, targetIndex)) return true;
+			}
+		}
+
+		// 炮
+		else if (piece === 6) {
+			for (var k = 0; k < 4; ++k) {
+				var barbette = false;
+
+				for (var j = i + vschess.kingDelta[k]; situation[j]; j += vschess.kingDelta[k]) {
+					if (barbette) {
+						if (situation[j] === 1) {
+							continue;
+						}
+
+						if (situation[j] >> 4 === enermy && checkMove(i, j)) return true;
+						break;
+					}
+					else {
+						if (situation[j] === 1) {
+							if (checkMove(i, j)) return true;
+						}
+						else {
+							barbette = true;
+						}
+					}
+				}
+			}
+		}
+
+		// 兵、卒
+		else  {
+			// 红方兵
+			if (player === 1) {
+				if (situation[i - 16] && situation[i - 16] >> 4 !== 1 &&			checkMove(i, i - 16)) return true;
+				if (situation[i +  1] && situation[i +  1] >> 4 !== 1 && i < 128 &&	checkMove(i, i +  1)) return true;
+				if (situation[i -  1] && situation[i -  1] >> 4 !== 1 && i < 128 &&	checkMove(i, i -  1)) return true;
+			}
+
+			// 黑方卒
+			else {
+				if (situation[i + 16] && situation[i + 16] >> 4 !== 2 &&			checkMove(i, i + 16)) return true;
+				if (situation[i -  1] && situation[i -  1] >> 4 !== 2 && i > 127 &&	checkMove(i, i -  1)) return true;
+				if (situation[i +  1] && situation[i +  1] >> 4 !== 2 && i > 127 &&	checkMove(i, i +  1)) return true;
+			}
+		}
+	}
+
+	return false;
+};
+
 // 着法生成器（索引模式）
 vschess.legalList = function(situation){
 	var RegExp = vschess.RegExp();
@@ -2069,15 +2205,18 @@ vschess.killMove = function(fen){
 };
 
 // 是否有杀棋着法
-vschess.hasKillMove = function(fen){
+vschess.hasKillMove = function(situation){
 	var RegExp = vschess.RegExp();
-	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
-	var legalList = vschess.legalMoveList(fen);
+	RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	var legalList = vschess.legalList(situation);
 
 	for (var i = 0; i < legalList.length; ++i) {
-		var movedFen = vschess.fenMovePiece(fen, legalList[i]);
+		var movedSituation = situation.slice(0);
+		movedSituation[legalList[i][1]] = movedSituation[legalList[i][0]];
+		movedSituation[legalList[i][0]] = 1;
+		movedSituation[0] = 3 - movedSituation[0];
 
-		if (vschess.checkThreat(movedFen) && vschess.legalList(movedFen).length === 0) {
+		if (vschess.checkThreat(movedSituation) && !vschess.hasLegalMove(movedSituation)) {
 			return true;
 		}
 	}
@@ -2114,6 +2253,10 @@ vschess.repeatLongThreatMove = function(moveList){
 		else {
 			break;
 		}
+	}
+
+	if (fenList.length - i < 14) {
+		return [];
 	}
 
 	var lastFen		= fenList[fenList.length - 1];
@@ -2161,6 +2304,10 @@ vschess.repeatLongKillMove = function(moveList){
 	var legalList	= vschess.legalMoveList(lastFen);
 	var banMoveList	= [];
 	var canMoveList	= [];
+
+	if (fenList.length - i < 14) {
+		return [];
+	}
 
 	for (var i = 0; i < legalList.length; ++i) {
 		var move     = legalList[i];
@@ -6881,11 +7028,7 @@ vschess.load.prototype.setBoardByStep = function(step, indexUnChange){
 		this.legalList     = vschess.legalList    (this.situationList[this.getCurrentStep()]);
 		this.legalMoveList = vschess.legalMoveList(this.situationList[this.getCurrentStep()]);
 		this.repeatLongThreatMoveList = this.getBanRepeatLongThreat() ? this.getRepeatLongThreatMove() : [];
-
-		// 一将一杀稍微拖性能，单开伪线程不拖慢界面
-		this.getBanRepeatLongKill() ?
-		setTimeout(function(){ _this.repeatLongKillMoveList = _this.getRepeatLongKillMove(); }, vschess.threadTimeout) :
-		(_this.repeatLongKillMoveList = []);
+		this.repeatLongKillMoveList   = this.getBanRepeatLongKill  () ? this.getRepeatLongKillMove  () : [];
 	}
 
 	this.setSelectByStep();
