@@ -450,7 +450,7 @@ vs.checkFen = function(fen){
 	return errorList;
 };
 
-// 杀祺着法生成器
+// 杀棋着法生成器
 vs.killMove = function(fen){
 	var RegExp = vs.RegExp();
 	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
