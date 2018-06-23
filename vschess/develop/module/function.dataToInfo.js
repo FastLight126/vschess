@@ -85,11 +85,18 @@ vs.dataToInfo_PGN = function(chessData){
 
 // 从东萍象棋 DhtmlXQ 格式中抽取棋局信息
 vs.dataToInfo_DhtmlXQ = function(chessData){
+	var eachLine = chessData.split("[DhtmlXQ");
+	var small = [];
+
+	for (var i = 0; i < eachLine.length; ++i) {
+		~eachLine[i].indexOf("_comment") || ~eachLine[i].indexOf("_move") || small.push(eachLine[i]);
+	}
+
+	chessData = small.join("[DhtmlXQ");
 	var result = {};
 
 	for (var i in vs.info.name) {
-		var key = "DhtmlXQ_" + (vs.info.DhtmlXQ[i] || i);
-		var startTag = "[" + key + "]";
+		var startTag = "[DhtmlXQ_" + (vs.info.DhtmlXQ[i] || i) + "]";
 		var startPos = chessData.indexOf(startTag);
 
 		if (~startPos) {

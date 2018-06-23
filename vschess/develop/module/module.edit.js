@@ -7,7 +7,37 @@ fn.createEdit = function(){
 	this.tabArea.append(this.editTitle);
 	this.tabArea.append(this.editArea );
 	this.editTitle.bind(this.options.click, function(){ _this.showTab("edit"); });
+	this.recommendStartList = this.options.recommendList;
 	this.createEditStartButton();
+	this.createNodeStartButton();
+	this.createEditOtherButton();
+	this.showEditStartButton();
+
+	if (this.options.cloudApi && this.options.cloudApi.startFen) {
+		$.ajax({
+			url: this.options.cloudApi.startFen,
+			dataType: "jsonp",
+			success: function(data){
+				typeof data === "string" && (data = $.parseJSON(data));
+
+				if (data.code === 0) {
+					_this.recommendStartList = _this.options.recommendList.concat(data.data);
+				}
+				else {
+				}
+			}
+		});
+	}
+
+	return this;
+};
+
+// 创建编辑局面区域非即时加载组件
+fn.createEditOtherItem = function(){
+	if (this._.editCreated) {
+		return this;
+	}
+
 	this.createEditEndButton();
 	this.createEditCancelButton();
 	this.createEditTextarea();
@@ -17,13 +47,11 @@ fn.createEdit = function(){
 	this.createEditStartPlayer();
 	this.createEditBoard();
 	this.createRecommendList();
-	this.createNodeStartButton();
 	this.createNodeEndButton();
 	this.createNodeCancelButton();
 	this.createNodeEditTextarea();
 	this.createNodeEditPlaceholder();
-	this.createEditOtherButton();
-	this.showEditStartButton();
+	this._.editCreated = true;
 	return this;
 };
 
@@ -88,6 +116,7 @@ fn.createEditStartButton = function(){
 	this.editStartButton.appendTo(this.editArea);
 
 	this.editStartButton.bind(this.options.click, function(){
+		_this.createEditOtherItem();
 		_this.pause(false);
 		_this.fillInRecommendList(0);
 		_this.hideEditStartButton();
@@ -141,7 +170,7 @@ fn.createEditEndButton = function(){
 			_this.hideEditModule();
 			_this.showEditStartButton();
 			_this.editTextarea.val("");
-			_this.node = { fen: fen, comment: "", next: [], defaultIndex: 0 };
+			_this.setNode({ fen: fen, comment: "", next: [], defaultIndex: 0 });
 			_this.rebuildSituation();
 			_this.setBoardByStep(0);
 			_this.refreshMoveSelectListNode();
@@ -429,28 +458,7 @@ fn.createRecommendList = function(){
 	this.DOM.append(this.recommendClass);
 	this.DOM.append(this.recommendList );
 	this.recommendClass.bind("change", function(){ _this.fillInRecommendList(this.selectedIndex); });
-
-	if (this.options.cloudApi && this.options.cloudApi.startFen) {
-		$.ajax({
-			url: this.options.cloudApi.startFen,
-			dataType: "jsonp",
-			success: function(data){
-				typeof data === "string" && (data = $.parseJSON(data));
-
-				if (data.code === 0) {
-					_this.recommendStartList = _this.options.recommendList.concat(data.data);
-					_this.fillInRecommendClass();
-				}
-				else {
-				}
-			},
-			error: function(){
-				_this.recommendStartList = _this.options.recommendList.slice(0);
-				_this.fillInRecommendClass();
-			}
-		});
-	}
-
+	this.fillInRecommendClass();
 	return this;
 };
 
@@ -536,6 +544,7 @@ fn.createNodeStartButton = function(){
 	this.editNodeStartButton.appendTo(this.editArea);
 
 	this.editNodeStartButton.bind(this.options.click, function(){
+		_this.createEditOtherItem();
 		_this.pause(false);
 		_this.hideEditModule();
 		_this.hideEditStartButton();
@@ -559,7 +568,7 @@ fn.createNodeEndButton = function(){
 		var chessData = _this.editNodeTextarea.val();
 		_this.editNodeTextarea.val("");
 		_this.setBoardByStep(0);
-		_this.node = vs.dataToNode(chessData);
+		_this.setNode(vs.dataToNode(chessData));
 		_this.rebuildSituation().refreshMoveSelectListNode().setBoardByStep(0);
 		_this.chessInfo = vs.dataToInfo(chessData, "auto");
 		_this.insertInfoByCurrent();
@@ -643,7 +652,7 @@ fn.createEditOtherButton = function(){
 					var chessData = vs.join(fileData);
 					fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vs.iconv2UTF8(fileData));
 					_this.setBoardByStep(0);
-					_this.node = vs.dataToNode(chessData);
+					_this.setNode(vs.dataToNode(chessData));
 					_this.rebuildSituation();
 					_this.refreshMoveSelectListNode();
 					_this.setBoardByStep(0);
@@ -676,7 +685,7 @@ fn.createEditOtherButton = function(){
 			return false;
 		}
 
-		_this.node = { fen: vs.defaultFen, comment: "", next: [], defaultIndex: 0 };
+		_this.setNode({ fen: vs.defaultFen, comment: "", next: [], defaultIndex: 0 });
 		_this.rebuildSituation();
 		_this.refreshMoveSelectListNode();
 		_this.setBoardByStep(0);
@@ -694,6 +703,7 @@ fn.createEditOtherButton = function(){
 	this.editBlankButton.appendTo(this.editArea);
 
 	this.editBlankButton.bind(this.options.click, function(){
+		_this.createEditOtherItem();
 		_this.pause(false);
 		_this.fillInRecommendList(0);
 		_this.hideEditStartButton();
@@ -732,7 +742,7 @@ fn.bindDrag = function(){
 				var chessData = vs.join(fileData);
 				fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vs.iconv2UTF8(fileData));
 				_this.setBoardByStep(0);
-				_this.node = vs.dataToNode(chessData);
+				_this.setNode(vs.dataToNode(chessData));
 				_this.rebuildSituation();
 				_this.refreshMoveSelectListNode();
 				_this.setBoardByStep(0);

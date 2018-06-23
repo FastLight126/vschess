@@ -1,7 +1,10 @@
 // 将军检查器
 vs.checkThreat = function(situation){
-	var RegExp = vs.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vs.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	}
+
 	situation = situation.slice(0);
 	var kingIndex = 0;
 	var player = situation[0];
@@ -94,8 +97,11 @@ vs.checkThreat = function(situation){
 
 // 检查局面是否有合法着法（未被将杀或困毙）
 vs.hasLegalMove = function(situation){
-	var RegExp = vs.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vs.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	}
+
 	var legalList = [];
 	var player = situation[0];
 	var enermy = 3 - player;
@@ -230,8 +236,11 @@ vs.hasLegalMove = function(situation){
 
 // 着法生成器（索引模式）
 vs.legalList = function(situation){
-	var RegExp = vs.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vs.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	}
+
 	var legalList = [];
 	var player = situation[0];
 	var enermy = 3 - player;
@@ -361,8 +370,11 @@ vs.legalList = function(situation){
 
 // 着法生成器（坐标模式）
 vs.legalMoveList = function(situation){
-	var RegExp = vs.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vs.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	}
+
 	var legalList = vs.legalList(situation), result = [];
 
 	for (var i = 0; i < legalList.length; ++i) {
@@ -470,8 +482,11 @@ vs.killMove = function(fen){
 
 // 是否有杀棋着法
 vs.hasKillMove = function(situation){
-	var RegExp = vs.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vs.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	}
+
 	var legalList = vs.legalList(situation);
 
 	for (var i = 0; i < legalList.length; ++i) {

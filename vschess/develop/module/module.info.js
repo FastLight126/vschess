@@ -8,7 +8,6 @@ fn.createInfo = function(){
 	this.tabArea.append(this.infoArea );
 	this.infoTitle.bind(this.options.click, function(){ _this.showTab("info"); });
 	this.createInfoList();
-	this.createInfoEditor();
 	return this;
 };
 
@@ -50,10 +49,16 @@ fn.insertInfoByCurrent = function(){
 		this.infoItem[i] = $('<li class="vschess-tab-body-info-item">' + vs.info.name[i] + '：' + vs.showText(this.chessInfo[i], i) + '</li>');
 		this.infoList.append(this.infoItem[i]);
 	}
+
+	return this;
 };
 
 // 创建棋局信息编辑器
 fn.createInfoEditor = function(){
+	if (this._.editCreated) {
+		return this;
+	}
+
 	var _this = this;
 	this.infoEditorArea = $('<div class="vschess-info-editor-area"></div>');
 	this.infoEditorList = $('<ul class="vschess-info-editor-list"></ul>');
@@ -148,6 +153,7 @@ fn.createInfoEditor = function(){
 		_this.setInfoEditorItemValueResult(result);
 	});
 
+	this._.editCreated = true;
 	return this;
 };
 
@@ -187,6 +193,7 @@ fn.setChessTitle = function(title){
 
 // 显示棋局信息编辑器
 fn.showInfoEditor = function(){
+	this.createInfoEditor();
 	this.infoEditorArea.addClass("vschess-info-editor-show");
 	return this;
 };
@@ -211,11 +218,15 @@ fn.getInfoFromEditor = function(){
 
 // 获取当前对弈结果
 fn.getResultByCurrent = function(){
-	return this.infoEditorItemValue.result.val() || this.getAutoResultByCurrent();
+	if (this._.editCreated) {
+		return this.infoEditorItemValue.result.val() || this.getAutoResultByCurrent();
+	}
+
+	return this.getAutoResultByCurrent();
 };
 
 // 自动识别当前分支的对弈结果
 fn.getAutoResultByCurrent = function(){
 	var lastSituation = this.situationList[this.lastSituationIndex()];
-	return !vs.legalList(lastSituation).length ? lastSituation[0] === 1 ? "0-1" : "1-0" : "*";
+	return !vs.hasLegalMove(lastSituation) ? lastSituation[0] === 1 ? "0-1" : "1-0" : "*";
 };

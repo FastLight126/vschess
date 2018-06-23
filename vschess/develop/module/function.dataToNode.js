@@ -275,37 +275,38 @@ vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 
 	var branchHashTable = {};
 
-	function DhtmlXQ_MoveToMove(DhtmlXQ_MoveList){
+	// DhtmlXQ 着法列表转换为 node 节点列表
+	function DhtmlXQ_MoveToMove(s){
 		var moveList = [];
 
-		while (DhtmlXQ_MoveList.length) {
-			var move = DhtmlXQ_MoveList.substring(0, 4).split("");
+		while (s.length) {
+			var move = s.slice(-4).split("");
 			moveList.push(vs.fcc(+move[0] + 97) + (9 - move[1]) + vs.fcc(+move[2] + 97) + (9 - move[3]));
-			DhtmlXQ_MoveList = DhtmlXQ_MoveList.substring(4);
+			s = s.slice(0, -4);
 		}
 
 		return moveList;
 	}
 
+	// 根据 node 节点列表创建分支
 	function makeBranch(list, target, b, i){
-		if (list.length === 0) return false;
-		var next = { move: list.shift(), comment: DhtmlXQ_Comment[b + "_" + i] || "", next: [], defaultIndex: 0 };
+		var next = { move: list.pop(), comment: DhtmlXQ_Comment[b + "_" + i] || "", next: [], defaultIndex: 0 };
 		branchHashTable[b + "_" + ++i] = next;
 		target.next.push(next);
-		makeBranch(list, next, b, i);
+		list.length && makeBranch(list, next, b, i);
 	}
 
 	// 生成主分支
 	var result   = { fen: DhtmlXQ_ToFenFinal, comment: DhtmlXQ_Comment["0_0"] || "", next: [], defaultIndex: 0 };
 	var moveList = DhtmlXQ_MoveToMove(DhtmlXQ_MoveList);
 	branchHashTable["0_1"] = result;
-	makeBranch(moveList, result, 0, 1);
+	moveList.length && makeBranch(moveList, result, 0, 1);
 
 	// 生成变着分支
 	for (var id in DhtmlXQ_Change) {
 		var idSplit  = id.split("_");
 		var moveList = DhtmlXQ_MoveToMove(DhtmlXQ_Change[id]);
-		makeBranch(moveList, branchHashTable[idSplit[0] + "_" + idSplit[1]], idSplit[2], idSplit[1]);
+		moveList.length && makeBranch(moveList, branchHashTable[idSplit[0] + "_" + idSplit[1]], idSplit[2], idSplit[1]);
 	}
 
 	return result;

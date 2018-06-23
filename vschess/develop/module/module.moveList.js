@@ -195,7 +195,7 @@ fn.refreshChangeSelectListNode = function(){
 			}
 
 			--changeList.length;
-			_this.rebuildSituation().refreshBoard().refreshMoveSelectListNode();
+			_this.rebuildSituation().refreshBoard().refreshMoveSelectListNode().refreshNodeLength();
 		});
 	});
 

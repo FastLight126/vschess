@@ -108,14 +108,13 @@ fn.setExportFormat = function(format, force){
 
 // 重建所有棋谱
 fn.rebuildExportAll = function(all){
-	var nodeLength = this.refreshNodeLength();
 	this.rebuildExportPGN();
 	this.rebuildExportText();
 	this.rebuildExportQQ();
 
 	// 大棋谱生成东萍 DhtmlXQ 格式和鹏飞 PFC 格式比较拖性能
-	(nodeLength < vs.bigBookCritical || all) && this.rebuildExportPengFei();
-	(nodeLength < vs.bigBookCritical || all) && this.rebuildExportDhtmlXQ();
+	(this.getNodeLength() < vs.bigBookCritical || all) && this.rebuildExportPengFei();
+	(this.getNodeLength() < vs.bigBookCritical || all) && this.rebuildExportDhtmlXQ();
 
 	this.hideExportFormatIfNeedStart();
 	return this;
@@ -188,7 +187,7 @@ fn.rebuildExportPengFei = function(){
 	return this;
 };
 
-// 重建东萍 Dhtml 格式棋谱
+// 重建东萍 DhtmlXQ 格式棋谱
 fn.rebuildExportDhtmlXQ = function(){
 	this.exportData.DhtmlXQ  = vs.nodeToData_DhtmlXQ(this.node, this.chessInfo);
 	this.exportData.DhtmlXQM = vs.turn_DhtmlXQ(this.exportData.DhtmlXQ);
@@ -199,12 +198,12 @@ fn.rebuildExportDhtmlXQ = function(){
 fn.hideExportFormatIfNeedStart = function(){
 	if (this.getFenByStep(0).split(" ", 2).join(" ") === vschess.defaultFen.split(" ", 2).join(" ")) {
 		for (var i in vs.exportFormatList) {
-			this.exportFormatOptions[i].show();
+			this.exportFormatOptions[i][0].style.display = "block";
 		}
 	}
 	else {
 		for (var i = 0; i < vs.exportFormatListIfNeedStart.length; ++i) {
-			this.exportFormatOptions[vs.exportFormatListIfNeedStart[i]].hide();
+			this.exportFormatOptions[vs.exportFormatListIfNeedStart[i]][0].style.display = "none";
 		}
 	}
 

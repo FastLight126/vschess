@@ -2,9 +2,9 @@
 vs.moveListToData_PGN = function(moveList, startFen, commentList, infoList, result){
 	var RegExp = vs.RegExp();
 
-	if (RegExp.FenShort.test(moveList[0])) {
+	if (moveList[0] && moveList[0].length > 4 && RegExp.FenShort.test(moveList[0])) {
 		moveList = moveList.slice(0);
-		startFen = moveList.shift();
+		startFen = moveList.shift( );
 	}
 	else {
 		RegExp.FenShort.test(startFen) || (startFen = vs.defaultFen);

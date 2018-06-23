@@ -32,11 +32,11 @@ fn.rebuildSituation = function(){
 		lastSituation[0]    = 3  -   lastSituation[0];
 		lastSituation[0]  === 1 && ++lastSituation[1];
 
-		this.eatStatus.push(vs.countPieceLength(lastSituation) !== prevPieceCount);
-		this.moveList.push(currentNode.move);
-		this.commentList.push(currentNode.comment ? decodeURIComponent(currentNode.comment) : "");
-		this.situationList.push(lastSituation);
-		this.fenList.push(vs.situationToFen(lastSituation));
+		this.eatStatus		.push(vs.countPieceLength(lastSituation) !== prevPieceCount);
+		this.moveList		.push(currentNode.move);
+		this.commentList	.push(currentNode.comment ? decodeURIComponent(currentNode.comment) : "");
+		this.situationList	.push(lastSituation);
+		this.fenList		.push(vs.situationToFen(lastSituation));
 
 		var wxf  = vs.Node2WXF(currentNode.move, prevFen).move;
 		var wxfM = wxf.charCodeAt(1) > 96 ? vs.Node2WXF(vs.turnMove(currentNode.move), vs.turnFen(prevFen)).move : vs.turnWXF(wxf);
@@ -57,7 +57,7 @@ fn.selectDefault = function(step){
 	step = vs.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	var currentNode = this.node;
 
-	for (var i=0;i<step;++i) {
+	for (var i = 0; i < step; ++i) {
 		currentNode = currentNode.next[currentNode.defaultIndex];
 	}
 
@@ -80,7 +80,12 @@ fn.hasMoveAtNode = function(move, step){
 // 节点增加着法
 fn.addNodeByMoveName = function(move, step){
 	step = vs.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
-	this.hasMoveAtNode(move, step) || this.selectDefault(step).next.push({ move: move, comment: "", next: [], defaultIndex: 0 });
+
+	if (!this.hasMoveAtNode(move, step)) {
+		this.selectDefault(step).next.push({ move: move, comment: "", next: [], defaultIndex: 0 });
+		++this._.nodeLength;
+	}
+
 	return this;
 };
 
@@ -93,7 +98,7 @@ fn.setMoveDefaultAtNode = function(move, step){
 		return false;
 	}
 
-	for (var i=0;i<currentNode.next.length;++i) {
+	for (var i = 0; i < currentNode.next.length; ++i) {
 		if (currentNode.next[i].move === move) {
 			currentNode.defaultIndex = i;
 			this.setSaved(false);
@@ -120,24 +125,31 @@ fn.getMoveNameList = function(format, isMirror){
 	return this;
 };
 
-// 刷新并取得节点数
+// 刷新节点数
 fn.refreshNodeLength = function(){
-	var total = 0;
+	var total = 1;
 
 	function countNode(node){
-		++total;
+		total += node.next.length;
 
-		for (var i=0;i<node.next.length;++i) {
+		for (var i = 0; i < node.next.length; ++i) {
 			countNode(node.next[i]);
 		}
 	}
 
 	countNode(this.node);
 	this._.nodeLength = total;
-	return total;
+	return this;
 };
 
 // 取得节点数
 fn.getNodeLength = function(){
 	return this._.nodeLength;
+};
+
+// 设置当前节点树
+fn.setNode = function(node){
+	this.node = node;
+	this.refreshNodeLength();
+	return this;
 };

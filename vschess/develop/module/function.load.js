@@ -130,7 +130,7 @@ fn.createLoading = function(selector){
 
 // 初始化起始局面
 fn.initStart = function(){
-	this.node = vs.dataToNode(this.chessData, this.options.parseType);
+	this.setNode(vs.dataToNode(this.chessData, this.options.parseType));
 	this.rebuildSituation();
 	this.setTurn		 (this.options.turn);
 	this.setBoardByStep	 (this.options.currentStep);

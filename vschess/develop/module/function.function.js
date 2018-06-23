@@ -1,12 +1,12 @@
 // 将整数限制在一个特定的范围内
 vs.limit = function(num, min, max, defaultValue){
 	typeof num === "undefined" && typeof defaultValue !== "undefined" && (num = defaultValue);
-	min = parseInt(min); isNaN(min) && (min = -Infinity);
-	max = parseInt(max); isNaN(max) && (max =  Infinity);
-	num = parseInt(num); isNaN(num) && (num = 0);
+	vs.isNumber(min) || (min = -Infinity);
+	vs.isNumber(max) || (max =  Infinity);
+	vs.isNumber(num) || (num =         0);
 	num < min && (num = min);
 	num > max && (num = max);
-	return num;
+	return +num;
 };
 
 // 正则表达式，使用时都是新的，避免出现 lastIndex 冲突
@@ -135,8 +135,10 @@ vs.turnWXF = function(oldMove){
 
 // 统计局面中棋子数量
 vs.countPieceLength = function(situation){
-	var RegExp = vs.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vs.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+	}
 
 	for (var i = 51, count = 0; i < 204; ++i) {
 		situation[i] > 1 && ++count;
@@ -200,20 +202,11 @@ vs.fenMovePiece = function(fen, move){
 
 // 获取棋局信息显示文本
 vs.showText = function(showText, item){
-	switch (item) {
-		case "result": {
-			switch (showText) {
-				case "*"		: return "";
-				case "1-0"		: return "红胜";
-				case "0-1"		: return "黑胜";
-				case "1/2-1/2"	: return "和棋";
-			}
+	var map = {
+		result: { "*": "", "1-0": "红胜", "0-1": "黑胜", "1/2-1/2": "和棋" }
+	};
 
-			break;
-		}
-	}
-
-	return showText;
+	return map[item] && map[item][showText] || showText;
 };
 
 // 获取棋局信息数据文本
@@ -324,23 +317,27 @@ vs.fenToArray = function(fen){
 
 // 合并 Fen 串
 vs.arrayToFen = function(array){
-	var tempArr = [];
+	var tempArr = [], blank = 0;
 
 	for (var i = 0; i < 90; ++i) {
-		tempArr.push(array[i]);
-		i % 9 === 8 && i < 89 && tempArr.push("/");
+		if (array[i] === "*") {
+			++blank;
+		}
+		else {
+			blank && tempArr.push(blank);
+			blank = 0;
+			tempArr.push(array[i]);
+		}
+
+		if (i % 9 === 8) {
+			blank && tempArr.push(blank);
+			blank = 0;
+			tempArr.push("/");
+		}
 	}
 
-	return tempArr.join("")
-		.replace(/\*\*\*\*\*\*\*\*\*/g, "9")
-		.replace(/\*\*\*\*\*\*\*\*/g, "8")
-		.replace(/\*\*\*\*\*\*\*/g, "7")
-		.replace(/\*\*\*\*\*\*/g, "6")
-		.replace(/\*\*\*\*\*/g, "5")
-		.replace(/\*\*\*\*/g, "4")
-		.replace(/\*\*\*/g, "3")
-		.replace(/\*\*/g, "2")
-		.replace(/\*/g, "1");
+	--tempArr.length;
+	return tempArr.join("");
 };
 
 // 取得指定弧度值旋转 CSS 样式

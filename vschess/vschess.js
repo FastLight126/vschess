@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月22日
- * Fri, 22 Jun 2018 18:46:53 +0800
+ * 最后修改日期：北京时间 2018年6月24日
+ * Sun, 24 Jun 2018 03:46:03 +0800
  */
 
 (function(){
@@ -695,11 +695,18 @@ vschess.dataToInfo_PGN = function(chessData){
 
 // 从东萍象棋 DhtmlXQ 格式中抽取棋局信息
 vschess.dataToInfo_DhtmlXQ = function(chessData){
+	var eachLine = chessData.split("[DhtmlXQ");
+	var small = [];
+
+	for (var i = 0; i < eachLine.length; ++i) {
+		~eachLine[i].indexOf("_comment") || ~eachLine[i].indexOf("_move") || small.push(eachLine[i]);
+	}
+
+	chessData = small.join("[DhtmlXQ");
 	var result = {};
 
 	for (var i in vschess.info.name) {
-		var key = "DhtmlXQ_" + (vschess.info.DhtmlXQ[i] || i);
-		var startTag = "[" + key + "]";
+		var startTag = "[DhtmlXQ_" + (vschess.info.DhtmlXQ[i] || i) + "]";
 		var startPos = chessData.indexOf(startTag);
 
 		if (~startPos) {
@@ -989,37 +996,38 @@ vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 
 	var branchHashTable = {};
 
-	function DhtmlXQ_MoveToMove(DhtmlXQ_MoveList){
+	// DhtmlXQ 着法列表转换为 node 节点列表
+	function DhtmlXQ_MoveToMove(s){
 		var moveList = [];
 
-		while (DhtmlXQ_MoveList.length) {
-			var move = DhtmlXQ_MoveList.substring(0, 4).split("");
+		while (s.length) {
+			var move = s.slice(-4).split("");
 			moveList.push(vschess.fcc(+move[0] + 97) + (9 - move[1]) + vschess.fcc(+move[2] + 97) + (9 - move[3]));
-			DhtmlXQ_MoveList = DhtmlXQ_MoveList.substring(4);
+			s = s.slice(0, -4);
 		}
 
 		return moveList;
 	}
 
+	// 根据 node 节点列表创建分支
 	function makeBranch(list, target, b, i){
-		if (list.length === 0) return false;
-		var next = { move: list.shift(), comment: DhtmlXQ_Comment[b + "_" + i] || "", next: [], defaultIndex: 0 };
+		var next = { move: list.pop(), comment: DhtmlXQ_Comment[b + "_" + i] || "", next: [], defaultIndex: 0 };
 		branchHashTable[b + "_" + ++i] = next;
 		target.next.push(next);
-		makeBranch(list, next, b, i);
+		list.length && makeBranch(list, next, b, i);
 	}
 
 	// 生成主分支
 	var result   = { fen: DhtmlXQ_ToFenFinal, comment: DhtmlXQ_Comment["0_0"] || "", next: [], defaultIndex: 0 };
 	var moveList = DhtmlXQ_MoveToMove(DhtmlXQ_MoveList);
 	branchHashTable["0_1"] = result;
-	makeBranch(moveList, result, 0, 1);
+	moveList.length && makeBranch(moveList, result, 0, 1);
 
 	// 生成变着分支
 	for (var id in DhtmlXQ_Change) {
 		var idSplit  = id.split("_");
 		var moveList = DhtmlXQ_MoveToMove(DhtmlXQ_Change[id]);
-		makeBranch(moveList, branchHashTable[idSplit[0] + "_" + idSplit[1]], idSplit[2], idSplit[1]);
+		moveList.length && makeBranch(moveList, branchHashTable[idSplit[0] + "_" + idSplit[1]], idSplit[2], idSplit[1]);
 	}
 
 	return result;
@@ -1104,12 +1112,12 @@ vschess.stepListToNode = function(fen, stepList){
 // 将整数限制在一个特定的范围内
 vschess.limit = function(num, min, max, defaultValue){
 	typeof num === "undefined" && typeof defaultValue !== "undefined" && (num = defaultValue);
-	min = parseInt(min); isNaN(min) && (min = -Infinity);
-	max = parseInt(max); isNaN(max) && (max =  Infinity);
-	num = parseInt(num); isNaN(num) && (num = 0);
+	vschess.isNumber(min) || (min = -Infinity);
+	vschess.isNumber(max) || (max =  Infinity);
+	vschess.isNumber(num) || (num =         0);
 	num < min && (num = min);
 	num > max && (num = max);
-	return num;
+	return +num;
 };
 
 // 正则表达式，使用时都是新的，避免出现 lastIndex 冲突
@@ -1238,8 +1246,10 @@ vschess.turnWXF = function(oldMove){
 
 // 统计局面中棋子数量
 vschess.countPieceLength = function(situation){
-	var RegExp = vschess.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vschess.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	}
 
 	for (var i = 51, count = 0; i < 204; ++i) {
 		situation[i] > 1 && ++count;
@@ -1303,20 +1313,11 @@ vschess.fenMovePiece = function(fen, move){
 
 // 获取棋局信息显示文本
 vschess.showText = function(showText, item){
-	switch (item) {
-		case "result": {
-			switch (showText) {
-				case "*"		: return "";
-				case "1-0"		: return "\u7ea2\u80dc";
-				case "0-1"		: return "\u9ed1\u80dc";
-				case "1/2-1/2"	: return "\u548c\u68cb";
-			}
+	var map = {
+		result: { "*": "", "1-0": "\u7ea2\u80dc", "0-1": "\u9ed1\u80dc", "1/2-1/2": "\u548c\u68cb" }
+	};
 
-			break;
-		}
-	}
-
-	return showText;
+	return map[item] && map[item][showText] || showText;
 };
 
 // 获取棋局信息数据文本
@@ -1427,23 +1428,27 @@ vschess.fenToArray = function(fen){
 
 // 合并 Fen 串
 vschess.arrayToFen = function(array){
-	var tempArr = [];
+	var tempArr = [], blank = 0;
 
 	for (var i = 0; i < 90; ++i) {
-		tempArr.push(array[i]);
-		i % 9 === 8 && i < 89 && tempArr.push("/");
+		if (array[i] === "*") {
+			++blank;
+		}
+		else {
+			blank && tempArr.push(blank);
+			blank = 0;
+			tempArr.push(array[i]);
+		}
+
+		if (i % 9 === 8) {
+			blank && tempArr.push(blank);
+			blank = 0;
+			tempArr.push("/");
+		}
 	}
 
-	return tempArr.join("")
-		.replace(/\*\*\*\*\*\*\*\*\*/g, "9")
-		.replace(/\*\*\*\*\*\*\*\*/g, "8")
-		.replace(/\*\*\*\*\*\*\*/g, "7")
-		.replace(/\*\*\*\*\*\*/g, "6")
-		.replace(/\*\*\*\*\*/g, "5")
-		.replace(/\*\*\*\*/g, "4")
-		.replace(/\*\*\*/g, "3")
-		.replace(/\*\*/g, "2")
-		.replace(/\*/g, "1");
+	--tempArr.length;
+	return tempArr.join("");
 };
 
 // 取得指定弧度值旋转 CSS 样式
@@ -1736,8 +1741,11 @@ vschess.init = function(options){
 
 // 将军检查器
 vschess.checkThreat = function(situation){
-	var RegExp = vschess.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vschess.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	}
+
 	situation = situation.slice(0);
 	var kingIndex = 0;
 	var player = situation[0];
@@ -1830,8 +1838,11 @@ vschess.checkThreat = function(situation){
 
 // 检查局面是否有合法着法（未被将杀或困毙）
 vschess.hasLegalMove = function(situation){
-	var RegExp = vschess.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vschess.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	}
+
 	var legalList = [];
 	var player = situation[0];
 	var enermy = 3 - player;
@@ -1966,8 +1977,11 @@ vschess.hasLegalMove = function(situation){
 
 // 着法生成器（索引模式）
 vschess.legalList = function(situation){
-	var RegExp = vschess.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vschess.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	}
+
 	var legalList = [];
 	var player = situation[0];
 	var enermy = 3 - player;
@@ -2097,8 +2111,11 @@ vschess.legalList = function(situation){
 
 // 着法生成器（坐标模式）
 vschess.legalMoveList = function(situation){
-	var RegExp = vschess.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vschess.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	}
+
 	var legalList = vschess.legalList(situation), result = [];
 
 	for (var i = 0; i < legalList.length; ++i) {
@@ -2206,8 +2223,11 @@ vschess.killMove = function(fen){
 
 // 是否有杀棋着法
 vschess.hasKillMove = function(situation){
-	var RegExp = vschess.RegExp();
-	RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	if (typeof situation === "string") {
+		var RegExp = vschess.RegExp();
+		RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
+	}
+
 	var legalList = vschess.legalList(situation);
 
 	for (var i = 0; i < legalList.length; ++i) {
@@ -2456,7 +2476,7 @@ vschess.load.prototype.createLoading = function(selector){
 
 // 初始化起始局面
 vschess.load.prototype.initStart = function(){
-	this.node = vschess.dataToNode(this.chessData, this.options.parseType);
+	this.setNode(vschess.dataToNode(this.chessData, this.options.parseType));
 	this.rebuildSituation();
 	this.setTurn		 (this.options.turn);
 	this.setBoardByStep	 (this.options.currentStep);
@@ -2782,9 +2802,9 @@ vschess.stepList2nodeList = function(moveList, fen){
 vschess.moveListToData_PGN = function(moveList, startFen, commentList, infoList, result){
 	var RegExp = vschess.RegExp();
 
-	if (RegExp.FenShort.test(moveList[0])) {
+	if (moveList[0] && moveList[0].length > 4 && RegExp.FenShort.test(moveList[0])) {
 		moveList = moveList.slice(0);
-		startFen = moveList.shift();
+		startFen = moveList.shift( );
 	}
 	else {
 		RegExp.FenShort.test(startFen) || (startFen = vschess.defaultFen);
@@ -4904,7 +4924,37 @@ vschess.load.prototype.createEdit = function(){
 	this.tabArea.append(this.editTitle);
 	this.tabArea.append(this.editArea );
 	this.editTitle.bind(this.options.click, function(){ _this.showTab("edit"); });
+	this.recommendStartList = this.options.recommendList;
 	this.createEditStartButton();
+	this.createNodeStartButton();
+	this.createEditOtherButton();
+	this.showEditStartButton();
+
+	if (this.options.cloudApi && this.options.cloudApi.startFen) {
+		$.ajax({
+			url: this.options.cloudApi.startFen,
+			dataType: "jsonp",
+			success: function(data){
+				typeof data === "string" && (data = $.parseJSON(data));
+
+				if (data.code === 0) {
+					_this.recommendStartList = _this.options.recommendList.concat(data.data);
+				}
+				else {
+				}
+			}
+		});
+	}
+
+	return this;
+};
+
+// 创建编辑局面区域非即时加载组件
+vschess.load.prototype.createEditOtherItem = function(){
+	if (this._.editCreated) {
+		return this;
+	}
+
 	this.createEditEndButton();
 	this.createEditCancelButton();
 	this.createEditTextarea();
@@ -4914,13 +4964,11 @@ vschess.load.prototype.createEdit = function(){
 	this.createEditStartPlayer();
 	this.createEditBoard();
 	this.createRecommendList();
-	this.createNodeStartButton();
 	this.createNodeEndButton();
 	this.createNodeCancelButton();
 	this.createNodeEditTextarea();
 	this.createNodeEditPlaceholder();
-	this.createEditOtherButton();
-	this.showEditStartButton();
+	this._.editCreated = true;
 	return this;
 };
 
@@ -4985,6 +5033,7 @@ vschess.load.prototype.createEditStartButton = function(){
 	this.editStartButton.appendTo(this.editArea);
 
 	this.editStartButton.bind(this.options.click, function(){
+		_this.createEditOtherItem();
 		_this.pause(false);
 		_this.fillInRecommendList(0);
 		_this.hideEditStartButton();
@@ -5038,7 +5087,7 @@ vschess.load.prototype.createEditEndButton = function(){
 			_this.hideEditModule();
 			_this.showEditStartButton();
 			_this.editTextarea.val("");
-			_this.node = { fen: fen, comment: "", next: [], defaultIndex: 0 };
+			_this.setNode({ fen: fen, comment: "", next: [], defaultIndex: 0 });
 			_this.rebuildSituation();
 			_this.setBoardByStep(0);
 			_this.refreshMoveSelectListNode();
@@ -5326,28 +5375,7 @@ vschess.load.prototype.createRecommendList = function(){
 	this.DOM.append(this.recommendClass);
 	this.DOM.append(this.recommendList );
 	this.recommendClass.bind("change", function(){ _this.fillInRecommendList(this.selectedIndex); });
-
-	if (this.options.cloudApi && this.options.cloudApi.startFen) {
-		$.ajax({
-			url: this.options.cloudApi.startFen,
-			dataType: "jsonp",
-			success: function(data){
-				typeof data === "string" && (data = $.parseJSON(data));
-
-				if (data.code === 0) {
-					_this.recommendStartList = _this.options.recommendList.concat(data.data);
-					_this.fillInRecommendClass();
-				}
-				else {
-				}
-			},
-			error: function(){
-				_this.recommendStartList = _this.options.recommendList.slice(0);
-				_this.fillInRecommendClass();
-			}
-		});
-	}
-
+	this.fillInRecommendClass();
 	return this;
 };
 
@@ -5433,6 +5461,7 @@ vschess.load.prototype.createNodeStartButton = function(){
 	this.editNodeStartButton.appendTo(this.editArea);
 
 	this.editNodeStartButton.bind(this.options.click, function(){
+		_this.createEditOtherItem();
 		_this.pause(false);
 		_this.hideEditModule();
 		_this.hideEditStartButton();
@@ -5456,7 +5485,7 @@ vschess.load.prototype.createNodeEndButton = function(){
 		var chessData = _this.editNodeTextarea.val();
 		_this.editNodeTextarea.val("");
 		_this.setBoardByStep(0);
-		_this.node = vschess.dataToNode(chessData);
+		_this.setNode(vschess.dataToNode(chessData));
 		_this.rebuildSituation().refreshMoveSelectListNode().setBoardByStep(0);
 		_this.chessInfo = vschess.dataToInfo(chessData, "auto");
 		_this.insertInfoByCurrent();
@@ -5540,7 +5569,7 @@ vschess.load.prototype.createEditOtherButton = function(){
 					var chessData = vschess.join(fileData);
 					fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vschess.iconv2UTF8(fileData));
 					_this.setBoardByStep(0);
-					_this.node = vschess.dataToNode(chessData);
+					_this.setNode(vschess.dataToNode(chessData));
 					_this.rebuildSituation();
 					_this.refreshMoveSelectListNode();
 					_this.setBoardByStep(0);
@@ -5573,7 +5602,7 @@ vschess.load.prototype.createEditOtherButton = function(){
 			return false;
 		}
 
-		_this.node = { fen: vschess.defaultFen, comment: "", next: [], defaultIndex: 0 };
+		_this.setNode({ fen: vschess.defaultFen, comment: "", next: [], defaultIndex: 0 });
 		_this.rebuildSituation();
 		_this.refreshMoveSelectListNode();
 		_this.setBoardByStep(0);
@@ -5591,6 +5620,7 @@ vschess.load.prototype.createEditOtherButton = function(){
 	this.editBlankButton.appendTo(this.editArea);
 
 	this.editBlankButton.bind(this.options.click, function(){
+		_this.createEditOtherItem();
 		_this.pause(false);
 		_this.fillInRecommendList(0);
 		_this.hideEditStartButton();
@@ -5629,7 +5659,7 @@ vschess.load.prototype.bindDrag = function(){
 				var chessData = vschess.join(fileData);
 				fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vschess.iconv2UTF8(fileData));
 				_this.setBoardByStep(0);
-				_this.node = vschess.dataToNode(chessData);
+				_this.setNode(vschess.dataToNode(chessData));
 				_this.rebuildSituation();
 				_this.refreshMoveSelectListNode();
 				_this.setBoardByStep(0);
@@ -5793,14 +5823,13 @@ vschess.load.prototype.setExportFormat = function(format, force){
 
 // 重建所有棋谱
 vschess.load.prototype.rebuildExportAll = function(all){
-	var nodeLength = this.refreshNodeLength();
 	this.rebuildExportPGN();
 	this.rebuildExportText();
 	this.rebuildExportQQ();
 
 	// 大棋谱生成东萍 DhtmlXQ 格式和鹏飞 PFC 格式比较拖性能
-	(nodeLength < vschess.bigBookCritical || all) && this.rebuildExportPengFei();
-	(nodeLength < vschess.bigBookCritical || all) && this.rebuildExportDhtmlXQ();
+	(this.getNodeLength() < vschess.bigBookCritical || all) && this.rebuildExportPengFei();
+	(this.getNodeLength() < vschess.bigBookCritical || all) && this.rebuildExportDhtmlXQ();
 
 	this.hideExportFormatIfNeedStart();
 	return this;
@@ -5873,7 +5902,7 @@ vschess.load.prototype.rebuildExportPengFei = function(){
 	return this;
 };
 
-// 重建东萍 Dhtml 格式棋谱
+// 重建东萍 DhtmlXQ 格式棋谱
 vschess.load.prototype.rebuildExportDhtmlXQ = function(){
 	this.exportData.DhtmlXQ  = vschess.nodeToData_DhtmlXQ(this.node, this.chessInfo);
 	this.exportData.DhtmlXQM = vschess.turn_DhtmlXQ(this.exportData.DhtmlXQ);
@@ -5884,12 +5913,12 @@ vschess.load.prototype.rebuildExportDhtmlXQ = function(){
 vschess.load.prototype.hideExportFormatIfNeedStart = function(){
 	if (this.getFenByStep(0).split(" ", 2).join(" ") === vschess.defaultFen.split(" ", 2).join(" ")) {
 		for (var i in vschess.exportFormatList) {
-			this.exportFormatOptions[i].show();
+			this.exportFormatOptions[i][0].style.display = "block";
 		}
 	}
 	else {
 		for (var i = 0; i < vschess.exportFormatListIfNeedStart.length; ++i) {
-			this.exportFormatOptions[vschess.exportFormatListIfNeedStart[i]].hide();
+			this.exportFormatOptions[vschess.exportFormatListIfNeedStart[i]][0].style.display = "none";
 		}
 	}
 
@@ -5938,7 +5967,6 @@ vschess.load.prototype.createInfo = function(){
 	this.tabArea.append(this.infoArea );
 	this.infoTitle.bind(this.options.click, function(){ _this.showTab("info"); });
 	this.createInfoList();
-	this.createInfoEditor();
 	return this;
 };
 
@@ -5980,10 +6008,16 @@ vschess.load.prototype.insertInfoByCurrent = function(){
 		this.infoItem[i] = $('<li class="vschess-tab-body-info-item">' + vschess.info.name[i] + '\uff1a' + vschess.showText(this.chessInfo[i], i) + '</li>');
 		this.infoList.append(this.infoItem[i]);
 	}
+
+	return this;
 };
 
 // 创建棋局信息编辑器
 vschess.load.prototype.createInfoEditor = function(){
+	if (this._.editCreated) {
+		return this;
+	}
+
 	var _this = this;
 	this.infoEditorArea = $('<div class="vschess-info-editor-area"></div>');
 	this.infoEditorList = $('<ul class="vschess-info-editor-list"></ul>');
@@ -6078,6 +6112,7 @@ vschess.load.prototype.createInfoEditor = function(){
 		_this.setInfoEditorItemValueResult(result);
 	});
 
+	this._.editCreated = true;
 	return this;
 };
 
@@ -6117,6 +6152,7 @@ vschess.load.prototype.setChessTitle = function(title){
 
 // 显示棋局信息编辑器
 vschess.load.prototype.showInfoEditor = function(){
+	this.createInfoEditor();
 	this.infoEditorArea.addClass("vschess-info-editor-show");
 	return this;
 };
@@ -6141,13 +6177,17 @@ vschess.load.prototype.getInfoFromEditor = function(){
 
 // 获取当前对弈结果
 vschess.load.prototype.getResultByCurrent = function(){
-	return this.infoEditorItemValue.result.val() || this.getAutoResultByCurrent();
+	if (this._.editCreated) {
+		return this.infoEditorItemValue.result.val() || this.getAutoResultByCurrent();
+	}
+
+	return this.getAutoResultByCurrent();
 };
 
 // 自动识别当前分支的对弈结果
 vschess.load.prototype.getAutoResultByCurrent = function(){
 	var lastSituation = this.situationList[this.lastSituationIndex()];
-	return !vschess.legalList(lastSituation).length ? lastSituation[0] === 1 ? "0-1" : "1-0" : "*";
+	return !vschess.hasLegalMove(lastSituation) ? lastSituation[0] === 1 ? "0-1" : "1-0" : "*";
 };
 
 // 着法选择列表
@@ -6347,7 +6387,7 @@ vschess.load.prototype.refreshChangeSelectListNode = function(){
 			}
 
 			--changeList.length;
-			_this.rebuildSituation().refreshBoard().refreshMoveSelectListNode();
+			_this.rebuildSituation().refreshBoard().refreshMoveSelectListNode().refreshNodeLength();
 		});
 	});
 
@@ -6670,11 +6710,11 @@ vschess.load.prototype.rebuildSituation = function(){
 		lastSituation[0]    = 3  -   lastSituation[0];
 		lastSituation[0]  === 1 && ++lastSituation[1];
 
-		this.eatStatus.push(vschess.countPieceLength(lastSituation) !== prevPieceCount);
-		this.moveList.push(currentNode.move);
-		this.commentList.push(currentNode.comment ? decodeURIComponent(currentNode.comment) : "");
-		this.situationList.push(lastSituation);
-		this.fenList.push(vschess.situationToFen(lastSituation));
+		this.eatStatus		.push(vschess.countPieceLength(lastSituation) !== prevPieceCount);
+		this.moveList		.push(currentNode.move);
+		this.commentList	.push(currentNode.comment ? decodeURIComponent(currentNode.comment) : "");
+		this.situationList	.push(lastSituation);
+		this.fenList		.push(vschess.situationToFen(lastSituation));
 
 		var wxf  = vschess.Node2WXF(currentNode.move, prevFen).move;
 		var wxfM = wxf.charCodeAt(1) > 96 ? vschess.Node2WXF(vschess.turnMove(currentNode.move), vschess.turnFen(prevFen)).move : vschess.turnWXF(wxf);
@@ -6695,7 +6735,7 @@ vschess.load.prototype.selectDefault = function(step){
 	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	var currentNode = this.node;
 
-	for (var i=0;i<step;++i) {
+	for (var i = 0; i < step; ++i) {
 		currentNode = currentNode.next[currentNode.defaultIndex];
 	}
 
@@ -6718,7 +6758,12 @@ vschess.load.prototype.hasMoveAtNode = function(move, step){
 // 节点增加着法
 vschess.load.prototype.addNodeByMoveName = function(move, step){
 	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
-	this.hasMoveAtNode(move, step) || this.selectDefault(step).next.push({ move: move, comment: "", next: [], defaultIndex: 0 });
+
+	if (!this.hasMoveAtNode(move, step)) {
+		this.selectDefault(step).next.push({ move: move, comment: "", next: [], defaultIndex: 0 });
+		++this._.nodeLength;
+	}
+
 	return this;
 };
 
@@ -6731,7 +6776,7 @@ vschess.load.prototype.setMoveDefaultAtNode = function(move, step){
 		return false;
 	}
 
-	for (var i=0;i<currentNode.next.length;++i) {
+	for (var i = 0; i < currentNode.next.length; ++i) {
 		if (currentNode.next[i].move === move) {
 			currentNode.defaultIndex = i;
 			this.setSaved(false);
@@ -6758,26 +6803,33 @@ vschess.load.prototype.getMoveNameList = function(format, isMirror){
 	return this;
 };
 
-// 刷新并取得节点数
+// 刷新节点数
 vschess.load.prototype.refreshNodeLength = function(){
-	var total = 0;
+	var total = 1;
 
 	function countNode(node){
-		++total;
+		total += node.next.length;
 
-		for (var i=0;i<node.next.length;++i) {
+		for (var i = 0; i < node.next.length; ++i) {
 			countNode(node.next[i]);
 		}
 	}
 
 	countNode(this.node);
 	this._.nodeLength = total;
-	return total;
+	return this;
 };
 
 // 取得节点数
 vschess.load.prototype.getNodeLength = function(){
 	return this._.nodeLength;
+};
+
+// 设置当前节点树
+vschess.load.prototype.setNode = function(node){
+	this.node = node;
+	this.refreshNodeLength();
+	return this;
 };
 
 // 棋子单击事件绑定
