@@ -34,10 +34,11 @@ fn.createEdit = function(){
 
 // 创建编辑局面区域非即时加载组件
 fn.createEditOtherItem = function(){
-	if (this._.editCreated) {
+	if (this._.fenEditorCreated) {
 		return this;
 	}
 
+	this._.fenEditorCreated = true;
 	this.createEditEndButton();
 	this.createEditCancelButton();
 	this.createEditTextarea();
@@ -51,7 +52,6 @@ fn.createEditOtherItem = function(){
 	this.createNodeCancelButton();
 	this.createNodeEditTextarea();
 	this.createNodeEditPlaceholder();
-	this._.editCreated = true;
 	return this;
 };
 

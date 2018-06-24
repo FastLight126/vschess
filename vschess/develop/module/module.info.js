@@ -55,11 +55,12 @@ fn.insertInfoByCurrent = function(){
 
 // 创建棋局信息编辑器
 fn.createInfoEditor = function(){
-	if (this._.editCreated) {
+	if (this._.infoEditorCreated) {
 		return this;
 	}
 
 	var _this = this;
+	this._.infoEditorCreated = true;
 	this.infoEditorArea = $('<div class="vschess-info-editor-area"></div>');
 	this.infoEditorList = $('<ul class="vschess-info-editor-list"></ul>');
 	this.infoEditorArea.append(this.infoEditorList);
@@ -153,12 +154,13 @@ fn.createInfoEditor = function(){
 		_this.setInfoEditorItemValueResult(result);
 	});
 
-	this._.editCreated = true;
 	return this;
 };
 
 // 刷新棋局信息编辑器
 fn.refreshInfoEditor = function(){
+	this.createInfoEditor();
+
 	for (var i in vs.info.name) {
 		if (i === "result") {
 			var result = vs.dataText(this.chessInfo[i] || "", i);
@@ -175,6 +177,8 @@ fn.refreshInfoEditor = function(){
 
 // 根据结果设置选择结果单选按钮
 fn.setInfoEditorItemValueResult = function(result){
+	this.createInfoEditor();
+
 	switch (result) {
 		case     "1-0": this.infoEditorItemValueResult.r_radio.attr("checked", "checked"); break;
 		case     "0-1": this.infoEditorItemValueResult.b_radio.attr("checked", "checked"); break;
@@ -200,6 +204,7 @@ fn.showInfoEditor = function(){
 
 // 隐藏棋局信息编辑器
 fn.hideInfoEditor = function(){
+	this.createInfoEditor();
 	this.infoEditorArea.removeClass("vschess-info-editor-show");
 	return this;
 };

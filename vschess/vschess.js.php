@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Shanghai');
 header('Content-type: application/x-javascript; charset=utf-8');
 include 'develop/class.JavaScriptPacker.php';
 
-$version = '2.1.0';
+$version = '2.2.0';
 $developList = scandir('develop/module');
 unset($developList[0], $developList[1]);
 $module[] = 'start.js';
@@ -59,7 +59,7 @@ foreach ($module as $filename) {
 	$code = str_replace('vs.', 'vschess.', $code);
 	$code = str_replace('fn.', 'vschess.load.prototype.', $code);
 
-	$jsMain .= trim($code). "\n\n";
+	$jsMain .= "/*** {$filename} ***/\n". trim($code). "\n\n";
 }
 
 $jsMainLines = explode("\n", $jsMain);
@@ -82,7 +82,7 @@ $jsMainCovert = str_replace('https:##', 'https://', $jsMainCovert);
 $javascript = trim($jsBegin. "\n\n". trim($jsMainCovert). "\n\n". '})();');
 $packer = new JavaScriptPacker($javascript, 'Normal', true, false); // None, Numeric, Normal, High ASCII
 $packed = "/* Weisi Chess Player V{$version} https://www.xiaxiangqi.com/ Copyright. */\n". trim($packer->pack());
-file_put_contents('vschess.js', $javascript);
+file_put_contents('vschess.js', preg_replace('/\\/\\*\\*\\*(.*)\\*\\*\\*\\/\\n/', '', $javascript));
 file_put_contents('vschess.min.js', $packed);
 $_GET['pack'] ? print($packed) : print($javascript);
 

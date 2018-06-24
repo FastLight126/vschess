@@ -1,5 +1,5 @@
 /*
- * 微思象棋播放器 V2.1.0
+ * 微思象棋播放器 V2.2.0
  * https://www.xiaxiangqi.com/
  *
  * Copyright @ 2009-2018 Margin.Top 版权所有
@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年6月24日
- * Sun, 24 Jun 2018 03:46:03 +0800
+ * Sun, 24 Jun 2018 16:59:55 +0800
  */
 
 (function(){
@@ -42,7 +42,7 @@ else {
 // 主程序
 var vschess = {
 	// 当前版本号
-	version: "2.1.0",
+	version: "2.2.0",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -2160,7 +2160,6 @@ vschess.checkFen = function(fen){
 				}
 			}
 		}
-
 	}
 
 	board[45] === "P" && board[54] === "P" && push("\u7ea2\u65b9\u4e5d\u8def\u51fa\u73b0\u672a\u8fc7\u6cb3\u7684\u91cd\u53e0\u5175");
@@ -2295,7 +2294,7 @@ vschess.repeatLongThreatMove = function(moveList){
 
 // 计算一将一杀着法
 vschess.repeatLongKillMove = function(moveList){
-	if (moveList.length < 13) {
+	if (moveList.length < 13 || vschess.repeatLongThreatMove(moveList)) {
 		return [];
 	}
 
@@ -4951,10 +4950,11 @@ vschess.load.prototype.createEdit = function(){
 
 // 创建编辑局面区域非即时加载组件
 vschess.load.prototype.createEditOtherItem = function(){
-	if (this._.editCreated) {
+	if (this._.fenEditorCreated) {
 		return this;
 	}
 
+	this._.fenEditorCreated = true;
 	this.createEditEndButton();
 	this.createEditCancelButton();
 	this.createEditTextarea();
@@ -4968,7 +4968,6 @@ vschess.load.prototype.createEditOtherItem = function(){
 	this.createNodeCancelButton();
 	this.createNodeEditTextarea();
 	this.createNodeEditPlaceholder();
-	this._.editCreated = true;
 	return this;
 };
 
@@ -6014,11 +6013,12 @@ vschess.load.prototype.insertInfoByCurrent = function(){
 
 // 创建棋局信息编辑器
 vschess.load.prototype.createInfoEditor = function(){
-	if (this._.editCreated) {
+	if (this._.infoEditorCreated) {
 		return this;
 	}
 
 	var _this = this;
+	this._.infoEditorCreated = true;
 	this.infoEditorArea = $('<div class="vschess-info-editor-area"></div>');
 	this.infoEditorList = $('<ul class="vschess-info-editor-list"></ul>');
 	this.infoEditorArea.append(this.infoEditorList);
@@ -6112,12 +6112,13 @@ vschess.load.prototype.createInfoEditor = function(){
 		_this.setInfoEditorItemValueResult(result);
 	});
 
-	this._.editCreated = true;
 	return this;
 };
 
 // 刷新棋局信息编辑器
 vschess.load.prototype.refreshInfoEditor = function(){
+	this.createInfoEditor();
+
 	for (var i in vschess.info.name) {
 		if (i === "result") {
 			var result = vschess.dataText(this.chessInfo[i] || "", i);
@@ -6134,6 +6135,8 @@ vschess.load.prototype.refreshInfoEditor = function(){
 
 // 根据结果设置选择结果单选按钮
 vschess.load.prototype.setInfoEditorItemValueResult = function(result){
+	this.createInfoEditor();
+
 	switch (result) {
 		case     "1-0": this.infoEditorItemValueResult.r_radio.attr("checked", "checked"); break;
 		case     "0-1": this.infoEditorItemValueResult.b_radio.attr("checked", "checked"); break;
@@ -6159,6 +6162,7 @@ vschess.load.prototype.showInfoEditor = function(){
 
 // 隐藏棋局信息编辑器
 vschess.load.prototype.hideInfoEditor = function(){
+	this.createInfoEditor();
 	this.infoEditorArea.removeClass("vschess-info-editor-show");
 	return this;
 };

@@ -419,7 +419,6 @@ vs.checkFen = function(fen){
 				}
 			}
 		}
-
 	}
 
 	board[45] === "P" && board[54] === "P" && push("红方九路出现未过河的重叠兵");
@@ -554,7 +553,7 @@ vs.repeatLongThreatMove = function(moveList){
 
 // 计算一将一杀着法
 vs.repeatLongKillMove = function(moveList){
-	if (moveList.length < 13) {
+	if (moveList.length < 13 || vs.repeatLongThreatMove(moveList)) {
 		return [];
 	}
 
