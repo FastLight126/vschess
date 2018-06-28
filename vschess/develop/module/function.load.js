@@ -79,7 +79,6 @@ fn.createBoard = function(){
 	this.createControlBar();
 	this.createMessageBox();
 	this.createFormatBar();
-	this.createHelp();
 	this.createTab();
 	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
 	this.chessId  = vs.chessList.length;

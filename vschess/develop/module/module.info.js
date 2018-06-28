@@ -204,7 +204,10 @@ fn.showInfoEditor = function(){
 
 // 隐藏棋局信息编辑器
 fn.hideInfoEditor = function(){
-	this.createInfoEditor();
+	if (!this._.infoEditorCreated) {
+		return this;
+	}
+
 	this.infoEditorArea.removeClass("vschess-info-editor-show");
 	return this;
 };

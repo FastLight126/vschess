@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月24日
- * Sun, 24 Jun 2018 16:59:55 +0800
+ * 最后修改日期：北京时间 2018年6月26日
+ * Tue, 26 Jun 2018 13:18:16 +0800
  */
 
 (function(){
@@ -515,7 +515,7 @@ vschess.defaultOptions = {
 		"\u6807\u6709\u661f\u53f7\u7684\u7740\u6cd5\u542b\u6709\u6ce8\u89e3",
 		"\u652f\u6301\u4e1c\u840d\u3001\u9e4f\u98de\u7b49\u591a\u79cd\u683c\u5f0f",
 		"\u5355\u51fb\u201c\u590d\u5236\u201d\u590d\u5236\u5f53\u524d\u5c40\u9762",
-		'<a href="https://www.xiaxiangqi.com/" target="_blank">\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V' + vschess.version + "</a>",
+		'<a href="https://chess.appchizi.com/" target="_blank">\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V' + vschess.version + "</a>",
 		'<a href="https://margin.top/" target="_blank">Margin.Top &copy; \u7248\u6743\u6240\u6709</a>'
 	],
 
@@ -529,9 +529,9 @@ vschess.defaultOptions = {
 
 	// 云服务 API 地址
 	cloudApi: {
-		startFen: "https://www.xiaxiangqi.com/api/cloud/startfen",
-		saveBook: "https://www.xiaxiangqi.com/api/cloud/savebook",
-		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save"
+		startFen: "https://chess.appchizi.com/api/cloud/startfen",
+		saveBook: "https://chess.appchizi.com/api/cloud/savebook",
+		saveBookForShare: "https://chess.appchizi.com/api/cloud/book/save"
 	},
 
 	// 默认推荐起始局面列表
@@ -575,9 +575,9 @@ vschess.defaultOptions.help += '<h2>9.&ensp;&ensp;\u7f16\u8f91\u5c40\u9762\u4f1a
 vschess.defaultOptions.help += '<h2>10.&ensp;\u7f16\u8f91\u5c40\u9762\u6807\u7b7e\u4e2d\uff0c\u53ef\u4ee5\u76f4\u63a5\u6253\u5f00\u7535\u8111\u4e2d\u7684\u68cb\u8c31\uff0c\u4e5f\u53ef\u4ee5\u76f4\u63a5\u5c06\u68cb\u8c31\u6587\u4ef6\u62d6\u62fd\u5230\u672c\u68cb\u76d8\u4e0a\u3002</h2>';
 vschess.defaultOptions.help += '<h2>11.&ensp;\u652f\u6301\u4e1c\u840d\u3001\u9e4f\u98de\u3001\u8c61\u68cb\u4e16\u5bb6\u3001\u6807\u51c6PGN\u3001\u4e2d\u56fd\u6e38\u620f\u4e2d\u5fc3\u3001QQ\u8c61\u68cb\u7b49\u683c\u5f0f\uff0c\u5176\u4ed6\u683c\u5f0f\u7a0b\u5e8f\u4e5f\u4f1a\u5c1d\u8bd5\u81ea\u52a8\u8bc6\u522b\u3002</h2>';
 vschess.defaultOptions.help += '<h2>12.&ensp;\u68cb\u76d8\u9009\u9879\u4e2d\uff0c\u53ef\u4ee5\u63a7\u5236\u68cb\u76d8\u65b9\u5411\u3001\u64ad\u653e\u901f\u5ea6\u3001\u8d70\u5b50\u58f0\u97f3\u7b49\u3002</h2>';
-vschess.defaultOptions.help += '<h2>13.&ensp;\u68cb\u8c31\u5206\u4eab\u529f\u80fd\u751f\u6210\u7684\u8bba\u575b UBB \u4ee3\u7801\uff0c\u53ef\u4ee5\u5728\u652f\u6301\u8be5\u4ee3\u7801\u7684\u8bba\u575b\u4e2d\u4f7f\u7528\u3002<a href="https://www.xiaxiangqi.com/" target="_blank">\u3010\u67e5\u770b\u90fd\u6709\u54ea\u4e9b\u8bba\u575b\u652f\u6301\u8be5\u4ee3\u7801\u3011</a></h2>';
+vschess.defaultOptions.help += '<h2>13.&ensp;\u68cb\u8c31\u5206\u4eab\u529f\u80fd\u751f\u6210\u7684\u8bba\u575b UBB \u4ee3\u7801\uff0c\u53ef\u4ee5\u5728\u652f\u6301\u8be5\u4ee3\u7801\u7684\u8bba\u575b\u4e2d\u4f7f\u7528\u3002<a href="https://chess.appchizi.com/" target="_blank">\u3010\u67e5\u770b\u90fd\u6709\u54ea\u4e9b\u8bba\u575b\u652f\u6301\u8be5\u4ee3\u7801\u3011</a></h2>';
 vschess.defaultOptions.help += '<hr />';
-vschess.defaultOptions.help += '<h2><a href="https://www.xiaxiangqi.com/" target="_blank">\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V' + vschess.version + '</a> <a href="https://margin.top/" target="_blank">Margin.Top &copy; \u7248\u6743\u6240\u6709</a></h2>';
+vschess.defaultOptions.help += '<h2><a href="https://chess.appchizi.com/" target="_blank">\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V' + vschess.version + '</a> <a href="https://margin.top/" target="_blank">Margin.Top &copy; \u7248\u6743\u6240\u6709</a></h2>';
 
 // IE6 兼容，棋子 PNG 图片透明，如果需要自定义棋子图片路径，请参考官方文档
 vschess.IE6Compatible_setPieceTransparent = function(options){
@@ -2424,7 +2424,6 @@ vschess.load.prototype.createBoard = function(){
 	this.createControlBar();
 	this.createMessageBox();
 	this.createFormatBar();
-	this.createHelp();
 	this.createTab();
 	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
 	this.chessId  = vschess.chessList.length;
@@ -5926,6 +5925,11 @@ vschess.load.prototype.hideExportFormatIfNeedStart = function(){
 
 // 创建帮助区域
 vschess.load.prototype.createHelp = function(){
+	if (this._.helpAreaCreated) {
+		return this;
+	}
+
+	this._.helpAreaCreated = true;
 	var _this = this;
 	var helpDetail = this.options.help.replace(/#quickStepOffsetRound#/g, this._.quickStepOffset / 2).replace(/#quickStepOffset#/g, this._.quickStepOffset);
 	this.helpArea = $('<div class="vschess-help-area"></div>');
@@ -5939,6 +5943,10 @@ vschess.load.prototype.createHelp = function(){
 
 // 刷新帮助信息
 vschess.load.prototype.refreshHelp = function(){
+	if (!this._.helpAreaCreated) {
+		return this;
+	}
+
 	var helpDetail = this.options.help.replace(/#quickStepOffsetRound#/g, this._.quickStepOffset / 2).replace(/#quickStepOffset#/g, this._.quickStepOffset);
 	this.helpArea.children(".vschess-help-area-detail").html(helpDetail);
 	return this;
@@ -5946,12 +5954,17 @@ vschess.load.prototype.refreshHelp = function(){
 
 // 显示帮助区域
 vschess.load.prototype.showHelpArea = function(){
+	this.createHelp();
 	this.helpArea.addClass("vschess-help-show");
 	return this;
 };
 
 // 隐藏帮助区域
 vschess.load.prototype.hideHelpArea = function(){
+	if (!this._.helpAreaCreated) {
+		return this;
+	}
+
 	this.helpArea.removeClass("vschess-help-show");
 	return this;
 };
@@ -6162,7 +6175,10 @@ vschess.load.prototype.showInfoEditor = function(){
 
 // 隐藏棋局信息编辑器
 vschess.load.prototype.hideInfoEditor = function(){
-	this.createInfoEditor();
+	if (!this._.infoEditorCreated) {
+		return this;
+	}
+
 	this.infoEditorArea.removeClass("vschess-info-editor-show");
 	return this;
 };
