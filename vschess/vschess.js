@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年6月26日
- * Tue, 26 Jun 2018 13:18:16 +0800
+ * 最后修改日期：北京时间 2018年7月15日
+ * Sun, 15 Jul 2018 00:19:19 +0800
  */
 
 (function(){
@@ -638,7 +638,7 @@ vschess.dataToInfo_PFC = function(chessData){
 	var node  = $($.trim(chessData)), result = {};
 
 	for (var i in vschess.info.name) {
-		node.attr(i) && (result[i] = node.attr(i));
+		node.attr(i) && (result[i] = vschess.stripTags(node.attr(i)));
 	}
 
 	return result;
@@ -669,7 +669,7 @@ vschess.dataToInfo_PGN = function(chessData){
 
 	for (var i in vschess.info.name) {
 		var name = vschess.info.pgn[i] || vschess.fieldNameToCamel(i);
-		original[name] && (resultA[i] = original[name]);
+		original[name] && (resultA[i] = vschess.stripTags(original[name]));
 	}
 
 	// 识别模式 B
@@ -681,7 +681,7 @@ vschess.dataToInfo_PGN = function(chessData){
 
 		if (~startPos) {
 			var value = chessData.substring(startPos + startTag.length + 2, chessData.indexOf("]", startPos) - 1);
-			value && (resultB[i] = value);
+			value && (resultB[i] = vschess.stripTags(value));
 		}
 	}
 
@@ -711,7 +711,7 @@ vschess.dataToInfo_DhtmlXQ = function(chessData){
 
 		if (~startPos) {
 			var value = chessData.substring(startPos + startTag.length, chessData.indexOf("[/DhtmlXQ_", startPos));
-			value && (result[i] = value);
+			value && (result[i] = vschess.stripTags(value));
 		}
 	}
 
@@ -1311,6 +1311,23 @@ vschess.fenMovePiece = function(fen, move){
 	return vschess.situationToFen(situation);
 };
 
+// Fen 串颠倒红黑
+vschess.invertFen = function(fen){
+	var RegExp = vschess.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vschess.defaultFen);
+	var fenSplit = fen.split(" ");
+	fenSplit[1]  = fenSplit[1] === "b" ? "w" : "b";
+	fenSplit.length <= 2 && (fenSplit.push("- - 0 1"));
+	var eachPiece = fenSplit[0].split("");
+
+	for (var i = 0; i < eachPiece.length; ++i) {
+		eachPiece[i] = vschess.cca(eachPiece[i]) > 96 ? eachPiece[i].toUpperCase() : eachPiece[i].toLowerCase();
+	}
+
+	fenSplit[0] = eachPiece.join("");
+	return fenSplit.join(" ");
+};
+
 // 获取棋局信息显示文本
 vschess.showText = function(showText, item){
 	var map = {
@@ -1529,6 +1546,11 @@ vschess.textBoard = function(fen, options) {
 
 	text.push(isB ? "\n\n\u7ea2\u65b9" : "\n\n\u7ea2\u65b9 \u8d70\u68cb\u65b9");
 	return text.join("").replace(/--/g, "\u2500");
+};
+
+// 字符串清除标签
+vschess.stripTags = function(str){
+	return $('<div>' + str + '</div>').text();
 };
 
 // GBK 转 UTF-8
@@ -5029,20 +5051,21 @@ vschess.load.prototype.createEditStartButton = function(){
 	var _this = this;
 	this.editStartButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-start-button" value="\u7f16\u8f91\u5c40\u9762" />');
 	this.editStartButton.appendTo(this.editArea);
-
-	this.editStartButton.bind(this.options.click, function(){
-		_this.createEditOtherItem();
-		_this.pause(false);
-		_this.fillInRecommendList(0);
-		_this.hideEditStartButton();
-		_this.hideNodeEditModule();
-		_this.showEditModule();
-		_this.fillEditBoardByFen(_this.getFenByStep(_this.getCurrentStep()));
-		_this.editSelectedIndex = -99;
-		_this.dragPiece = null;
-	});
-
+	this.editStartButton.bind(this.options.click, function(){ _this.showEditBoard(); });
 	return this;
+};
+
+// 显示编辑局面界面
+vschess.load.prototype.showEditBoard = function(){
+	this.createEditOtherItem();
+	this.pause(false);
+	this.fillInRecommendList(0);
+	this.hideEditStartButton();
+	this.hideNodeEditModule();
+	this.showEditModule();
+	this.fillEditBoardByFen(this.getFenByStep(this.getCurrentStep()));
+	this.editSelectedIndex = -99;
+	this.dragPiece = null;
 };
 
 // 创建编辑局面区域结束编辑按钮

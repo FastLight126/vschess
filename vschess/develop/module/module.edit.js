@@ -114,20 +114,21 @@ fn.createEditStartButton = function(){
 	var _this = this;
 	this.editStartButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-start-button" value="编辑局面" />');
 	this.editStartButton.appendTo(this.editArea);
-
-	this.editStartButton.bind(this.options.click, function(){
-		_this.createEditOtherItem();
-		_this.pause(false);
-		_this.fillInRecommendList(0);
-		_this.hideEditStartButton();
-		_this.hideNodeEditModule();
-		_this.showEditModule();
-		_this.fillEditBoardByFen(_this.getFenByStep(_this.getCurrentStep()));
-		_this.editSelectedIndex = -99;
-		_this.dragPiece = null;
-	});
-
+	this.editStartButton.bind(this.options.click, function(){ _this.showEditBoard(); });
 	return this;
+};
+
+// 显示编辑局面界面
+fn.showEditBoard = function(){
+	this.createEditOtherItem();
+	this.pause(false);
+	this.fillInRecommendList(0);
+	this.hideEditStartButton();
+	this.hideNodeEditModule();
+	this.showEditModule();
+	this.fillEditBoardByFen(this.getFenByStep(this.getCurrentStep()));
+	this.editSelectedIndex = -99;
+	this.dragPiece = null;
 };
 
 // 创建编辑局面区域结束编辑按钮
