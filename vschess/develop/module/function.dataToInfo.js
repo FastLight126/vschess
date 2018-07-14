@@ -28,7 +28,7 @@ vs.dataToInfo_PFC = function(chessData){
 	var node  = $($.trim(chessData)), result = {};
 
 	for (var i in vs.info.name) {
-		node.attr(i) && (result[i] = node.attr(i));
+		node.attr(i) && (result[i] = vs.stripTags(node.attr(i)));
 	}
 
 	return result;
@@ -59,7 +59,7 @@ vs.dataToInfo_PGN = function(chessData){
 
 	for (var i in vs.info.name) {
 		var name = vs.info.pgn[i] || vs.fieldNameToCamel(i);
-		original[name] && (resultA[i] = original[name]);
+		original[name] && (resultA[i] = vs.stripTags(original[name]));
 	}
 
 	// 识别模式 B
@@ -71,7 +71,7 @@ vs.dataToInfo_PGN = function(chessData){
 
 		if (~startPos) {
 			var value = chessData.substring(startPos + startTag.length + 2, chessData.indexOf("]", startPos) - 1);
-			value && (resultB[i] = value);
+			value && (resultB[i] = vs.stripTags(value));
 		}
 	}
 
@@ -101,7 +101,7 @@ vs.dataToInfo_DhtmlXQ = function(chessData){
 
 		if (~startPos) {
 			var value = chessData.substring(startPos + startTag.length, chessData.indexOf("[/DhtmlXQ_", startPos));
-			value && (result[i] = value);
+			value && (result[i] = vs.stripTags(value));
 		}
 	}
 
