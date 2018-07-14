@@ -200,6 +200,23 @@ vs.fenMovePiece = function(fen, move){
 	return vs.situationToFen(situation);
 };
 
+// Fen 串颠倒红黑
+vs.invertFen = function(fen){
+	var RegExp = vs.RegExp();
+	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
+	var fenSplit = fen.split(" ");
+	fenSplit[1]  = fenSplit[1] === "b" ? "w" : "b";
+	fenSplit.length <= 2 && (fenSplit.push("- - 0 1"));
+	var eachPiece = fenSplit[0].split("");
+
+	for (var i = 0; i < eachPiece.length; ++i) {
+		eachPiece[i] = vs.cca(eachPiece[i]) > 96 ? eachPiece[i].toUpperCase() : eachPiece[i].toLowerCase();
+	}
+
+	fenSplit[0] = eachPiece.join("");
+	return fenSplit.join(" ");
+};
+
 // 获取棋局信息显示文本
 vs.showText = function(showText, item){
 	var map = {
@@ -418,4 +435,9 @@ vs.textBoard = function(fen, options) {
 
 	text.push(isB ? "\n\n红方" : "\n\n红方 走棋方");
 	return text.join("").replace(/--/g, "─");
+};
+
+// 字符串清除标签
+vs.stripTags = function(str){
+	return $('<div>' + str + '</div>').text();
 };
