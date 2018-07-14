@@ -1,0 +1,19 @@
+.vschess-style-mobile .vschess-board, .vschess-style-mobile .vschess-board-edit { width:360px; height:400px; padding:10px; background:url(board.png) no-repeat 0px 0px, url(board.jpg) no-repeat 0px 0px; background-size:100%; }
+.vschess-style-mobile .vschess-piece, .vschess-style-mobile .vschess-piece-animate, .vschess-style-mobile .vschess-piece-disabled { width:40px; height:40px; }
+.vschess-style-mobile .vschess-piece-S { background:url(piece.png) no-repeat 0px -560px; background-size:100%; }
+.vschess-style-mobile .vschess-piece-s { background:url(piece.png) no-repeat 0px -600px; background-size:100%; }
+.vschess-style-mobile .vschess-piece span, .vschess-style-mobile .vschess-piece-animate span { width:40px; height:40px; background:url(piece.png) no-repeat 0px 40px; background-size:100%; }
+.vschess-style-mobile .vschess-piece-R span { background-position:0px    0px; }
+.vschess-style-mobile .vschess-piece-N span { background-position:0px  -40px; }
+.vschess-style-mobile .vschess-piece-B span { background-position:0px  -80px; }
+.vschess-style-mobile .vschess-piece-A span { background-position:0px -120px; }
+.vschess-style-mobile .vschess-piece-K span { background-position:0px -160px; }
+.vschess-style-mobile .vschess-piece-C span { background-position:0px -200px; }
+.vschess-style-mobile .vschess-piece-P span { background-position:0px -240px; }
+.vschess-style-mobile .vschess-piece-r span { background-position:0px -280px; }
+.vschess-style-mobile .vschess-piece-n span { background-position:0px -320px; }
+.vschess-style-mobile .vschess-piece-b span { background-position:0px -360px; }
+.vschess-style-mobile .vschess-piece-a span { background-position:0px -400px; }
+.vschess-style-mobile .vschess-piece-k span { background-position:0px -440px; }
+.vschess-style-mobile .vschess-piece-c span { background-position:0px -480px; }
+.vschess-style-mobile .vschess-piece-p span { background-position:0px -520px; }

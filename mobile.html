@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="viewport" content="width=640px,target-densitydpi=device-dpi,user-scalable=no;" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style>
+* { margin: 0px; padding: 0px; font-family: "微软雅黑", "宋体", Tahoma, "Arial Unicode MS"; font-size: 10pt; }
+a { text-decoration: none; }
+img { border-top-style: none; border-right-style: none; border-bottom-style: none; border-left-style: none; }
+ul { list-style-type: none; }
+body {}
+div.vschess {}
+</style>
+<script type="text/javascript" src="jquery/jquery.js"></script>
+<!--<script type="text/javascript" src="jquery/zepto.js"></script>-->
+<script type="text/javascript" src="vschess/vschess.js.php"></script>
+<title>中国象棋</title>
+</head>
+<body>
+<div class="vschess"></div>
+<script type="text/javascript">
+var chess;
+
+$.ajax({
+	url: "dhtmlxq2.txt",
+	success: function(chessData){
+		try { console.   time("棋盘加载时间"); } catch (e) {}
+		//try { console.profile("运行时间分析"); } catch (e) {}
+
+		chess = new vschess.load(".vschess", {
+			chessData: chessData,
+			defaultTab: "share",
+			style: "mobile",
+			layout: "mobile",
+			loadFinish: function(){
+				try { console.   timeEnd("棋盘加载时间"); } catch (e) {}
+				//try { console.profileEnd("运行时间分析"); } catch (e) {}
+			}
+		});
+	}
+});
+</script>
+</body>
+</html>
