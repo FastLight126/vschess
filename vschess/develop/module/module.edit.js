@@ -159,7 +159,7 @@ fn.createEditEndButton = function(){
 			var errorMsg = ["当前局面出现下列错误：\n"];
 
 			for (var i = 0; i < errorList.length; ++i) {
-				errorMsg.push(i + 1, ".", errorList[i], i === errorList.length - 1 ? "。\n" : "；\n");
+				errorMsg.push(i + 1, ".", errorList[i], i === errorList.length - 1 ? "。" : "；\n");
 			}
 
 			alert(errorMsg.join(""));

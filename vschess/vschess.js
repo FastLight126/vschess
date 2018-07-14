@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年7月15日
- * Sun, 15 Jul 2018 00:58:08 +0800
+ * Sun, 15 Jul 2018 01:01:50 +0800
  */
 
 (function(){
@@ -5096,7 +5096,7 @@ vschess.load.prototype.createEditEndButton = function(){
 			var errorMsg = ["\u5f53\u524d\u5c40\u9762\u51fa\u73b0\u4e0b\u5217\u9519\u8bef\uff1a\n"];
 
 			for (var i = 0; i < errorList.length; ++i) {
-				errorMsg.push(i + 1, ".", errorList[i], i === errorList.length - 1 ? "\u3002\n" : "\uff1b\n");
+				errorMsg.push(i + 1, ".", errorList[i], i === errorList.length - 1 ? "\u3002" : "\uff1b\n");
 			}
 
 			alert(errorMsg.join(""));
