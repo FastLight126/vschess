@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年7月15日
- * Sun, 15 Jul 2018 00:19:19 +0800
+ * Sun, 15 Jul 2018 00:58:08 +0800
  */
 
 (function(){
@@ -5057,6 +5057,7 @@ vschess.load.prototype.createEditStartButton = function(){
 
 // 显示编辑局面界面
 vschess.load.prototype.showEditBoard = function(){
+	this.showTab("edit");
 	this.createEditOtherItem();
 	this.pause(false);
 	this.fillInRecommendList(0);

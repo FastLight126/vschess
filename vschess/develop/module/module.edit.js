@@ -120,6 +120,7 @@ fn.createEditStartButton = function(){
 
 // 显示编辑局面界面
 fn.showEditBoard = function(){
+	this.showTab("edit");
 	this.createEditOtherItem();
 	this.pause(false);
 	this.fillInRecommendList(0);
