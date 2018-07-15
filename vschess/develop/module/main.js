@@ -3,6 +3,9 @@ var vschess = {
 	// 当前版本号
 	version: "#VERSION#",
 
+	// 版本时间戳
+	timestamp: "#TIMESTAMP#",
+
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
 	// situation[1] 表示的是当前回合数
@@ -228,7 +231,7 @@ var vschess = {
 	tabList: "comment info share export edit config".split(" "),
 
 	// 钩子列表
-	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece".split(" "),
+	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece afterStartFen".split(" "),
 
 	// 默认 Fen 串
 	defaultFen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1",

@@ -25,6 +25,8 @@ fn.createEdit = function(){
 				}
 				else {
 				}
+
+				typeof _this.callback_afterStartFen === "function" && _this.callback_afterStartFen();
 			}
 		});
 	}
