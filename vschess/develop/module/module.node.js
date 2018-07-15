@@ -4,7 +4,7 @@ fn.rebuildSituation = function(){
 	this.fenList   = [this.node.fen];
 	this.moveList  = [this.node.fen];
 	this.eatStatus = [false];
-	this.commentList = [this.node.comment ? decodeURIComponent(this.node.comment) : ""];
+	this.commentList = [this.node.comment || ""];
 	this.changeLengthList = [];
 	this.currentNodeList = [0];
 
@@ -34,7 +34,7 @@ fn.rebuildSituation = function(){
 
 		this.eatStatus		.push(vs.countPieceLength(lastSituation) !== prevPieceCount);
 		this.moveList		.push(currentNode.move);
-		this.commentList	.push(currentNode.comment ? decodeURIComponent(currentNode.comment) : "");
+		this.commentList	.push(currentNode.comment || "");
 		this.situationList	.push(lastSituation);
 		this.fenList		.push(vs.situationToFen(lastSituation));
 
