@@ -53,6 +53,7 @@ $jsBegin = '
 foreach ($module as $filename) {
 	$code = file_get_contents("develop/module/{$filename}");
 	$code = str_replace('#VERSION#', $version, $code);
+	$code = str_replace('#TIMESTAMP#', date('r', $edittime), $code);
 	$code = str_replace('#YEAR#', date('Y'), $code);
 	$code = str_replace('http://', 'http:##', $code);
 	$code = str_replace('https://', 'https:##', $code);

@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年7月15日
- * Sun, 15 Jul 2018 01:01:50 +0800
+ * 最后修改日期：北京时间 2018年7月16日
+ * Mon, 16 Jul 2018 01:49:52 +0800
  */
 
 (function(){
@@ -43,6 +43,9 @@ else {
 var vschess = {
 	// 当前版本号
 	version: "2.2.0",
+
+	// 版本时间戳
+	timestamp: "Mon, 16 Jul 2018 01:49:52 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -269,7 +272,7 @@ var vschess = {
 	tabList: "comment info share export edit config".split(" "),
 
 	// 钩子列表
-	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece".split(" "),
+	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece afterStartFen".split(" "),
 
 	// 默认 Fen 串
 	defaultFen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1",
@@ -926,7 +929,7 @@ vschess.dataToNode_PGN = function(chessData){
 // 将东萍象棋 DhtmlXQ 格式转换为棋谱节点树
 vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 	var DhtmlXQ_Comment	 = {};
-	var DhtmlXQ_Change	 = {};
+	var DhtmlXQ_Change	 = [];
 	var DhtmlXQ_Start	 = "";
 	var DhtmlXQ_MoveList = "";
 	var DhtmlXQ_Fen		 = "";
@@ -950,7 +953,7 @@ vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 		else if (~l.indexOf("[DhtmlXQ_move_")) {
 			var start	 = l.indexOf("]");
 			var changeId = l.substring(14, start);
-			DhtmlXQ_Change[changeId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_"));
+			DhtmlXQ_Change.push({ id: changeId, change: l.substring(start + 1, l.indexOf("[/DhtmlXQ_")) });
 		}
 		else if (~l.indexOf("[DhtmlXQ_fen")) {
 			DhtmlXQ_Fen = l.substring(l.indexOf("[DhtmlXQ_fen") + 13, l.indexOf("[/DhtmlXQ_"));
@@ -1024,10 +1027,27 @@ vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 	moveList.length && makeBranch(moveList, result, 0, 1);
 
 	// 生成变着分支
-	for (var id in DhtmlXQ_Change) {
-		var idSplit  = id.split("_");
-		var moveList = DhtmlXQ_MoveToMove(DhtmlXQ_Change[id]);
-		moveList.length && makeBranch(moveList, branchHashTable[idSplit[0] + "_" + idSplit[1]], idSplit[2], idSplit[1]);
+	var undoList = [];
+
+	for (var i = 0; i < DhtmlXQ_Change.length; ++i) {
+		var line   = DhtmlXQ_Change[i];
+		var id     = line.id.split("_");
+		var target = branchHashTable[id[0] + "_" + id[1]];
+
+		if (target) {
+			var moveList = DhtmlXQ_MoveToMove(line.change);
+			moveList.length && makeBranch(moveList, target, id[2], id[1]);
+			undoList.length = 0;
+		}
+		else {
+			if (~undoList.indexOf(line.id)) {
+				break;
+			}
+			else {
+				DhtmlXQ_Change.push(line   );
+				undoList      .push(line.id);
+			}
+		}
 	}
 
 	return result;
@@ -4962,6 +4982,8 @@ vschess.load.prototype.createEdit = function(){
 				}
 				else {
 				}
+
+				typeof _this.callback_afterStartFen === "function" && _this.callback_afterStartFen();
 			}
 		});
 	}
@@ -6726,7 +6748,7 @@ vschess.load.prototype.rebuildSituation = function(){
 	this.fenList   = [this.node.fen];
 	this.moveList  = [this.node.fen];
 	this.eatStatus = [false];
-	this.commentList = [this.node.comment ? decodeURIComponent(this.node.comment) : ""];
+	this.commentList = [this.node.comment || ""];
 	this.changeLengthList = [];
 	this.currentNodeList = [0];
 
@@ -6756,7 +6778,7 @@ vschess.load.prototype.rebuildSituation = function(){
 
 		this.eatStatus		.push(vschess.countPieceLength(lastSituation) !== prevPieceCount);
 		this.moveList		.push(currentNode.move);
-		this.commentList	.push(currentNode.comment ? decodeURIComponent(currentNode.comment) : "");
+		this.commentList	.push(currentNode.comment || "");
 		this.situationList	.push(lastSituation);
 		this.fenList		.push(vschess.situationToFen(lastSituation));
 
