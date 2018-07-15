@@ -205,7 +205,7 @@ vs.dataToNode_PGN = function(chessData){
 // 将东萍象棋 DhtmlXQ 格式转换为棋谱节点树
 vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 	var DhtmlXQ_Comment	 = {};
-	var DhtmlXQ_Change	 = {};
+	var DhtmlXQ_Change	 = [];
 	var DhtmlXQ_Start	 = "";
 	var DhtmlXQ_MoveList = "";
 	var DhtmlXQ_Fen		 = "";
@@ -229,7 +229,7 @@ vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 		else if (~l.indexOf("[DhtmlXQ_move_")) {
 			var start	 = l.indexOf("]");
 			var changeId = l.substring(14, start);
-			DhtmlXQ_Change[changeId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_"));
+			DhtmlXQ_Change.push({ id: changeId, change: l.substring(start + 1, l.indexOf("[/DhtmlXQ_")) });
 		}
 		else if (~l.indexOf("[DhtmlXQ_fen")) {
 			DhtmlXQ_Fen = l.substring(l.indexOf("[DhtmlXQ_fen") + 13, l.indexOf("[/DhtmlXQ_"));
@@ -303,10 +303,27 @@ vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 	moveList.length && makeBranch(moveList, result, 0, 1);
 
 	// 生成变着分支
-	for (var id in DhtmlXQ_Change) {
-		var idSplit  = id.split("_");
-		var moveList = DhtmlXQ_MoveToMove(DhtmlXQ_Change[id]);
-		moveList.length && makeBranch(moveList, branchHashTable[idSplit[0] + "_" + idSplit[1]], idSplit[2], idSplit[1]);
+	var undoList = [];
+
+	for (var i = 0; i < DhtmlXQ_Change.length; ++i) {
+		var line   = DhtmlXQ_Change[i];
+		var id     = line.id.split("_");
+		var target = branchHashTable[id[0] + "_" + id[1]];
+
+		if (target) {
+			var moveList = DhtmlXQ_MoveToMove(line.change);
+			moveList.length && makeBranch(moveList, target, id[2], id[1]);
+			undoList.length = 0;
+		}
+		else {
+			if (~undoList.indexOf(line.id)) {
+				break;
+			}
+			else {
+				DhtmlXQ_Change.push(line   );
+				undoList      .push(line.id);
+			}
+		}
 	}
 
 	return result;
