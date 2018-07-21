@@ -345,7 +345,7 @@ vs.dataToNode_DHJHtmlXQ = function(chessData){
 	chessData = chessData.replace(/comment_/g, "DhtmlXQ_comment");
 
 	if (~chessData.indexOf("[DhtmlXQ_startPlayer")) {
-		var start = chessData.indexOf("[DhtmlXQ_startPlayer")
+		var start = chessData.indexOf("[DhtmlXQ_startPlayer");
 		var end   = chessData.indexOf("[/DhtmlXQ_", start);
 		var begin = chessData.substring(start + 21, end);
 		begin = +begin === 1 ? "b" : "w";
@@ -355,7 +355,7 @@ vs.dataToNode_DHJHtmlXQ = function(chessData){
 	}
 
 	if (~chessData.indexOf("[DhtmlXQ_startStep")) {
-		var start = chessData.indexOf("[DhtmlXQ_startStep")
+		var start = chessData.indexOf("[DhtmlXQ_startStep");
 		var end   = chessData.indexOf("[/DhtmlXQ_", start);
 		var step  = chessData.substring(start + 19, end);
 		step = begin === "w" ? Math.floor(step / 2) + 1 : Math.ceil(step / 2) + 1;
@@ -365,7 +365,7 @@ vs.dataToNode_DHJHtmlXQ = function(chessData){
 	}
 
 	if (~chessData.indexOf("[DhtmlXQ_fen")) {
-		var start = chessData.indexOf("[DhtmlXQ_fen")
+		var start = chessData.indexOf("[DhtmlXQ_fen");
 		var end   = chessData.indexOf("[/DhtmlXQ_", start);
 		var fen   = chessData.substring(start + 13, end);
 
@@ -380,7 +380,7 @@ vs.dataToNode_DHJHtmlXQ = function(chessData){
 	}
 
 	if (~chessData.indexOf("[DhtmlXQ_movelist")) {
-		var start = chessData.indexOf("[DhtmlXQ_movelist")
+		var start = chessData.indexOf("[DhtmlXQ_movelist");
 		var end   = chessData.indexOf("[/DhtmlXQ_", start);
 		var moves = chessData.substring(start + 18, end);
 

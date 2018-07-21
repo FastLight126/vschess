@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年7月22日
- * Sun, 22 Jul 2018 01:14:33 +0800
+ * Sun, 22 Jul 2018 01:30:31 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 22 Jul 2018 01:14:33 +0800",
+	timestamp: "Sun, 22 Jul 2018 01:30:31 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1108,7 +1108,7 @@ vschess.dataToNode_DHJHtmlXQ = function(chessData){
 	chessData = chessData.replace(/comment_/g, "DhtmlXQ_comment");
 
 	if (~chessData.indexOf("[DhtmlXQ_startPlayer")) {
-		var start = chessData.indexOf("[DhtmlXQ_startPlayer")
+		var start = chessData.indexOf("[DhtmlXQ_startPlayer");
 		var end   = chessData.indexOf("[/DhtmlXQ_", start);
 		var begin = chessData.substring(start + 21, end);
 		begin = +begin === 1 ? "b" : "w";
@@ -1118,7 +1118,7 @@ vschess.dataToNode_DHJHtmlXQ = function(chessData){
 	}
 
 	if (~chessData.indexOf("[DhtmlXQ_startStep")) {
-		var start = chessData.indexOf("[DhtmlXQ_startStep")
+		var start = chessData.indexOf("[DhtmlXQ_startStep");
 		var end   = chessData.indexOf("[/DhtmlXQ_", start);
 		var step  = chessData.substring(start + 19, end);
 		step = begin === "w" ? Math.floor(step / 2) + 1 : Math.ceil(step / 2) + 1;
@@ -1128,7 +1128,7 @@ vschess.dataToNode_DHJHtmlXQ = function(chessData){
 	}
 
 	if (~chessData.indexOf("[DhtmlXQ_fen")) {
-		var start = chessData.indexOf("[DhtmlXQ_fen")
+		var start = chessData.indexOf("[DhtmlXQ_fen");
 		var end   = chessData.indexOf("[/DhtmlXQ_", start);
 		var fen   = chessData.substring(start + 13, end);
 
@@ -1143,7 +1143,7 @@ vschess.dataToNode_DHJHtmlXQ = function(chessData){
 	}
 
 	if (~chessData.indexOf("[DhtmlXQ_movelist")) {
-		var start = chessData.indexOf("[DhtmlXQ_movelist")
+		var start = chessData.indexOf("[DhtmlXQ_movelist");
 		var end   = chessData.indexOf("[/DhtmlXQ_", start);
 		var moves = chessData.substring(start + 18, end);
 
