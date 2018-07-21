@@ -1,4 +1,4 @@
-.vschess-layout-mobile { width:640px; height:1000px; padding:0px; border:none; background-color:#fff; overflow:hidden; box-sizing:content-box; }
+.vschess-layout-mobile { width:640px; height:920px; padding:0px; border:none; background-color:#fff; overflow:hidden; box-sizing:content-box; }
 .vschess-layout-mobile * { font-size:20px; margin:0; padding:0; box-sizing:content-box; }
 .vschess-layout-mobile .vschess-button { width:48px; height:40px; position:relative; display:block; font-size:20px; cursor:pointer; -webkit-appearance:none; border:1px solid #bfbfbf; background-color:#f5f5f5; text-align:center; box-sizing:border-box; }
 .vschess-layout-mobile .vschess-button:hover { border-color:#0078d7; background-color:#e5f1fb; }
@@ -53,7 +53,7 @@
 .vschess-layout-mobile .vschess-format-bar-wxf     { display:none; position:absolute; top: -80px; left:128px; }
 .vschess-layout-mobile .vschess-format-bar-iccs    { display:none; position:absolute; top: -40px; left:128px; }
 .vschess-layout-mobile .vschess-format-bar-button-change { display:block; }
-.vschess-layout-mobile .vschess-tab-area  { position:absolute; top:632px; left:2px; z-index:20; }
+.vschess-layout-mobile .vschess-tab-area  { position:absolute; top:680px; left:2px; z-index:20; }
 .vschess-layout-mobile .vschess-tab-title { position:absolute; width:104px; height:40px; font-size:18px; line-height:40px; background:url(title-bg.png) repeat-x 0px -90px; color:#887d6f; text-align:center; cursor:pointer; overflow:hidden; }
 .vschess-layout-mobile .vschess-tab-title-current { background-position:0px -130px; color:#f0ede9; }
 .vschess-layout-mobile .vschess-tab-title-comment { top:0px; left:   0px; }
@@ -62,24 +62,24 @@
 .vschess-layout-mobile .vschess-tab-title-export  { top:0px; left: 318px; }
 .vschess-layout-mobile .vschess-tab-title-edit    { top:0px; left: 424px; }
 .vschess-layout-mobile .vschess-tab-title-config  { top:0px; left: 530px; width:106px; }
-.vschess-layout-mobile .vschess-tab-body { position:absolute; top:32px; left:0px; width:636px; height:190px; font-size:18px; display:none; overflow:hidden; }
+.vschess-layout-mobile .vschess-tab-body { position:absolute; top:42px; left:0px; width:636px; height:190px; font-size:18px; display:none; overflow:hidden; }
 .vschess-layout-mobile .vschess-tab-body-current { display:block; }
 .vschess-layout-mobile .vschess-tab-body-comment-textarea               { position:absolute; width:626px; height:178px; top:  2px; left: 0px; padding:5px; font-size:18px; line-height:30px; z-index:1; background-color:transparent; border:none; +border:1px solid none; outline:none; resize:none; overflow-x:hidden; overflow-y:auto; +margin-top:-1px; +margin-bottom:-1px; }
 .vschess-layout-mobile .vschess-tab-body-comment-textarea-placeholder   { position:absolute; width:626px; height:178px; top:  2px; left: 0px; padding:5px; font-size:18px; line-height:30px; z-index:0; color:#a9a9a9; }
-.vschess-layout-mobile .vschess-tab-body-edit-end-button                { position:absolute; width: 82px; height: 24px; top:290px; left: 6px; display:none; }
-.vschess-layout-mobile .vschess-tab-body-edit-cancel-button             { position:absolute; width: 82px; height: 24px; top:290px; left:96px; display:none; }
-.vschess-layout-mobile .vschess-tab-body-edit-node-end-button           { position:absolute; width: 82px; height: 24px; top:290px; left: 6px; display:none; }
-.vschess-layout-mobile .vschess-tab-body-edit-node-cancel-button        { position:absolute; width: 82px; height: 24px; top:290px; left:96px; display:none; }
+.vschess-layout-mobile .vschess-tab-body-edit-end-button                { position:absolute; width: 82px; height: 40px; top:290px; left: 6px; display:none; }
+.vschess-layout-mobile .vschess-tab-body-edit-cancel-button             { position:absolute; width: 82px; height: 40px; top:290px; left:96px; display:none; }
+.vschess-layout-mobile .vschess-tab-body-edit-node-end-button           { position:absolute; width: 82px; height: 40px; top:290px; left: 6px; display:none; }
+.vschess-layout-mobile .vschess-tab-body-edit-node-cancel-button        { position:absolute; width: 82px; height: 40px; top:290px; left:96px; display:none; }
 .vschess-layout-mobile .vschess-tab-body-edit-tips                      { position:absolute; width:572px; height: 28px; top:495px; left: 0px; font-size:12px; line-height:28px; display:none; z-index:20; background:#fff; text-align:center; border:none; }
 .vschess-layout-mobile .vschess-tab-body-edit-textarea                  { position:absolute; width:626px; height: 85px; top:  0px; left: 0px; font-size:12px; line-height:20px; display:none; z-index: 1; padding:5px; background-color:transparent; border:none; +border:1px solid none; outline:none; resize:none; overflow-y:auto; +margin-top:-1px; +margin-bottom:-1px; }
 .vschess-layout-mobile .vschess-tab-body-edit-textarea-placeholder      { position:absolute; width:626px; height: 85px; top:  0px; left: 0px; font-size:12px; line-height:20px; display:none; z-index: 0; padding:5px; color:#a9a9a9; }
 .vschess-layout-mobile .vschess-tab-body-edit-node-textarea             { position:absolute; width:626px; height:278px; top:  0px; left: 0px; font-size:12px; line-height:20px; display:none; z-index: 1; padding:5px; background-color:transparent; border:none; +border:1px solid none; outline:none; resize:none; overflow-y:auto; +margin-top:-1px; +margin-bottom:-1px; }
 .vschess-layout-mobile .vschess-tab-body-edit-node-textarea-placeholder { position:absolute; width:626px; height:278px; top:  0px; left: 0px; font-size:12px; line-height:20px; display:none; z-index: 0; padding:5px; color:#a9a9a9; }
-.vschess-layout-mobile .vschess-tab-body-edit-open-button               { position:relative; width:624px; height: 22px; display:none; margin:8px auto 0; text-align:center; line-height:22px; }
-.vschess-layout-mobile .vschess-tab-body-edit-start-button              { position:relative; width:626px; height: 24px; display:none; margin:8px auto 0; }
-.vschess-layout-mobile .vschess-tab-body-edit-begin-button              { position:relative; width:626px; height: 24px; display:none; margin:8px auto 0; }
-.vschess-layout-mobile .vschess-tab-body-edit-blank-button              { position:relative; width:626px; height: 24px; display:none; margin:8px auto 0; }
-.vschess-layout-mobile .vschess-tab-body-edit-node-start-button         { position:relative; width:626px; height: 24px; display:none; margin:8px auto 0; }
+.vschess-layout-mobile .vschess-tab-body-edit-open-button               { position:relative; width:624px; height: 38px; display:none; margin:8px auto 0; text-align:center; line-height:38px; }
+.vschess-layout-mobile .vschess-tab-body-edit-start-button              { position:relative; width:626px; height: 40px; display:none; margin:8px auto 0; }
+.vschess-layout-mobile .vschess-tab-body-edit-begin-button              { position:relative; width:626px; height: 40px; display:none; margin:8px auto 0; }
+.vschess-layout-mobile .vschess-tab-body-edit-blank-button              { position:relative; width:626px; height: 40px; display:none; margin:8px auto 0; }
+.vschess-layout-mobile .vschess-tab-body-edit-node-start-button         { position:relative; width:626px; height: 40px; display:none; margin:8px auto 0; }
 .vschess-layout-mobile .vschess-tab-body-edit-start-text   { position:absolute; display:none; top:261px; left:  7px; width:50px; height:20px; font-size:12px; z-index:0; line-height:20px; }
 .vschess-layout-mobile .vschess-tab-body-edit-start-round  { position:absolute; display:none; top:261px; left: 40px; width:64px; height:20px; font-size:12px; z-index:1; border:none; text-align:center; border-bottom:1px solid #000; }
 .vschess-layout-mobile .vschess-tab-body-edit-start-player { position:absolute; display:none; top:261px; left:109px; width:67px; height:18px; cursor:pointer; z-index:1; border:1px solid #d5d5d5; overflow:hidden; }
@@ -89,12 +89,11 @@
 .vschess-layout-mobile .vschess-tab-body-edit-area .vschess-piece { -khtml-user-drag:element; -moz-user-select:none; }
 .vschess-layout-mobile .vschess-tab-body-edit-current    { display:block; }
 .vschess-layout-mobile .vschess-tab-body-export          { overflow:visible; }
-.vschess-layout-mobile .vschess-tab-body-export-format   { position:absolute; width:108px; height: 24px; top:  2px; left:  0px; font-size:12px; }
-.vschess-layout-mobile .vschess-tab-body-export-copy     { position:absolute; width: 36px; height: 24px; top:  2px; left:110px; font-size:12px; z-index:1; display:none; }
-.vschess-layout-mobile .vschess-tab-body-export-generate { position:absolute; width: 74px; height: 24px; top:  2px; left:110px; font-size:12px; z-index:1; display:none; }
-.vschess-layout-mobile .vschess-tab-body-export-download { position:absolute; width: 36px; height: 24px; top:  2px; left:148px; font-size:12px; z-index:1; display:none; }
-.vschess-layout-mobile .vschess-tab-body-export-textarea { position:absolute; width:174px; height:282px; top: 28px; left:  0px; font-size:12px; z-index:0; background-color:transparent; border:none; +border:1px solid none; outline:none; resize:none; overflow-x:hidden; overflow-y:auto; +margin-top:-1px; +margin-bottom:-1px; padding:5px; line-height:20px; }
-.vschess-layout-mobile .vschess-tab-body-export-textarea-format-TextBoard { font-family:SimSun; width:230px; height:276px; line-height:12px; top:25px; padding:11px 0; text-align:center; overflow:hidden; background:#fff url(export-textboard-line.png) no-repeat right center; }
+.vschess-layout-mobile .vschess-tab-body-export-format   { position:absolute; width:200px; height: 40px; top:  2px; left:  0px; font-size:18px; box-sizing:border-box; }
+.vschess-layout-mobile .vschess-tab-body-export-copy     { position:absolute; width: 60px; height: 40px; top:  2px; left:202px; font-size:18px; z-index:1; display:none; }
+.vschess-layout-mobile .vschess-tab-body-export-generate { position:absolute; width:118px; height: 40px; top:  2px; left:202px; font-size:18px; z-index:1; display:none; }
+.vschess-layout-mobile .vschess-tab-body-export-download { position:absolute; width: 60px; height: 40px; top:  2px; left:264px; font-size:18px; z-index:1; display:none; }
+.vschess-layout-mobile .vschess-tab-body-export-textarea { position:absolute; width:626px; height:138px; top: 42px; left:  0px; font-size:18px; z-index:0; background-color:transparent; border:none; +border:1px solid none; outline:none; resize:none; overflow-x:hidden; overflow-y:auto; +margin-top:-1px; +margin-bottom:-1px; padding:5px; line-height:32px; }
 .vschess-layout-mobile .vschess-tab-body-export-current  { display:block; }
 .vschess-layout-mobile .vschess-tab-body-config-list { position:absolute; width:174px; height:312px; top:0px; left:0px; padding:5px; overflow-y:auto; }
 .vschess-layout-mobile .vschess-tab-body-config-item { position:relative; width:174px; height: 20px; line-height:20px; font-size:12px; margin-bottom:5px; }
@@ -106,13 +105,13 @@
 .vschess-layout-mobile .vschess-tab-body-config-item-select { position:absolute; width:60px; height:20px; top:0px; right:0px; }
 .vschess-layout-mobile .vschess-tab-body-info-edit  { position:absolute; width: 82px; height: 24px; top:290px; left: 6px; }
 .vschess-layout-mobile .vschess-tab-body-info-empty { position:absolute; width: 82px; height: 24px; top:290px; left:96px; }
-.vschess-layout-mobile .vschess-tab-body-info-list  { position:absolute; width:174px; height:272px; top:  2px; left: 0px; padding:5px; overflow-y:auto; }
-.vschess-layout-mobile .vschess-tab-body-info-item  { position:relative; line-height:20px; font-size:12px; }
-.vschess-layout-mobile .vschess-tab-body-share-generate-button { position:relative; width:172px; height:24px; display:block; margin:8px auto 0; }
-.vschess-layout-mobile .vschess-tab-body-share-title      { position:relative; width:172px; margin:8px auto 0; }
-.vschess-layout-mobile .vschess-tab-body-share-text       { position:relative; width:172px; height:24px; display:block; margin:5px auto 0; }
-.vschess-layout-mobile .vschess-tab-body-share-text-input { position:relative; width:132px; height:23px; display:block; float: left; border:none; border-bottom:1px solid #bfbfbf; }
-.vschess-layout-mobile .vschess-tab-body-share-text-copy  { position:relative; width: 40px; height:24px; display:block; float:right; }
+.vschess-layout-mobile .vschess-tab-body-info-list  { position:absolute; width:626px; height:178px; top:  2px; left: 0px; padding:5px; overflow-y:auto; }
+.vschess-layout-mobile .vschess-tab-body-info-item  { position:relative; line-height:30px; font-size:18px; }
+.vschess-layout-mobile .vschess-tab-body-share-generate-button { position:relative; width:360px; height:40px; display:block; margin:8px auto 0; font-size:18px; }
+.vschess-layout-mobile .vschess-tab-body-share-title      { position:relative; width:360px; margin:8px auto 0; font-size:18px; }
+.vschess-layout-mobile .vschess-tab-body-share-text       { position:relative; width:360px; height:40px; display:block; font-size:18px; margin:5px auto 0; }
+.vschess-layout-mobile .vschess-tab-body-share-text-input { position:relative; width:280px; height:39px; display:block; font-size:18px; float: left; border:none; border-bottom:1px solid #bfbfbf; }
+.vschess-layout-mobile .vschess-tab-body-share-text-copy  { position:relative; width: 80px; height:40px; display:block; font-size:18px; float:right; }
 .vschess-layout-mobile .vschess-info-editor-area { position:absolute; top:30px; left:1px; width:754px; height:490px; padding:1px; background-color:#fff; z-index:50; display:none; }
 .vschess-layout-mobile .vschess-info-editor-show { display:block; }
 .vschess-layout-mobile .vschess-info-editor-list { position:absolute; top:20px; left:0px; width:730px; overflow:hidden; }
