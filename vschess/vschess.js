@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年7月16日
- * Mon, 16 Jul 2018 01:49:52 +0800
+ * 最后修改日期：北京时间 2018年7月22日
+ * Sun, 22 Jul 2018 01:14:33 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Mon, 16 Jul 2018 01:49:52 +0800",
+	timestamp: "Sun, 22 Jul 2018 01:14:33 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -359,6 +359,30 @@ var vschess = {
 			date		: "create-time"
 		},
 		DhtmlXQ: {},
+		DHJHtmlXQ: {
+			title		: 10,
+			event		: 11,
+			date		: 13,
+			place		: 14,
+			round		: 15,
+			table		: 16,
+			red			: 17,
+			redname		: 18,
+			redlevel	: 19,
+			redrating	: 20,
+			black		: 21,
+			blackname	: 22,
+			blacklevel	: 23,
+			blackrating	: 24,
+			result		: 28,
+			redtime		: 29,
+			blacktime	: 30,
+			open		: 36,
+			variation	: 37,
+			author		: 41,
+			remark		: 40,
+			record		: 42
+		},
 		pgn: {
 			place		: "Site",
 			open		: "Opening",
@@ -376,6 +400,7 @@ var vschess = {
 		PGN_ICCS : "ICCS PGN \u683c\u5f0f",
 		PengFei: "\u9e4f\u98de PFC \u683c\u5f0f",
 		DhtmlXQ: "\u4e1c\u840d DhtmlXQ UBB \u683c\u5f0f",
+		DHJHtmlXQ: "\u5e7f\u4e1c\u8c61\u68cb\u7f51 DHJHtmlXQ \u683c\u5f0f",
 		Text : "\u6587\u672c TXT \u683c\u5f0f",
 		QQ : "\uff31\uff31 CHE \u683c\u5f0f",
 		TextBoard: "\u6587\u5b57\u68cb\u76d8"
@@ -625,6 +650,11 @@ vschess.dataToInfo = function(chessData, parseType){
 		return vschess.dataToInfo_DhtmlXQ(chessData);
 	}
 
+	// 打虎将 DHJHtmlXQ 格式
+	if (parseType === "auto" && ~replaceQuote.indexOf("[DHJHtmlXQ") || parseType === "DHJHtmlXQ") {
+		return vschess.dataToInfo_DHJHtmlXQ(chessData);
+	}
+
 	// 标准 PGN 格式
 	if (parseType === "auto" && ~replaceQuote.indexOf('[Game "Chinese Chess"]') || parseType === "pgn") {
 		return vschess.dataToInfo_PGN(chessData);
@@ -722,6 +752,15 @@ vschess.dataToInfo_DhtmlXQ = function(chessData){
 	return result;
 };
 
+// 从广东象棋网打虎将 DHJHtmlXQ 格式中抽取棋局信息
+vschess.dataToInfo_DHJHtmlXQ = function(chessData){
+	for (var i in vschess.info.DHJHtmlXQ) {
+		chessData = chessData.replace(RegExp("DHJHtmlXQ_" + vschess.info.DHJHtmlXQ[i], "g"), "DhtmlXQ_" + i);
+	}
+
+	return vschess.dataToInfo_DhtmlXQ(chessData);
+};
+
 // 将原始数据转换为棋谱节点树，这里的变招都是节点，变招的切换即为默认节点的切换
 vschess.dataToNode = function(chessData, parseType){
 	var match, RegExp = vschess.RegExp();
@@ -735,6 +774,11 @@ vschess.dataToNode = function(chessData, parseType){
 	// 东萍象棋 DhtmlXQ 格式
 	if (parseType === "auto" && ~chessData.indexOf("[DhtmlXQ") || parseType === "DhtmlXQ") {
 		return vschess.dataToNode_DhtmlXQ(chessData);
+	}
+
+	// 打虎将 DHJHtmlXQ 格式
+	if (parseType === "auto" && ~chessData.indexOf("[DHJHtmlXQ") || parseType === "DHJHtmlXQ") {
+		return vschess.dataToNode_DHJHtmlXQ(chessData);
 	}
 
 	// QQ新中国象棋格式
@@ -1053,6 +1097,69 @@ vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 	return result;
 };
 
+// 将广东象棋网打虎将 DHJHtmlXQ 格式转换为棋谱节点树
+vschess.dataToNode_DHJHtmlXQ = function(chessData){
+	chessData = chessData.replace(/DHJHtmlXQ/g, "DhtmlXQ");
+	chessData = chessData.replace(/DhtmlXQ_31/g, "DhtmlXQ_fen");
+	chessData = chessData.replace(/DhtmlXQ_32/g, "DhtmlXQ_startPlayer");
+	chessData = chessData.replace(/DhtmlXQ_33/g, "DhtmlXQ_startStep");
+	chessData = chessData.replace(/DhtmlXQ_34/g, "DhtmlXQ_movelist");
+	chessData = chessData.replace(/game_comment_/g, "DhtmlXQ_comment");
+	chessData = chessData.replace(/comment_/g, "DhtmlXQ_comment");
+
+	if (~chessData.indexOf("[DhtmlXQ_startPlayer")) {
+		var start = chessData.indexOf("[DhtmlXQ_startPlayer")
+		var end   = chessData.indexOf("[/DhtmlXQ_", start);
+		var begin = chessData.substring(start + 21, end);
+		begin = +begin === 1 ? "b" : "w";
+	}
+	else {
+		var begin = "w";
+	}
+
+	if (~chessData.indexOf("[DhtmlXQ_startStep")) {
+		var start = chessData.indexOf("[DhtmlXQ_startStep")
+		var end   = chessData.indexOf("[/DhtmlXQ_", start);
+		var step  = chessData.substring(start + 19, end);
+		step = begin === "w" ? Math.floor(step / 2) + 1 : Math.ceil(step / 2) + 1;
+	}
+	else {
+		var step = 1;
+	}
+
+	if (~chessData.indexOf("[DhtmlXQ_fen")) {
+		var start = chessData.indexOf("[DhtmlXQ_fen")
+		var end   = chessData.indexOf("[/DhtmlXQ_", start);
+		var fen   = chessData.substring(start + 13, end);
+
+		if (fen) {
+			fen = vschess.arrayToFen(fen.split("")) + " " + begin + " - - 0 " + step;
+		}
+		else {
+			fen = vschess.defaultFen;
+		}
+
+		chessData = chessData.replace(chessData.substring(start, end + 14), "[DhtmlXQ_fen]" + fen + "[/DhtmlXQ_fen]");
+	}
+
+	if (~chessData.indexOf("[DhtmlXQ_movelist")) {
+		var start = chessData.indexOf("[DhtmlXQ_movelist")
+		var end   = chessData.indexOf("[/DhtmlXQ_", start);
+		var moves = chessData.substring(start + 18, end);
+
+		var moveSplit = moves.split("");
+
+		for (var i = 1; i < moveSplit.length; i += 2) {
+			moveSplit[i] = 9 - moveSplit[i];
+		}
+
+		moves = moveSplit.join("");
+		chessData = chessData.replace(chessData.substring(start, end + 19), "[DhtmlXQ_movelist]" + moves + "[/DhtmlXQ_movelist]");
+	}
+
+	return vschess.dataToNode_DhtmlXQ(chessData);
+};
+
 // 将 QQ 新中国象棋格式转换为棋谱节点树
 vschess.dataToNode_QQNew = function(chessData) {
 	var match, stepList = [];
@@ -1359,20 +1466,17 @@ vschess.showText = function(showText, item){
 
 // 获取棋局信息数据文本
 vschess.dataText = function(dataText, item){
-	switch (item) {
-		case "result": {
-			switch (dataText) {
-				case "\u7ea2\u80dc": case "1-0"    : return "1-0"    ;
-				case "\u9ed1\u80dc": case "0-1"    : return "0-1"    ;
-				case "\u548c\u68cb": case "1/2-1/2": return "1/2-1/2";
-				default    :                 return "*"      ;
-			}
-
-			break;
+	var map = {
+		result: {
+			"\u7ea2\u80dc": "1-0", "\u7ea2\u5148\u80dc": "1-0", "\u9ed1\u8d1f": "1-0",
+			"\u7ea2\u8d1f": "0-1", "\u7ea2\u5148\u8d1f": "0-1", "\u9ed1\u80dc": "0-1", "0-1": "0-1",
+			"\u7ea2\u548c": "1/2-1/2", "\u7ea2\u5148\u548c": "1/2-1/2", "\u548c\u68cb": "1/2-1/2", "\u548c": "1/2-1/2",
+			"1-0": "1-0", "0-1": "0-1", "1/2-1/2": "1/2-1/2",
+			__default__: "*"
 		}
-	}
+	};
 
-	return dataText;
+	return map[item] && (map[item][dataText] || map[item].__default__) || dataText;
 };
 
 // PGN 字段驼峰化
@@ -1571,6 +1675,15 @@ vschess.textBoard = function(fen, options) {
 // 字符串清除标签
 vschess.stripTags = function(str){
 	return $('<div>' + str + '</div>').text();
+};
+
+// 时间格式统一
+vschess.dateFormat = function(date){
+	if (/^([0-9]{8})$/.test(date)) {
+		return date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8);
+	}
+
+	return date;
 };
 
 // GBK 转 UTF-8
@@ -3135,6 +3248,76 @@ vschess.turn_DhtmlXQ = function(chessData){
 	}
 
 	return DhtmlXQ_EachLine.join("\n");
+};
+
+// 将棋谱节点树转换为广东象棋网打虎将 DHJHtmlXQ 格式
+vschess.nodeToData_DHJHtmlXQ = function(nodeData, infoList, isMirror){
+	var DHJHtmlXQ = [];
+	var isB   =  nodeData.fen.split(" ")[1] === "b";
+	var round = +nodeData.fen.split(" ")[5];
+	DHJHtmlXQ[31] = vschess.fenToArray(nodeData.fen).join("");
+	DHJHtmlXQ[32] = isB ? 1 : 0;
+	DHJHtmlXQ[33] = round * 2 - isB ? 1 : 2;
+
+	var nextList = nodeData.next, moveList = [], commentList = [nodeData.comment], step = 0;
+
+	while (nextList.length) {
+		var moveSplit = nextList[0].move.split("");
+		moveList   .push(vschess.cca(moveSplit[0]) - 97, moveSplit[1], vschess.cca(moveSplit[2]) - 97, moveSplit[3]);
+		commentList.push(nextList[0].comment);
+		nextList = nextList[0].next;
+	}
+
+	DHJHtmlXQ[34] = moveList.join("");
+
+	for (var i in vschess.info.DHJHtmlXQ) {
+		if (infoList[i]) {
+			DHJHtmlXQ[vschess.info.DHJHtmlXQ[i]] = infoList[i];
+		}
+	}
+
+	var result = ["[DHJHtmlXQ]"];
+
+	for (var i = 0; i < DHJHtmlXQ.length; ++i) {
+		if (typeof DHJHtmlXQ[i] !== "undefined") {
+			result.push("[DHJHtmlXQ_" + i + "]" + DHJHtmlXQ[i] + "[/DHJHtmlXQ_" + i + "]");
+		}
+	}
+
+	for (var i = 0; i < commentList.length; ++i) {
+		if (commentList[i].length) {
+			result.push("[game_comment_0_" + i + "]" + commentList[i] + "[/comment_0_" + i + "]");
+		}
+	}
+
+	result.push("[/DHJHtmlXQ]");
+	return isMirror ? vschess.turn_DHJHtmlXQ(result.join("\n")) : result.join("\n");
+};
+
+// 翻转广东象棋网打虎将 DHJHtmlXQ 格式
+vschess.turn_DHJHtmlXQ = function(chessData){
+	var DHJHtmlXQ_EachLine = chessData.split("\n");
+
+	for (var i = 0; i < DHJHtmlXQ_EachLine.length; ++i) {
+		var l = DHJHtmlXQ_EachLine[i];
+
+		if (~l.indexOf("[DHJHtmlXQ_31")) {
+			var startSplit = l.substring(l.indexOf("[DHJHtmlXQ_31") + 14, l.indexOf("[/DHJHtmlXQ_")).split("");
+			startSplit = vschess.fenToArray(vschess.turnFen(vschess.arrayToFen(startSplit)));
+			DHJHtmlXQ_EachLine[i] = "[DHJHtmlXQ_31]" + startSplit.join("") + "[/DHJHtmlXQ_31]";
+		}
+		else if (~l.indexOf("[DHJHtmlXQ_34")) {
+			var moveSplit = l.substring(l.indexOf("[DHJHtmlXQ_34") + 14, l.indexOf("[/DHJHtmlXQ_")).split("");
+
+			for (var j = 0; j < moveSplit.length; j += 2) {
+				moveSplit[j] < 9 && (moveSplit[j] = 8 - moveSplit[j]);
+			}
+
+			DHJHtmlXQ_EachLine[i] = "[DHJHtmlXQ_34]" + moveSplit.join("") + "[/DHJHtmlXQ_34]";
+		}
+	}
+
+	return DHJHtmlXQ_EachLine.join("\n");
 };
 
 // 将棋谱节点树转换为鹏飞象棋 PFC 格式
@@ -5870,6 +6053,7 @@ vschess.load.prototype.rebuildExportAll = function(all){
 	this.rebuildExportPGN();
 	this.rebuildExportText();
 	this.rebuildExportQQ();
+	this.rebuildExportDHJHtmlXQ();
 
 	// 大棋谱生成东萍 DhtmlXQ 格式和鹏飞 PFC 格式比较拖性能
 	(this.getNodeLength() < vschess.bigBookCritical || all) && this.rebuildExportPengFei();
@@ -5950,6 +6134,13 @@ vschess.load.prototype.rebuildExportPengFei = function(){
 vschess.load.prototype.rebuildExportDhtmlXQ = function(){
 	this.exportData.DhtmlXQ  = vschess.nodeToData_DhtmlXQ(this.node, this.chessInfo);
 	this.exportData.DhtmlXQM = vschess.turn_DhtmlXQ(this.exportData.DhtmlXQ);
+	return this;
+};
+
+// 重建广东象棋网 DHJHtmlXQ 格式棋谱
+vschess.load.prototype.rebuildExportDHJHtmlXQ = function(){
+	this.exportData.DHJHtmlXQ  = vschess.nodeToData_DHJHtmlXQ(this.node, this.chessInfo);
+	this.exportData.DHJHtmlXQM = vschess.turn_DHJHtmlXQ(this.exportData.DHJHtmlXQ);
 	return this;
 };
 
@@ -6088,12 +6279,12 @@ vschess.load.prototype.createInfoEditor = function(){
 	this.DOM.append(this.infoEditorArea);
 
 	for (var i in vschess.info.name) {
-		this.infoEditorItem[i] = $('<li class="vschess-info-editor-item vschess-info-editor-item-' + i + '"></li>');
+		this.infoEditorItem     [i] = $('<li class="vschess-info-editor-item vschess-info-editor-item-' + i + '"></li>');
 		this.infoEditorItemName [i] = $('<div class="vschess-info-editor-item-name vschess-info-editor-item-name-' + i + '">' + vschess.info.name[i] + '\uff1a</div></li>');
-		this.infoEditorItemValue[i] = $('<input type="' + (i === "date" ? "date" : "text") + '" class="vschess-info-editor-item-value vschess-info-editor-item-value-' + i + '" value="' + vschess.dataText(this.chessInfo[i] || "", i) + '" />');
-		this.infoEditorItem[i].append(this.infoEditorItemName [i]);
-		this.infoEditorItem[i].append(this.infoEditorItemValue[i]);
-		this.infoEditorList.append(this.infoEditorItem[i]);
+		this.infoEditorItemValue[i] = $('<input type="' + (i === "date" ? "date" : "text") + '" class="vschess-info-editor-item-value vschess-info-editor-item-value-' + i + '" />');
+		this.infoEditorItem     [i].append(this.infoEditorItemName [i]);
+		this.infoEditorItem     [i].append(this.infoEditorItemValue[i]);
+		this.infoEditorList        .append(this.infoEditorItem     [i]);
 
 		if (i === "result") {
 			var radio_name = "vschess-info-editor-item-value-result-radio-name-" + vschess.guid();
@@ -6125,7 +6316,7 @@ vschess.load.prototype.createInfoEditor = function(){
 
 		if (~vschess.autoInfo.indexOf(i)) {
 			this.infoEditorItemAuto[i] = $('<input type="button" class="vschess-button vschess-info-editor-item-auto vschess-info-editor-item-auto-' + i + '" value="\u8bc6 \u522b" alt="\u6839\u636e\u5f53\u524d\u5206\u652f\u81ea\u52a8\u8bc6\u522b' + vschess.info.name[i] + '" title="\u6839\u636e\u5f53\u524d\u5206\u652f\u81ea\u52a8\u8bc6\u522b' + vschess.info.name[i] + '" />');
-			this.infoEditorItem[i].append(this.infoEditorItemAuto[i]);
+			this.infoEditorItem    [i].append(this.infoEditorItemAuto[i]);
 		}
 	}
 
@@ -6171,7 +6362,7 @@ vschess.load.prototype.createInfoEditor = function(){
 		_this.setInfoEditorItemValueResult(result);
 	});
 
-	return this;
+	return this.refreshInfoEditor();
 };
 
 // 刷新棋局信息编辑器
@@ -6183,6 +6374,9 @@ vschess.load.prototype.refreshInfoEditor = function(){
 			var result = vschess.dataText(this.chessInfo[i] || "", i);
 			this.infoEditorItemValue.result.val(result);
 			this.setInfoEditorItemValueResult(result);
+		}
+		else if (i === "date") {
+			this.infoEditorItemValue[i].val(vschess.dateFormat(this.chessInfo[i] || "", i));
 		}
 		else {
 			this.infoEditorItemValue[i].val(vschess.dataText(this.chessInfo[i] || "", i));

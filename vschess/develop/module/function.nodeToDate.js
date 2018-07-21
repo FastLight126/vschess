@@ -297,6 +297,76 @@ vs.turn_DhtmlXQ = function(chessData){
 	return DhtmlXQ_EachLine.join("\n");
 };
 
+// 将棋谱节点树转换为广东象棋网打虎将 DHJHtmlXQ 格式
+vs.nodeToData_DHJHtmlXQ = function(nodeData, infoList, isMirror){
+	var DHJHtmlXQ = [];
+	var isB   =  nodeData.fen.split(" ")[1] === "b";
+	var round = +nodeData.fen.split(" ")[5];
+	DHJHtmlXQ[31] = vs.fenToArray(nodeData.fen).join("");
+	DHJHtmlXQ[32] = isB ? 1 : 0;
+	DHJHtmlXQ[33] = round * 2 - isB ? 1 : 2;
+
+	var nextList = nodeData.next, moveList = [], commentList = [nodeData.comment], step = 0;
+
+	while (nextList.length) {
+		var moveSplit = nextList[0].move.split("");
+		moveList   .push(vs.cca(moveSplit[0]) - 97, moveSplit[1], vs.cca(moveSplit[2]) - 97, moveSplit[3]);
+		commentList.push(nextList[0].comment);
+		nextList = nextList[0].next;
+	}
+
+	DHJHtmlXQ[34] = moveList.join("");
+
+	for (var i in vs.info.DHJHtmlXQ) {
+		if (infoList[i]) {
+			DHJHtmlXQ[vs.info.DHJHtmlXQ[i]] = infoList[i];
+		}
+	}
+
+	var result = ["[DHJHtmlXQ]"];
+
+	for (var i = 0; i < DHJHtmlXQ.length; ++i) {
+		if (typeof DHJHtmlXQ[i] !== "undefined") {
+			result.push("[DHJHtmlXQ_" + i + "]" + DHJHtmlXQ[i] + "[/DHJHtmlXQ_" + i + "]");
+		}
+	}
+
+	for (var i = 0; i < commentList.length; ++i) {
+		if (commentList[i].length) {
+			result.push("[game_comment_0_" + i + "]" + commentList[i] + "[/comment_0_" + i + "]");
+		}
+	}
+
+	result.push("[/DHJHtmlXQ]");
+	return isMirror ? vs.turn_DHJHtmlXQ(result.join("\n")) : result.join("\n");
+};
+
+// 翻转广东象棋网打虎将 DHJHtmlXQ 格式
+vs.turn_DHJHtmlXQ = function(chessData){
+	var DHJHtmlXQ_EachLine = chessData.split("\n");
+
+	for (var i = 0; i < DHJHtmlXQ_EachLine.length; ++i) {
+		var l = DHJHtmlXQ_EachLine[i];
+
+		if (~l.indexOf("[DHJHtmlXQ_31")) {
+			var startSplit = l.substring(l.indexOf("[DHJHtmlXQ_31") + 14, l.indexOf("[/DHJHtmlXQ_")).split("");
+			startSplit = vs.fenToArray(vs.turnFen(vs.arrayToFen(startSplit)));
+			DHJHtmlXQ_EachLine[i] = "[DHJHtmlXQ_31]" + startSplit.join("") + "[/DHJHtmlXQ_31]";
+		}
+		else if (~l.indexOf("[DHJHtmlXQ_34")) {
+			var moveSplit = l.substring(l.indexOf("[DHJHtmlXQ_34") + 14, l.indexOf("[/DHJHtmlXQ_")).split("");
+
+			for (var j = 0; j < moveSplit.length; j += 2) {
+				moveSplit[j] < 9 && (moveSplit[j] = 8 - moveSplit[j]);
+			}
+
+			DHJHtmlXQ_EachLine[i] = "[DHJHtmlXQ_34]" + moveSplit.join("") + "[/DHJHtmlXQ_34]";
+		}
+	}
+
+	return DHJHtmlXQ_EachLine.join("\n");
+};
+
 // 将棋谱节点树转换为鹏飞象棋 PFC 格式
 vs.nodeToData_PengFei = function(nodeData, infoList, result, isMirror){
 	function getXmlByNode(nodeData, isDefault){

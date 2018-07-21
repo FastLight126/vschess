@@ -228,20 +228,17 @@ vs.showText = function(showText, item){
 
 // 获取棋局信息数据文本
 vs.dataText = function(dataText, item){
-	switch (item) {
-		case "result": {
-			switch (dataText) {
-				case "红胜": case "1-0"    : return "1-0"    ;
-				case "黑胜": case "0-1"    : return "0-1"    ;
-				case "和棋": case "1/2-1/2": return "1/2-1/2";
-				default    :                 return "*"      ;
-			}
-
-			break;
+	var map = {
+		result: {
+			"红胜": "1-0", "红先胜": "1-0", "黑负": "1-0",
+			"红负": "0-1", "红先负": "0-1", "黑胜": "0-1", "0-1": "0-1",
+			"红和": "1/2-1/2", "红先和": "1/2-1/2", "和棋": "1/2-1/2", "和": "1/2-1/2",
+			"1-0": "1-0", "0-1": "0-1", "1/2-1/2": "1/2-1/2",
+			__default__: "*"
 		}
-	}
+	};
 
-	return dataText;
+	return map[item] && (map[item][dataText] || map[item].__default__) || dataText;
 };
 
 // PGN 字段驼峰化
@@ -440,4 +437,13 @@ vs.textBoard = function(fen, options) {
 // 字符串清除标签
 vs.stripTags = function(str){
 	return $('<div>' + str + '</div>').text();
+};
+
+// 时间格式统一
+vs.dateFormat = function(date){
+	if (/^([0-9]{8})$/.test(date)) {
+		return date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8);
+	}
+
+	return date;
 };

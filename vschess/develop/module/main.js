@@ -318,6 +318,30 @@ var vschess = {
 			date		: "create-time"
 		},
 		DhtmlXQ: {},
+		DHJHtmlXQ: {
+			title		: 10,
+			event		: 11,
+			date		: 13,
+			place		: 14,
+			round		: 15,
+			table		: 16,
+			red			: 17,
+			redname		: 18,
+			redlevel	: 19,
+			redrating	: 20,
+			black		: 21,
+			blackname	: 22,
+			blacklevel	: 23,
+			blackrating	: 24,
+			result		: 28,
+			redtime		: 29,
+			blacktime	: 30,
+			open		: 36,
+			variation	: 37,
+			author		: 41,
+			remark		: 40,
+			record		: 42
+		},
 		pgn: {
 			place		: "Site",
 			open		: "Opening",
@@ -335,6 +359,7 @@ var vschess = {
 		PGN_ICCS : "ICCS PGN 格式",
 		PengFei: "鹏飞 PFC 格式",
 		DhtmlXQ: "东萍 DhtmlXQ UBB 格式",
+		DHJHtmlXQ: "广东象棋网 DHJHtmlXQ 格式",
 		Text : "文本 TXT 格式",
 		QQ : "ＱＱ CHE 格式",
 		TextBoard: "文字棋盘"

@@ -111,6 +111,7 @@ fn.rebuildExportAll = function(all){
 	this.rebuildExportPGN();
 	this.rebuildExportText();
 	this.rebuildExportQQ();
+	this.rebuildExportDHJHtmlXQ();
 
 	// 大棋谱生成东萍 DhtmlXQ 格式和鹏飞 PFC 格式比较拖性能
 	(this.getNodeLength() < vs.bigBookCritical || all) && this.rebuildExportPengFei();
@@ -191,6 +192,13 @@ fn.rebuildExportPengFei = function(){
 fn.rebuildExportDhtmlXQ = function(){
 	this.exportData.DhtmlXQ  = vs.nodeToData_DhtmlXQ(this.node, this.chessInfo);
 	this.exportData.DhtmlXQM = vs.turn_DhtmlXQ(this.exportData.DhtmlXQ);
+	return this;
+};
+
+// 重建广东象棋网 DHJHtmlXQ 格式棋谱
+fn.rebuildExportDHJHtmlXQ = function(){
+	this.exportData.DHJHtmlXQ  = vs.nodeToData_DHJHtmlXQ(this.node, this.chessInfo);
+	this.exportData.DHJHtmlXQM = vs.turn_DHJHtmlXQ(this.exportData.DHJHtmlXQ);
 	return this;
 };
 

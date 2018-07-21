@@ -12,6 +12,11 @@ vs.dataToInfo = function(chessData, parseType){
 		return vs.dataToInfo_DhtmlXQ(chessData);
 	}
 
+	// 打虎将 DHJHtmlXQ 格式
+	if (parseType === "auto" && ~replaceQuote.indexOf("[DHJHtmlXQ") || parseType === "DHJHtmlXQ") {
+		return vs.dataToInfo_DHJHtmlXQ(chessData);
+	}
+
 	// 标准 PGN 格式
 	if (parseType === "auto" && ~replaceQuote.indexOf('[Game "Chinese Chess"]') || parseType === "pgn") {
 		return vs.dataToInfo_PGN(chessData);
@@ -107,4 +112,13 @@ vs.dataToInfo_DhtmlXQ = function(chessData){
 
 	result.result = vs.dataText(result.result, "result");
 	return result;
+};
+
+// 从广东象棋网打虎将 DHJHtmlXQ 格式中抽取棋局信息
+vs.dataToInfo_DHJHtmlXQ = function(chessData){
+	for (var i in vs.info.DHJHtmlXQ) {
+		chessData = chessData.replace(RegExp("DHJHtmlXQ_" + vs.info.DHJHtmlXQ[i], "g"), "DhtmlXQ_" + i);
+	}
+
+	return vs.dataToInfo_DhtmlXQ(chessData);
 };

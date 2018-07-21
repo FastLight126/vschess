@@ -13,6 +13,11 @@ vs.dataToNode = function(chessData, parseType){
 		return vs.dataToNode_DhtmlXQ(chessData);
 	}
 
+	// 打虎将 DHJHtmlXQ 格式
+	if (parseType === "auto" && ~chessData.indexOf("[DHJHtmlXQ") || parseType === "DHJHtmlXQ") {
+		return vs.dataToNode_DHJHtmlXQ(chessData);
+	}
+
 	// QQ新中国象棋格式
 	if (parseType === "auto" && RegExp.QQNew.test(chessData) || parseType === "qqnew") {
 		return vs.dataToNode_QQNew(chessData);
@@ -327,6 +332,69 @@ vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 	}
 
 	return result;
+};
+
+// 将广东象棋网打虎将 DHJHtmlXQ 格式转换为棋谱节点树
+vs.dataToNode_DHJHtmlXQ = function(chessData){
+	chessData = chessData.replace(/DHJHtmlXQ/g, "DhtmlXQ");
+	chessData = chessData.replace(/DhtmlXQ_31/g, "DhtmlXQ_fen");
+	chessData = chessData.replace(/DhtmlXQ_32/g, "DhtmlXQ_startPlayer");
+	chessData = chessData.replace(/DhtmlXQ_33/g, "DhtmlXQ_startStep");
+	chessData = chessData.replace(/DhtmlXQ_34/g, "DhtmlXQ_movelist");
+	chessData = chessData.replace(/game_comment_/g, "DhtmlXQ_comment");
+	chessData = chessData.replace(/comment_/g, "DhtmlXQ_comment");
+
+	if (~chessData.indexOf("[DhtmlXQ_startPlayer")) {
+		var start = chessData.indexOf("[DhtmlXQ_startPlayer")
+		var end   = chessData.indexOf("[/DhtmlXQ_", start);
+		var begin = chessData.substring(start + 21, end);
+		begin = +begin === 1 ? "b" : "w";
+	}
+	else {
+		var begin = "w";
+	}
+
+	if (~chessData.indexOf("[DhtmlXQ_startStep")) {
+		var start = chessData.indexOf("[DhtmlXQ_startStep")
+		var end   = chessData.indexOf("[/DhtmlXQ_", start);
+		var step  = chessData.substring(start + 19, end);
+		step = begin === "w" ? Math.floor(step / 2) + 1 : Math.ceil(step / 2) + 1;
+	}
+	else {
+		var step = 1;
+	}
+
+	if (~chessData.indexOf("[DhtmlXQ_fen")) {
+		var start = chessData.indexOf("[DhtmlXQ_fen")
+		var end   = chessData.indexOf("[/DhtmlXQ_", start);
+		var fen   = chessData.substring(start + 13, end);
+
+		if (fen) {
+			fen = vs.arrayToFen(fen.split("")) + " " + begin + " - - 0 " + step;
+		}
+		else {
+			fen = vs.defaultFen;
+		}
+
+		chessData = chessData.replace(chessData.substring(start, end + 14), "[DhtmlXQ_fen]" + fen + "[/DhtmlXQ_fen]");
+	}
+
+	if (~chessData.indexOf("[DhtmlXQ_movelist")) {
+		var start = chessData.indexOf("[DhtmlXQ_movelist")
+		var end   = chessData.indexOf("[/DhtmlXQ_", start);
+		var moves = chessData.substring(start + 18, end);
+
+		var moveSplit = moves.split("");
+
+		for (var i = 1; i < moveSplit.length; i += 2) {
+			moveSplit[i] = 9 - moveSplit[i];
+		}
+
+		moves = moveSplit.join("");
+		chessData = chessData.replace(chessData.substring(start, end + 19), "[DhtmlXQ_movelist]" + moves + "[/DhtmlXQ_movelist]");
+	}
+
+	return vs.dataToNode_DhtmlXQ(chessData);
 };
 
 // 将 QQ 新中国象棋格式转换为棋谱节点树

@@ -71,12 +71,12 @@ fn.createInfoEditor = function(){
 	this.DOM.append(this.infoEditorArea);
 
 	for (var i in vs.info.name) {
-		this.infoEditorItem[i] = $('<li class="vschess-info-editor-item vschess-info-editor-item-' + i + '"></li>');
+		this.infoEditorItem     [i] = $('<li class="vschess-info-editor-item vschess-info-editor-item-' + i + '"></li>');
 		this.infoEditorItemName [i] = $('<div class="vschess-info-editor-item-name vschess-info-editor-item-name-' + i + '">' + vs.info.name[i] + '：</div></li>');
-		this.infoEditorItemValue[i] = $('<input type="' + (i === "date" ? "date" : "text") + '" class="vschess-info-editor-item-value vschess-info-editor-item-value-' + i + '" value="' + vs.dataText(this.chessInfo[i] || "", i) + '" />');
-		this.infoEditorItem[i].append(this.infoEditorItemName [i]);
-		this.infoEditorItem[i].append(this.infoEditorItemValue[i]);
-		this.infoEditorList.append(this.infoEditorItem[i]);
+		this.infoEditorItemValue[i] = $('<input type="' + (i === "date" ? "date" : "text") + '" class="vschess-info-editor-item-value vschess-info-editor-item-value-' + i + '" />');
+		this.infoEditorItem     [i].append(this.infoEditorItemName [i]);
+		this.infoEditorItem     [i].append(this.infoEditorItemValue[i]);
+		this.infoEditorList        .append(this.infoEditorItem     [i]);
 
 		if (i === "result") {
 			var radio_name = "vschess-info-editor-item-value-result-radio-name-" + vs.guid();
@@ -108,7 +108,7 @@ fn.createInfoEditor = function(){
 
 		if (~vs.autoInfo.indexOf(i)) {
 			this.infoEditorItemAuto[i] = $('<input type="button" class="vschess-button vschess-info-editor-item-auto vschess-info-editor-item-auto-' + i + '" value="识 别" alt="根据当前分支自动识别' + vs.info.name[i] + '" title="根据当前分支自动识别' + vs.info.name[i] + '" />');
-			this.infoEditorItem[i].append(this.infoEditorItemAuto[i]);
+			this.infoEditorItem    [i].append(this.infoEditorItemAuto[i]);
 		}
 	}
 
@@ -154,7 +154,7 @@ fn.createInfoEditor = function(){
 		_this.setInfoEditorItemValueResult(result);
 	});
 
-	return this;
+	return this.refreshInfoEditor();
 };
 
 // 刷新棋局信息编辑器
@@ -166,6 +166,9 @@ fn.refreshInfoEditor = function(){
 			var result = vs.dataText(this.chessInfo[i] || "", i);
 			this.infoEditorItemValue.result.val(result);
 			this.setInfoEditorItemValueResult(result);
+		}
+		else if (i === "date") {
+			this.infoEditorItemValue[i].val(vs.dateFormat(this.chessInfo[i] || "", i));
 		}
 		else {
 			this.infoEditorItemValue[i].val(vs.dataText(this.chessInfo[i] || "", i));
