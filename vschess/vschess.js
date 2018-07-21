@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年7月22日
- * Sun, 22 Jul 2018 01:30:31 +0800
+ * Sun, 22 Jul 2018 01:38:23 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 22 Jul 2018 01:30:31 +0800",
+	timestamp: "Sun, 22 Jul 2018 01:38:23 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -814,7 +814,7 @@ vschess.dataToNode = function(chessData, parseType){
 		return vschess.dataToNode_PGN('[Game "Chinese Chess"][Format "ICCS"]' + chessData);
 	}
 
-	// 简易坐标格式兼容，将简易坐标转换为 ICCS 格式，然后直接调用 ICCS 转换器转换，其实PGN格式并没有此种着法格式。
+	// 简易坐标格式兼容，将简易坐标转换为 ICCS 格式，然后直接调用 ICCS 转换器转换，其实 PGN 格式并没有此种着法格式。
 	if (RegExp.Node.test(chessData)) {
 		return vschess.dataToNode_PGN('[Game "Chinese Chess"][Format "Node"]' + chessData);
 	}

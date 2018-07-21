@@ -51,7 +51,7 @@ vs.dataToNode = function(chessData, parseType){
 		return vs.dataToNode_PGN('[Game "Chinese Chess"][Format "ICCS"]' + chessData);
 	}
 
-	// 简易坐标格式兼容，将简易坐标转换为 ICCS 格式，然后直接调用 ICCS 转换器转换，其实PGN格式并没有此种着法格式。
+	// 简易坐标格式兼容，将简易坐标转换为 ICCS 格式，然后直接调用 ICCS 转换器转换，其实 PGN 格式并没有此种着法格式。
 	if (RegExp.Node.test(chessData)) {
 		return vs.dataToNode_PGN('[Game "Chinese Chess"][Format "Node"]' + chessData);
 	}
