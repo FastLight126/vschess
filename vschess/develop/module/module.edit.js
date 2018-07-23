@@ -132,6 +132,7 @@ fn.showEditBoard = function(){
 	this.fillEditBoardByFen(this.getFenByStep(this.getCurrentStep()));
 	this.editSelectedIndex = -99;
 	this.dragPiece = null;
+	return this;
 };
 
 // 创建编辑局面区域结束编辑按钮
@@ -202,6 +203,8 @@ fn.createEditCancelButton = function(){
 		_this.hideEditModule();
 		_this.showEditStartButton();
 	});
+
+	return this;
 };
 
 // 创建编辑局面区域输入框
@@ -260,6 +263,7 @@ fn.createEditPieceArea = function(){
 			this.editPieceList[k].appendTo(this.editPieceArea);
 		}
 	}
+
 	this.editPieceArea.bind("dragover", function(e){
 		e.preventDefault();
 		return true;
@@ -765,6 +769,8 @@ fn.bindDrag = function(){
 			}
 		}
 	});
+
+	return this;
 };
 
 // 确认提示框

@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年7月24日
- * Tue, 24 Jul 2018 00:20:35 +0800
+ * Tue, 24 Jul 2018 03:37:46 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Tue, 24 Jul 2018 00:20:35 +0800",
+	timestamp: "Tue, 24 Jul 2018 03:37:46 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -5272,6 +5272,7 @@ vschess.load.prototype.showEditBoard = function(){
 	this.fillEditBoardByFen(this.getFenByStep(this.getCurrentStep()));
 	this.editSelectedIndex = -99;
 	this.dragPiece = null;
+	return this;
 };
 
 // 创建编辑局面区域结束编辑按钮
@@ -5342,6 +5343,8 @@ vschess.load.prototype.createEditCancelButton = function(){
 		_this.hideEditModule();
 		_this.showEditStartButton();
 	});
+
+	return this;
 };
 
 // 创建编辑局面区域输入框
@@ -5400,6 +5403,7 @@ vschess.load.prototype.createEditPieceArea = function(){
 			this.editPieceList[k].appendTo(this.editPieceArea);
 		}
 	}
+
 	this.editPieceArea.bind("dragover", function(e){
 		e.preventDefault();
 		return true;
@@ -5905,6 +5909,8 @@ vschess.load.prototype.bindDrag = function(){
 			}
 		}
 	});
+
+	return this;
 };
 
 // 确认提示框
@@ -6924,6 +6930,7 @@ vschess.load.prototype.setBanRepeatLongKill = function(banRepeatLongKill){
 vschess.load.prototype.getBanRepeatLongKill = function(){
 	return this._.banRepeatLongKill;
 };
+
 // 设置违例提示状态
 vschess.load.prototype.setIllegalTips = function(illegalTips){
 	this._.illegalTips = !!illegalTips;

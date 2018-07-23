@@ -236,6 +236,7 @@ fn.setBanRepeatLongKill = function(banRepeatLongKill){
 fn.getBanRepeatLongKill = function(){
 	return this._.banRepeatLongKill;
 };
+
 // 设置违例提示状态
 fn.setIllegalTips = function(illegalTips){
 	this._.illegalTips = !!illegalTips;
