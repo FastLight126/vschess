@@ -100,25 +100,25 @@ vs.dataToNode_PGN = function(chessData){
 		var format = "node";
 		chessData = chessData
 			.replace(/\[(.*)\]/g, "").replace(/\((.*)\)/g, "").replace(/[0-9]+\./g, "").replace(/1\-0([\S\s]*)/g, "")
-			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "").replace(/\*([\S\s]*)/g, "");
+			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "");
 	}
 	else if (~chessData.indexOf('[Format "ICCS"]')) {
 		var format = "iccs";
 		chessData = chessData
 			.replace(/\[(.*)\]/g, "").replace(/\((.*)\)/g, "").replace(/[0-9]+\./g, "").replace(/1\-0([\S\s]*)/g, "")
-			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "").replace(/\*([\S\s]*)/g, "");
+			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "");
 	}
 	else if (~chessData.indexOf('[Format "WXF"]')) {
 		var format = "wxf";
 		chessData = chessData
 			.replace(/\[(.*)\]/g, "").replace(/\((.*)\)/g, "").replace(/1\-0([\S\s]*)/g, "").replace(/0\-1([\S\s]*)/g, "")
-			.replace(/1\/2\-1\/2([\S\s]*)/g, "").replace(/\*([\S\s]*)/g, "");
+			.replace(/1\/2\-1\/2([\S\s]*)/g, "");
 	}
 	else {
 		var format = "chinese";
 		chessData = chessData
 			.replace(/\[(.*)\]/g, "").replace(/\((.*)\)/g, "").replace(/[0-9]+\./g, "").replace(/1\-0([\S\s]*)/g, "")
-			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "").replace(/\*([\S\s]*)/g, "");
+			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "");
 	}
 
 	// 抽取注释

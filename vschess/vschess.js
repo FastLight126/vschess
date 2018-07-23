@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年7月22日
- * Sun, 22 Jul 2018 01:38:23 +0800
+ * 最后修改日期：北京时间 2018年7月24日
+ * Tue, 24 Jul 2018 00:20:35 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 22 Jul 2018 01:38:23 +0800",
+	timestamp: "Tue, 24 Jul 2018 00:20:35 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -863,25 +863,25 @@ vschess.dataToNode_PGN = function(chessData){
 		var format = "node";
 		chessData = chessData
 			.replace(/\[(.*)\]/g, "").replace(/\((.*)\)/g, "").replace(/[0-9]+\./g, "").replace(/1\-0([\S\s]*)/g, "")
-			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "").replace(/\*([\S\s]*)/g, "");
+			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "");
 	}
 	else if (~chessData.indexOf('[Format "ICCS"]')) {
 		var format = "iccs";
 		chessData = chessData
 			.replace(/\[(.*)\]/g, "").replace(/\((.*)\)/g, "").replace(/[0-9]+\./g, "").replace(/1\-0([\S\s]*)/g, "")
-			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "").replace(/\*([\S\s]*)/g, "");
+			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "");
 	}
 	else if (~chessData.indexOf('[Format "WXF"]')) {
 		var format = "wxf";
 		chessData = chessData
 			.replace(/\[(.*)\]/g, "").replace(/\((.*)\)/g, "").replace(/1\-0([\S\s]*)/g, "").replace(/0\-1([\S\s]*)/g, "")
-			.replace(/1\/2\-1\/2([\S\s]*)/g, "").replace(/\*([\S\s]*)/g, "");
+			.replace(/1\/2\-1\/2([\S\s]*)/g, "");
 	}
 	else {
 		var format = "chinese";
 		chessData = chessData
 			.replace(/\[(.*)\]/g, "").replace(/\((.*)\)/g, "").replace(/[0-9]+\./g, "").replace(/1\-0([\S\s]*)/g, "")
-			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "").replace(/\*([\S\s]*)/g, "");
+			.replace(/0\-1([\S\s]*)/g, "").replace(/1\/2\-1\/2([\S\s]*)/g, "");
 	}
 
 	// 抽取注释
