@@ -57,6 +57,7 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 				_this.pieceRotateDeg[from] = Math.random() * 360;
 				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
 
+				typeof _this.callback_afterAnimate === "function" && _this.callback_afterAnimate();
 				typeof callback === "function" && callback();
 			};
 
@@ -119,6 +120,7 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 				_this.pieceRotateDeg[from] = Math.random() * 360;
 				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
 
+				typeof _this.callback_afterAnimate === "function" && _this.callback_afterAnimate();
 				typeof callback === "function" && callback();
 			};
 
@@ -167,6 +169,7 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 		this.setBoardByOffset(1);
 		this.setSelectByStep();
 		this.playSoundBySituation();
+		typeof this.callback_afterAnimate === "function" && this.callback_afterAnimate();
 		typeof callback === "function" && callback();
 	}
 
