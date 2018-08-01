@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年7月24日
- * Tue, 24 Jul 2018 03:37:46 +0800
+ * 最后修改日期：北京时间 2018年8月1日
+ * Wed, 01 Aug 2018 18:03:37 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Tue, 24 Jul 2018 03:37:46 +0800",
+	timestamp: "Wed, 01 Aug 2018 18:03:37 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -272,7 +272,7 @@ var vschess = {
 	tabList: "comment info share export edit config".split(" "),
 
 	// 钩子列表
-	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece afterStartFen".split(" "),
+	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece afterStartFen afterAnimate".split(" "),
 
 	// 默认 Fen 串
 	defaultFen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1",
@@ -2936,15 +2936,33 @@ vschess.stepList2nodeList = function(moveList, fen){
 		}
 
 		for (var i = 0; i < moveList.length; ++i) {
+			var legalList = vschess.legalMoveList(currentFen);
 			stepData = converter(moveList[i], currentFen);
-			var legalList = vschess.legalMoveList(vschess.fenToSituation(currentFen));
 
+			if (~legalList.indexOf(stepData.move)) {
+				currentFen = stepData.movedFen;
+				result.push(stepData.move);
+			}
+			else {
+				var exchangeMove = moveList[i].substring(3, 5) + "-" + moveList[i].substring(0, 2);
+				stepData = converter(exchangeMove, currentFen);
+
+				if (~legalList.indexOf(stepData.move)) {
+					currentFen = stepData.movedFen;
+					result.push(stepData.move);
+				}
+				else {
+					break;
+				}
+			}
+			/*
 			if (!~legalList.indexOf(stepData.move)) {
 				break;
 			}
 
 			currentFen = stepData.movedFen;
 			result.push(stepData.move);
+			*/
 		}
 	}
 
@@ -6751,6 +6769,7 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 				_this.pieceRotateDeg[from] = Math.random() * 360;
 				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
 
+				typeof _this.callback_afterAnimate === "function" && _this.callback_afterAnimate();
 				typeof callback === "function" && callback();
 			};
 
@@ -6813,6 +6832,7 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 				_this.pieceRotateDeg[from] = Math.random() * 360;
 				_this.getPieceRotate() ? _this.loadPieceRotate() : _this.clearPieceRotate();
 
+				typeof _this.callback_afterAnimate === "function" && _this.callback_afterAnimate();
 				typeof callback === "function" && callback();
 			};
 
@@ -6861,6 +6881,7 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 		this.setBoardByOffset(1);
 		this.setSelectByStep();
 		this.playSoundBySituation();
+		typeof this.callback_afterAnimate === "function" && this.callback_afterAnimate();
 		typeof callback === "function" && callback();
 	}
 

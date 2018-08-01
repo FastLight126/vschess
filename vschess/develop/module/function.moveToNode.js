@@ -247,15 +247,25 @@ vs.stepList2nodeList = function(moveList, fen){
 		}
 
 		for (var i = 0; i < moveList.length; ++i) {
+			var legalList = vs.legalMoveList(currentFen);
 			stepData = converter(moveList[i], currentFen);
-			var legalList = vs.legalMoveList(vs.fenToSituation(currentFen));
 
-			if (!~legalList.indexOf(stepData.move)) {
-				break;
+			if (~legalList.indexOf(stepData.move)) {
+				currentFen = stepData.movedFen;
+				result.push(stepData.move);
 			}
+			else {
+				var exchangeMove = moveList[i].substring(3, 5) + "-" + moveList[i].substring(0, 2);
+				stepData = converter(exchangeMove, currentFen);
 
-			currentFen = stepData.movedFen;
-			result.push(stepData.move);
+				if (~legalList.indexOf(stepData.move)) {
+					currentFen = stepData.movedFen;
+					result.push(stepData.move);
+				}
+				else {
+					break;
+				}
+			}
 		}
 	}
 
