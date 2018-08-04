@@ -66,6 +66,11 @@ vs.dataToNode = function(chessData, parseType){
 		return { fen: match[0] + " - - 0 1", comment: "", next: [], defaultIndex: 0 };
 	}
 
+	// 迷你 Fen 串
+	if (match = RegExp.FenMini.exec(chessData)) {
+		return { fen: match[0] + " w - - 0 1", comment: "", next: [], defaultIndex: 0 };
+	}
+
 	// 未能识别的数据，返回起始局面
 	return { fen: vs.defaultFen, comment: "", next: [], defaultIndex: 0 };
 };
@@ -144,15 +149,19 @@ vs.dataToNode_PGN = function(chessData){
 	}
 
 	// 抽取起始 Fen 串
-	var match, startFen, noFenData;//, RegExp = vs.RegExp();
+	var match, startFen, noFenData;
 
 	if (match = RegExp.FenLong.exec(originalChessData)) {
 		startFen  = match[0];
-		noFenData = chessData.replace(RegExp.FenShort, "");
+		noFenData = chessData.replace(RegExp.FenMini, "");
 	}
 	else if (match = RegExp.FenShort.exec(originalChessData)) {
 		startFen = match[0] + " - - 0 1";
-		noFenData = chessData.replace(RegExp.FenShort, "");
+		noFenData = chessData.replace(RegExp.FenMini, "");
+	}
+	else if (match = RegExp.FenMini.exec(originalChessData)) {
+		startFen = match[0] + " w - - 0 1";
+		noFenData = chessData.replace(RegExp.FenMini, "");
 	}
 	else {
 		startFen = vs.defaultFen;
@@ -186,7 +195,7 @@ vs.dataToNode_PGN = function(chessData){
 	// 生成节点树
 	var stepList = vs.stepList2nodeList(moveList, startFen);
 
-	// 尝试识别黑先
+	// 交换先后手，用于纠正 Fen 串的先后手错误和自动识别迷你 Fen 串的先后手
 	var fenChangePlayer = vs.fenChangePlayer(startFen);
 	var stepListM = vs.stepList2nodeList(moveList, fenChangePlayer);
 

@@ -15,6 +15,7 @@ vs.RegExp = function(){
 		// Fen 串识别正则表达式
 		FenLong	: /(?:[RNHBEAKCPrnhbeakcp1-9]{1,9}\/){9}[RNHBEAKCPrnhbeakcp1-9]{1,9}[\s][wbr][\s]-[\s]-[\s][0-9]+[\s][0-9]+/,
 		FenShort: /(?:[RNHBEAKCPrnhbeakcp1-9]{1,9}\/){9}[RNHBEAKCPrnhbeakcp1-9]{1,9}[\s][wbr]/,
+		FenMini : /(?:[RNHBEAKCPrnhbeakcp1-9]{1,9}\/){9}[RNHBEAKCPrnhbeakcp1-9]{1,9}/,
 
 		// 通用棋步识别正则表达式
 		Chinese	: /[车車俥马馬傌相象仕士帅帥将將炮包砲兵卒前中后後一二三四五壹贰叁肆伍１２３４５1-5][车車俥马馬傌相象仕士炮包砲兵卒一二三四五六七八九壹贰叁肆伍陆柒捌玖１２３４５６７８９1-9][进進退平][一二三四五六七八九壹贰叁肆伍陆柒捌玖１２３４５６７８９1-9]/g,

@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年8月1日
- * Wed, 01 Aug 2018 18:03:37 +0800
+ * 最后修改日期：北京时间 2018年8月3日
+ * Fri, 03 Aug 2018 03:42:20 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 01 Aug 2018 18:03:37 +0800",
+	timestamp: "Fri, 03 Aug 2018 03:42:20 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -829,6 +829,11 @@ vschess.dataToNode = function(chessData, parseType){
 		return { fen: match[0] + " - - 0 1", comment: "", next: [], defaultIndex: 0 };
 	}
 
+	// 迷你 Fen 串
+	if (match = RegExp.FenMini.exec(chessData)) {
+		return { fen: match[0] + " w - - 0 1", comment: "", next: [], defaultIndex: 0 };
+	}
+
 	// 未能识别的数据，返回起始局面
 	return { fen: vschess.defaultFen, comment: "", next: [], defaultIndex: 0 };
 };
@@ -907,15 +912,19 @@ vschess.dataToNode_PGN = function(chessData){
 	}
 
 	// 抽取起始 Fen 串
-	var match, startFen, noFenData;//, RegExp = vschess.RegExp();
+	var match, startFen, noFenData;
 
 	if (match = RegExp.FenLong.exec(originalChessData)) {
 		startFen  = match[0];
-		noFenData = chessData.replace(RegExp.FenShort, "");
+		noFenData = chessData.replace(RegExp.FenMini, "");
 	}
 	else if (match = RegExp.FenShort.exec(originalChessData)) {
 		startFen = match[0] + " - - 0 1";
-		noFenData = chessData.replace(RegExp.FenShort, "");
+		noFenData = chessData.replace(RegExp.FenMini, "");
+	}
+	else if (match = RegExp.FenMini.exec(originalChessData)) {
+		startFen = match[0] + " w - - 0 1";
+		noFenData = chessData.replace(RegExp.FenMini, "");
 	}
 	else {
 		startFen = vschess.defaultFen;
@@ -949,7 +958,7 @@ vschess.dataToNode_PGN = function(chessData){
 	// 生成节点树
 	var stepList = vschess.stepList2nodeList(moveList, startFen);
 
-	// 尝试识别黑先
+	// 交换先后手，用于纠正 Fen 串的先后手错误和自动识别迷你 Fen 串的先后手
 	var fenChangePlayer = vschess.fenChangePlayer(startFen);
 	var stepListM = vschess.stepList2nodeList(moveList, fenChangePlayer);
 
@@ -1253,6 +1262,7 @@ vschess.RegExp = function(){
 		// Fen 串识别正则表达式
 		FenLong	: /(?:[RNHBEAKCPrnhbeakcp1-9]{1,9}\/){9}[RNHBEAKCPrnhbeakcp1-9]{1,9}[\s][wbr][\s]-[\s]-[\s][0-9]+[\s][0-9]+/,
 		FenShort: /(?:[RNHBEAKCPrnhbeakcp1-9]{1,9}\/){9}[RNHBEAKCPrnhbeakcp1-9]{1,9}[\s][wbr]/,
+		FenMini : /(?:[RNHBEAKCPrnhbeakcp1-9]{1,9}\/){9}[RNHBEAKCPrnhbeakcp1-9]{1,9}/,
 
 		// 通用棋步识别正则表达式
 		Chinese	: /[\u8f66\u8eca\u4fe5\u9a6c\u99ac\u508c\u76f8\u8c61\u4ed5\u58eb\u5e05\u5e25\u5c06\u5c07\u70ae\u5305\u7832\u5175\u5352\u524d\u4e2d\u540e\u5f8c\u4e00\u4e8c\u4e09\u56db\u4e94\u58f9\u8d30\u53c1\u8086\u4f0d\uff11\uff12\uff13\uff14\uff151-5][\u8f66\u8eca\u4fe5\u9a6c\u99ac\u508c\u76f8\u8c61\u4ed5\u58eb\u70ae\u5305\u7832\u5175\u5352\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u4e03\u516b\u4e5d\u58f9\u8d30\u53c1\u8086\u4f0d\u9646\u67d2\u634c\u7396\uff11\uff12\uff13\uff14\uff15\uff16\uff17\uff18\uff191-9][\u8fdb\u9032\u9000\u5e73][\u4e00\u4e8c\u4e09\u56db\u4e94\u516d\u4e03\u516b\u4e5d\u58f9\u8d30\u53c1\u8086\u4f0d\u9646\u67d2\u634c\u7396\uff11\uff12\uff13\uff14\uff15\uff16\uff17\uff18\uff191-9]/g,
@@ -2955,14 +2965,6 @@ vschess.stepList2nodeList = function(moveList, fen){
 					break;
 				}
 			}
-			/*
-			if (!~legalList.indexOf(stepData.move)) {
-				break;
-			}
-
-			currentFen = stepData.movedFen;
-			result.push(stepData.move);
-			*/
 		}
 	}
 
