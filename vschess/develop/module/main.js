@@ -338,8 +338,8 @@ var vschess = {
 			blacktime	: 30,
 			open		: 36,
 			variation	: 37,
-			author		: 41,
 			remark		: 40,
+			author		: 41,
 			record		: 42
 		},
 		pgn: {
