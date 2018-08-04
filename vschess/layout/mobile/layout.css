@@ -1,5 +1,5 @@
 .vschess-layout-mobile { width:640px; height:920px; padding:0px; border:none; background-color:#fff; overflow:hidden; box-sizing:content-box; }
-.vschess-layout-mobile * { font-size:20px; margin:0; padding:0; box-sizing:content-box; }
+.vschess-layout-mobile * { font-size:20px; margin:0; padding:0; box-sizing:content-box; text-decoration:none; }
 .vschess-layout-mobile .vschess-button { width:48px; height:40px; position:relative; display:block; font-size:20px; cursor:pointer; -webkit-appearance:none; border:1px solid #bfbfbf; background-color:#f5f5f5; text-align:center; box-sizing:border-box; }
 .vschess-layout-mobile .vschess-button:hover { border-color:#0078d7; background-color:#e5f1fb; }
 .vschess-layout-mobile .vschess-loading { width:640px; height:519px; position:absolute; top:0px; left:0px; text-align:center; line-height:519px; font-size:20px; }
