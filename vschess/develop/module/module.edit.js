@@ -8,10 +8,11 @@ fn.createEdit = function(){
 	this.tabArea.append(this.editArea );
 	this.editTitle.bind(this.options.click, function(){ _this.showTab("edit"); });
 	this.recommendStartList = this.options.recommendList;
+	this.editNodeTextarea   = { val: function(){ return ""; } };
 	this.createEditStartButton();
 	this.createNodeStartButton();
 	this.createEditOtherButton();
-	this.showEditStartButton();
+	this.showEditStartButton  ();
 
 	if (this.options.cloudApi && this.options.cloudApi.startFen) {
 		$.ajax({
@@ -60,7 +61,9 @@ fn.createEditOtherItem = function(){
 // 显示编辑开始按钮
 fn.showEditStartButton = function(){
 	for (var i = 0; i < vs.editStartList.length; ++i) {
-		this[vs.editStartList[i]].addClass("vschess-tab-body-edit-current");
+		if (this[vs.editStartList[i]] && typeof this[vs.editStartList[i]].addClass === "function") {
+			this[vs.editStartList[i]].addClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
@@ -69,7 +72,9 @@ fn.showEditStartButton = function(){
 // 隐藏编辑开始按钮
 fn.hideEditStartButton = function(){
 	for (var i = 0; i < vs.editStartList.length; ++i) {
-		this[vs.editStartList[i]].removeClass("vschess-tab-body-edit-current");
+		if (this[vs.editStartList[i]] && typeof this[vs.editStartList[i]].removeClass === "function") {
+			this[vs.editStartList[i]].removeClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
@@ -78,7 +83,9 @@ fn.hideEditStartButton = function(){
 // 显示编辑局面组件
 fn.showEditModule = function(){
 	for (var i = 0; i < vs.editModuleList.length; ++i) {
-		this[vs.editModuleList[i]].addClass("vschess-tab-body-edit-current");
+		if (this[vs.editModuleList[i]] && typeof this[vs.editModuleList[i]].addClass === "function") {
+			this[vs.editModuleList[i]].addClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
@@ -87,7 +94,9 @@ fn.showEditModule = function(){
 // 隐藏编辑局面组件
 fn.hideEditModule = function(){
 	for (var i = 0; i < vs.editModuleList.length; ++i) {
-		this[vs.editModuleList[i]].removeClass("vschess-tab-body-edit-current");
+		if (this[vs.editModuleList[i]] && typeof this[vs.editModuleList[i]].removeClass === "function") {
+			this[vs.editModuleList[i]].removeClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
@@ -96,7 +105,9 @@ fn.hideEditModule = function(){
 // 显示粘贴棋谱组件
 fn.showNodeEditModule = function(){
 	for (var i = 0; i < vs.editNodeModuleList.length; ++i) {
-		this[vs.editNodeModuleList[i]].addClass("vschess-tab-body-edit-current");
+		if (this[vs.editNodeModuleList[i]] && typeof this[vs.editNodeModuleList[i]].addClass === "function") {
+			this[vs.editNodeModuleList[i]].addClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
@@ -105,7 +116,9 @@ fn.showNodeEditModule = function(){
 // 隐藏粘贴棋谱组件
 fn.hideNodeEditModule = function(){
 	for (var i = 0; i < vs.editNodeModuleList.length; ++i) {
-		this[vs.editNodeModuleList[i]].removeClass("vschess-tab-body-edit-current");
+		if (this[vs.editNodeModuleList[i]] && typeof this[vs.editNodeModuleList[i]].removeClass === "function") {
+			this[vs.editNodeModuleList[i]].removeClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;

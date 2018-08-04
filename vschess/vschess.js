@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年8月5日
- * Sun, 05 Aug 2018 00:53:32 +0800
+ * Sun, 05 Aug 2018 01:58:21 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 05 Aug 2018 00:53:32 +0800",
+	timestamp: "Sun, 05 Aug 2018 01:58:21 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -5168,10 +5168,11 @@ vschess.load.prototype.createEdit = function(){
 	this.tabArea.append(this.editArea );
 	this.editTitle.bind(this.options.click, function(){ _this.showTab("edit"); });
 	this.recommendStartList = this.options.recommendList;
+	this.editNodeTextarea   = { val: function(){ return ""; } };
 	this.createEditStartButton();
 	this.createNodeStartButton();
 	this.createEditOtherButton();
-	this.showEditStartButton();
+	this.showEditStartButton  ();
 
 	if (this.options.cloudApi && this.options.cloudApi.startFen) {
 		$.ajax({
@@ -5220,7 +5221,9 @@ vschess.load.prototype.createEditOtherItem = function(){
 // 显示编辑开始按钮
 vschess.load.prototype.showEditStartButton = function(){
 	for (var i = 0; i < vschess.editStartList.length; ++i) {
-		this[vschess.editStartList[i]].addClass("vschess-tab-body-edit-current");
+		if (this[vschess.editStartList[i]] && typeof this[vschess.editStartList[i]].addClass === "function") {
+			this[vschess.editStartList[i]].addClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
@@ -5229,7 +5232,9 @@ vschess.load.prototype.showEditStartButton = function(){
 // 隐藏编辑开始按钮
 vschess.load.prototype.hideEditStartButton = function(){
 	for (var i = 0; i < vschess.editStartList.length; ++i) {
-		this[vschess.editStartList[i]].removeClass("vschess-tab-body-edit-current");
+		if (this[vschess.editStartList[i]] && typeof this[vschess.editStartList[i]].removeClass === "function") {
+			this[vschess.editStartList[i]].removeClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
@@ -5238,7 +5243,9 @@ vschess.load.prototype.hideEditStartButton = function(){
 // 显示编辑局面组件
 vschess.load.prototype.showEditModule = function(){
 	for (var i = 0; i < vschess.editModuleList.length; ++i) {
-		this[vschess.editModuleList[i]].addClass("vschess-tab-body-edit-current");
+		if (this[vschess.editModuleList[i]] && typeof this[vschess.editModuleList[i]].addClass === "function") {
+			this[vschess.editModuleList[i]].addClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
@@ -5247,7 +5254,9 @@ vschess.load.prototype.showEditModule = function(){
 // 隐藏编辑局面组件
 vschess.load.prototype.hideEditModule = function(){
 	for (var i = 0; i < vschess.editModuleList.length; ++i) {
-		this[vschess.editModuleList[i]].removeClass("vschess-tab-body-edit-current");
+		if (this[vschess.editModuleList[i]] && typeof this[vschess.editModuleList[i]].removeClass === "function") {
+			this[vschess.editModuleList[i]].removeClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
@@ -5256,7 +5265,9 @@ vschess.load.prototype.hideEditModule = function(){
 // 显示粘贴棋谱组件
 vschess.load.prototype.showNodeEditModule = function(){
 	for (var i = 0; i < vschess.editNodeModuleList.length; ++i) {
-		this[vschess.editNodeModuleList[i]].addClass("vschess-tab-body-edit-current");
+		if (this[vschess.editNodeModuleList[i]] && typeof this[vschess.editNodeModuleList[i]].addClass === "function") {
+			this[vschess.editNodeModuleList[i]].addClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
@@ -5265,7 +5276,9 @@ vschess.load.prototype.showNodeEditModule = function(){
 // 隐藏粘贴棋谱组件
 vschess.load.prototype.hideNodeEditModule = function(){
 	for (var i = 0; i < vschess.editNodeModuleList.length; ++i) {
-		this[vschess.editNodeModuleList[i]].removeClass("vschess-tab-body-edit-current");
+		if (this[vschess.editNodeModuleList[i]] && typeof this[vschess.editNodeModuleList[i]].removeClass === "function") {
+			this[vschess.editNodeModuleList[i]].removeClass("vschess-tab-body-edit-current");
+		}
 	}
 
 	return this;
