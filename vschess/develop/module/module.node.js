@@ -5,8 +5,8 @@ fn.rebuildSituation = function(){
 	this.moveList  = [this.node.fen];
 	this.eatStatus = [false];
 	this.commentList = [this.node.comment || ""];
-	this.changeLengthList = [];
-	this.currentNodeList = [0];
+	this.changeLengthList = [ ];
+	this.currentNodeList  = [0];
 
 	var turnFen = vs.turnFen(this.node.fen);
 
@@ -17,8 +17,8 @@ fn.rebuildSituation = function(){
 	};
 
 	for (var currentNode = this.node; currentNode.next.length; ) {
-		this.changeLengthList.push(currentNode.next.length);
-		this.currentNodeList.push(currentNode.defaultIndex);
+		this.changeLengthList.push(currentNode.next.length );
+		this.currentNodeList .push(currentNode.defaultIndex);
 		currentNode = currentNode.next[currentNode.defaultIndex];
 
 		var from = vs.i2s[currentNode.move.substring(0, 2)];
@@ -45,8 +45,8 @@ fn.rebuildSituation = function(){
 		this.moveNameList.   ICCSM.push(vs.Node2ICCS_NoFen(vs.turnMove(currentNode.move)));
 		this.moveNameList.    WXF .push(wxf );
 		this.moveNameList.    WXFM.push(wxfM);
-		this.moveNameList.Chinese .push(vs.Node2Chinese(wxf , prevFen, this.options));
-		this.moveNameList.ChineseM.push(vs.Node2Chinese(wxfM, prevFen, this.options));
+		this.moveNameList.Chinese .push(vs.Node2Chinese(wxf , 0, this.options));
+		this.moveNameList.ChineseM.push(vs.Node2Chinese(wxfM, 0, this.options));
 	}
 
 	return this.rebuildExportAll().setExportFormat();

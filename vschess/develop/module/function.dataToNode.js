@@ -429,7 +429,7 @@ vs.dataToNode_ShiJia = function(chessData, onlyFen) {
 		var situation = vs.fenToSituation(vs.blankFen);
 		situation[0]  = match[33].toUpperCase() === "B" ? 2 : 1;
 
-		for (var i = 1; i <= 32; ++i) {
+		for (var i = 1; i < 33; ++i) {
 			situation[match[i] - 1] = vs.f2n[chessman[i]];
 		}
 
