@@ -45,8 +45,8 @@ fn.rebuildSituation = function(){
 		this.moveNameList.   ICCSM.push(vs.Node2ICCS_NoFen(vs.turnMove(currentNode.move)));
 		this.moveNameList.    WXF .push(wxf );
 		this.moveNameList.    WXFM.push(wxfM);
-		this.moveNameList.Chinese .push(vs.Node2Chinese(wxf , 0, this.options));
-		this.moveNameList.ChineseM.push(vs.Node2Chinese(wxfM, 0, this.options));
+		this.moveNameList.Chinese .push(vs.Node2Chinese(wxf , prevFen, this.options));
+		this.moveNameList.ChineseM.push(vs.Node2Chinese(wxfM, prevFen, this.options));
 	}
 
 	return this.rebuildExportAll().setExportFormat();
