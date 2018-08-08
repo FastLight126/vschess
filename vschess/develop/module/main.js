@@ -502,7 +502,7 @@ vs.defaultOptions = {
 		"标有星号的着法含有注解",
 		"支持东萍、鹏飞等多种格式",
 		"单击“复制”复制当前局面",
-		'<a href="https://www.xiaxiangqi.com/" target="_blank">微思象棋播放器 V' + vs.version + "</a>",
+		'<a href="https://www.xiaxiangqi.com/vschess/" target="_blank">微思象棋播放器 V' + vs.version + "</a>",
 		'<a href="https://margin.top/" target="_blank">Margin.Top &copy; 版权所有</a>'
 	],
 
@@ -564,4 +564,4 @@ vs.defaultOptions.help += '<h2>11.&ensp;支持东萍、鹏飞、象棋世家、�
 vs.defaultOptions.help += '<h2>12.&ensp;棋盘选项中，可以控制棋盘方向、播放速度、走子声音等。</h2>';
 vs.defaultOptions.help += '<h2>13.&ensp;棋谱分享功能生成的论坛 UBB 代码，可以在支持该代码的论坛中使用。<a href="https://www.xiaxiangqi.com/" target="_blank">【查看都有哪些论坛支持该代码】</a></h2>';
 vs.defaultOptions.help += '<hr />';
-vs.defaultOptions.help += '<h2><a href="https://www.xiaxiangqi.com/" target="_blank">微思象棋播放器 V' + vs.version + '</a> <a href="https://margin.top/" target="_blank">Margin.Top &copy; 版权所有</a></h2>';
+vs.defaultOptions.help += '<h2><a href="https://www.xiaxiangqi.com/vschess/" target="_blank">微思象棋播放器 V' + vs.version + '</a> <a href="https://margin.top/" target="_blank">Margin.Top &copy; 版权所有</a></h2>';
