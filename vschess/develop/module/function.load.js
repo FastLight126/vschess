@@ -7,7 +7,9 @@ vs.load = function(selector, options){
 		this.options = $.extend(true, {}, vs.defaultOptions, options);
 		this._ = { nodeLength: 0 };
 		vs.init(this.options);
-		this.DOM = $(selector).not(".vschess-loaded").first();
+		this.originalDOM = $(selector).not(".vschess-loaded, .vschess-original-dom").first();
+		this.DOM = this.originalDOM.clone();
+		this.originalDOM.after(this.DOM).addClass("vschess-original-dom");
 		this.createLoading(selector);
 
 		var waitCSS = setInterval(function(){
@@ -119,8 +121,7 @@ fn.initArguments = function(){
 
 // 创建加载界面
 fn.createLoading = function(selector){
-	this.originalData = this.DOM.html();
-	this.chessData = this.options.chessData === false ? this.originalData : this.options.chessData;
+	this.chessData = this.options.chessData === false ? this.DOM.html() : this.options.chessData;
 	this.DOM.html('<div class="vschess-loading">棋盘加载中，请稍候。</div>');
 	this.DOM.addClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout);
 	this.DOM.attr("data-vschess-dpr", vs.dpr);
@@ -158,9 +159,10 @@ fn.intervalCallback = function(){
 	return this;
 };
 
-// 卸载棋盘，即将对应的 DOM 恢复原状，但不保留原 DOM 的事件绑定
+// 卸载棋盘，即将对应的 DOM 恢复原状
 fn.unload = function(){
-	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).removeAttr("data-vschess-dpr");
+	this.DOM.remove();
+	this.originalDOM.removeClass("vschess-original-dom");
 	window.removeEventListener("resize", this.resetDPR, false);
 	return this;
 };

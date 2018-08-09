@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年8月9日
- * Thu, 09 Aug 2018 04:17:01 +0800
+ * Thu, 09 Aug 2018 15:58:05 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Thu, 09 Aug 2018 04:17:01 +0800",
+	timestamp: "Thu, 09 Aug 2018 15:58:05 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -2517,7 +2517,9 @@ vschess.load = function(selector, options){
 		this.options = $.extend(true, {}, vschess.defaultOptions, options);
 		this._ = { nodeLength: 0 };
 		vschess.init(this.options);
-		this.DOM = $(selector).not(".vschess-loaded").first();
+		this.originalDOM = $(selector).not(".vschess-loaded, .vschess-original-dom").first();
+		this.DOM = this.originalDOM.clone();
+		this.originalDOM.after(this.DOM).addClass("vschess-original-dom");
 		this.createLoading(selector);
 
 		var waitCSS = setInterval(function(){
@@ -2629,8 +2631,7 @@ vschess.load.prototype.initArguments = function(){
 
 // 创建加载界面
 vschess.load.prototype.createLoading = function(selector){
-	this.originalData = this.DOM.html();
-	this.chessData = this.options.chessData === false ? this.originalData : this.options.chessData;
+	this.chessData = this.options.chessData === false ? this.DOM.html() : this.options.chessData;
 	this.DOM.html('<div class="vschess-loading">\u68cb\u76d8\u52a0\u8f7d\u4e2d\uff0c\u8bf7\u7a0d\u5019\u3002</div>');
 	this.DOM.addClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout);
 	this.DOM.attr("data-vschess-dpr", vschess.dpr);
@@ -2668,9 +2669,10 @@ vschess.load.prototype.intervalCallback = function(){
 	return this;
 };
 
-// 卸载棋盘，即将对应的 DOM 恢复原状，但不保留原 DOM 的事件绑定
+// 卸载棋盘，即将对应的 DOM 恢复原状
 vschess.load.prototype.unload = function(){
-	this.DOM.html(this.originalData).removeClass("vschess-loaded vschess-style-" + this.options.style + " vschess-layout-" + this.options.layout).removeAttr("data-vschess-dpr");
+	this.DOM.remove();
+	this.originalDOM.removeClass("vschess-original-dom");
 	window.removeEventListener("resize", this.resetDPR, false);
 	return this;
 };

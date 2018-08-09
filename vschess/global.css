@@ -1,5 +1,6 @@
 .vschess-loaded { display:block; position:relative; }
 .vschess-loaded * { margin:0; padding:0; list-style:none; outline:none; }
+.vschess-original-dom { display:none !important; }
 .vschess-board, .vschess-board-edit { position:relative; }
 .vschess-piece { float:left; position:relative; z-index:0; }
 .vschess-piece-disabled { float:left; position:relative; z-index:0; visibility:hidden; }
