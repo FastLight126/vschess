@@ -12,7 +12,7 @@
  * https://www.xqbase.com/
  *
  * 最后修改日期：北京时间 2018年8月15日
- * Wed, 15 Aug 2018 00:20:17 +0800
+ * Wed, 15 Aug 2018 02:36:48 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 15 Aug 2018 00:20:17 +0800",
+	timestamp: "Wed, 15 Aug 2018 02:36:48 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -7554,11 +7554,15 @@ vschess.load.prototype.playSoundBySituation = function(step){
 
 // 朗读着法
 vschess.load.prototype.speakMove = function(move){
-	if (SpeechSynthesisUtterance) {
+	if (!this.getSound()) {
+		return this;
+	}
+
+	if (SpeechSynthesisUtterance && speechSynthesis) {
 		var speech    = new SpeechSynthesisUtterance();
 		speech.text   = move;
 		speech.volume = this.getVolume() / 100;
-		speechSynthesis && speechSynthesis.speak(speech);
+		speechSynthesis.speak(speech);
 	}
 	else if (window.ActiveXObject) {
 		vschess.TTS || (vschess.TTS = new ActiveXObject("Sapi.SpVoice"));

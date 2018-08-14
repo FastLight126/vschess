@@ -54,11 +54,15 @@ fn.playSoundBySituation = function(step){
 
 // 朗读着法
 fn.speakMove = function(move){
-	if (SpeechSynthesisUtterance) {
+	if (!this.getSound()) {
+		return this;
+	}
+
+	if (SpeechSynthesisUtterance && speechSynthesis) {
 		var speech    = new SpeechSynthesisUtterance();
 		speech.text   = move;
 		speech.volume = this.getVolume() / 100;
-		speechSynthesis && speechSynthesis.speak(speech);
+		speechSynthesis.speak(speech);
 	}
 	else if (window.ActiveXObject) {
 		vs.TTS || (vs.TTS = new ActiveXObject("Sapi.SpVoice"));
