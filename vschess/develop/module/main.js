@@ -439,6 +439,9 @@ vs.defaultOptions = {
 	// 自定义音效路径，空字符串表示程序自动识别，如需自定义请参考官方文档
 	soundPath: "",
 
+	// 着法朗读
+	speakMove: false,
+
 	// IE6 自定义棋子图片路径，如需自定义请参考官方文档
 	IE6Compatible_CustomPieceUrl: false,
 

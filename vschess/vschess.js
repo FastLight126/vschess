@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年8月9日
- * Thu, 09 Aug 2018 15:58:05 +0800
+ * 最后修改日期：北京时间 2018年8月15日
+ * Wed, 15 Aug 2018 00:20:17 +0800
  */
 
 (function(){
@@ -45,7 +45,7 @@ var vschess = {
 	version: "2.2.0",
 
 	// 版本时间戳
-	timestamp: "Thu, 09 Aug 2018 15:58:05 +0800",
+	timestamp: "Wed, 15 Aug 2018 00:20:17 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -479,6 +479,9 @@ vschess.defaultOptions = {
 
 	// 自定义音效路径，空字符串表示程序自动识别，如需自定义请参考官方文档
 	soundPath: "",
+
+	// 着法朗读
+	speakMove: false,
 
 	// IE6 自定义棋子图片路径，如需自定义请参考官方文档
 	IE6Compatible_CustomPieceUrl: false,
@@ -2621,6 +2624,7 @@ vschess.load.prototype.initArguments = function(){
 	this.setPieceRotate			(this.options.pieceRotate			);
 	this.setIllegalTips			(this.options.illegalTips			);
 	this.setMoveFormat			(this.options.moveFormat			);
+	this.setSpeakMove			(this.options.speakMove				);
 	this.setMoveTips			(this.options.moveTips				);
 	this.setSaveTips			(this.options.saveTips				);
 	this.setPlayGap				(this.options.playGap				);
@@ -4738,6 +4742,10 @@ vschess.load.prototype.createConfigSwitch = function(){
 
 	this.addConfigItem("sound", "\u8d70\u5b50\u97f3\u6548", "boolean", true, "", function(){
 		_this._.sound = _this.configValue["sound"];
+	});
+
+	this.addConfigItem("speakMove", "\u7740\u6cd5\u6717\u8bfb", "boolean", false, "", function(){
+		_this._.speakMove = _this.configValue["speakMove"];
 	});
 
 	this.addConfigItem("saveTips", "\u4fdd\u5b58\u63d0\u793a", "boolean", true, "", function(){
@@ -7504,27 +7512,57 @@ vschess.load.prototype.playSoundBySituation = function(step){
 		return this;
 	}
 
-	var fromPiece = this.situationList[step - 1][vschess.i2s[this.getMoveByStep(step).substring(0, 2)]];
-	var   toPiece = this.situationList[step - 1][vschess.i2s[this.getMoveByStep(step).substring(2, 4)]];
-
-	// 播放将杀音效
-	if (this.legalList.length === 0) {
-		this.playSound("lose");
+	// 着法朗读
+	if (this.getSpeakMove()) {
+		var move = this.getMoveNameList()[this.getCurrentStep()];
+		// TTS 部分读音有错误，用同音字强行纠正
+		move = move.replace(/\u5352/g, "\u8db3");
+		move = move.replace(/\u76f8/g, "\u8c61");
+		move = move.replace(/\u5c06/g, "\u964d");
+		move = move.replace(/\u4e00/g, "\u8863");
+		move = move.replace(/\uff11/g, "\u8863");
+		this.speakMove(move);
 	}
-
-	// 播放将军音效
-	else if (vschess.checkThreat(this.situationList[this.getCurrentStep()])) {
-		this.playSound("check");
-	}
-
-	// 播放炮吃子、普通吃子音效
-	else if (toPiece > 1) {
-		(fromPiece & 15) === 6 ? this.playSound("bomb") : this.playSound("eat");
-	}
-
-	// 播放移动棋子音效
+	// 普通音效
 	else {
-		this.playSound("move");
+		var fromPiece = this.situationList[step - 1][vschess.i2s[this.getMoveByStep(step).substring(0, 2)]];
+		var   toPiece = this.situationList[step - 1][vschess.i2s[this.getMoveByStep(step).substring(2, 4)]];
+
+		// 播放将杀音效
+		if (this.legalList.length === 0) {
+			this.playSound("lose");
+		}
+
+		// 播放将军音效
+		else if (vschess.checkThreat(this.situationList[this.getCurrentStep()])) {
+			this.playSound("check");
+		}
+
+		// 播放炮吃子、普通吃子音效
+		else if (toPiece > 1) {
+			(fromPiece & 15) === 6 ? this.playSound("bomb") : this.playSound("eat");
+		}
+
+		// 播放移动棋子音效
+		else {
+			this.playSound("move");
+		}
+	}
+
+	return this;
+};
+
+// 朗读着法
+vschess.load.prototype.speakMove = function(move){
+	if (SpeechSynthesisUtterance) {
+		var speech    = new SpeechSynthesisUtterance();
+		speech.text   = move;
+		speech.volume = this.getVolume() / 100;
+		speechSynthesis && speechSynthesis.speak(speech);
+	}
+	else if (window.ActiveXObject) {
+		vschess.TTS || (vschess.TTS = new ActiveXObject("Sapi.SpVoice"));
+		vschess.TTS &&  vschess.TTS.Speak(move, 1);
 	}
 
 	return this;
@@ -7540,6 +7578,18 @@ vschess.load.prototype.setSound = function(sound){
 // 取得音效状态
 vschess.load.prototype.getSound = function(){
 	return this._.sound;
+};
+
+// 设置着法朗读状态
+vschess.load.prototype.setSpeakMove = function(speakMove){
+	this._.speakMove = !!speakMove;
+	this.setConfigItemValue("speakMove", this._.speakMove);
+	return this;
+};
+
+// 取得着法朗读状态
+vschess.load.prototype.getSpeakMove = function(){
+	return this._.speakMove;
 };
 
 // 设置音量大小

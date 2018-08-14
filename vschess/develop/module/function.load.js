@@ -111,6 +111,7 @@ fn.initArguments = function(){
 	this.setPieceRotate			(this.options.pieceRotate			);
 	this.setIllegalTips			(this.options.illegalTips			);
 	this.setMoveFormat			(this.options.moveFormat			);
+	this.setSpeakMove			(this.options.speakMove				);
 	this.setMoveTips			(this.options.moveTips				);
 	this.setSaveTips			(this.options.saveTips				);
 	this.setPlayGap				(this.options.playGap				);

@@ -38,6 +38,10 @@ fn.createConfigSwitch = function(){
 		_this._.sound = _this.configValue["sound"];
 	});
 
+	this.addConfigItem("speakMove", "着法朗读", "boolean", false, "", function(){
+		_this._.speakMove = _this.configValue["speakMove"];
+	});
+
 	this.addConfigItem("saveTips", "保存提示", "boolean", true, "", function(){
 		_this._.saveTips = _this.configValue["saveTips"];
 	});
