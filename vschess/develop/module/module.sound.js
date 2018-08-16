@@ -61,6 +61,7 @@ fn.speakMove = function(move){
 	if (SpeechSynthesisUtterance && speechSynthesis) {
 		var speech    = new SpeechSynthesisUtterance();
 		speech.text   = move;
+		speech.lang   = "zh-cn";
 		speech.volume = this.getVolume() / 100;
 		speechSynthesis.speak(speech);
 	}
