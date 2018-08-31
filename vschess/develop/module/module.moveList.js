@@ -61,9 +61,9 @@ fn.refreshMoveSelectListNodeColor = function(){
 
 // 避免当前着法进入滚动区域外
 fn.setMoveLeaveHide = function(){
-	var bottomLine  = this.moveSelectList.height() - this.moveSelectListSteps.first().height();
-	var currentTop  = this.moveSelectListSteps.eq(this.getCurrentStep()).position().top;
-	var currentScrollTop = this.moveSelectList.scrollTop();
+	var bottomLine           = this.moveSelectList.height() - this.moveSelectListSteps.first().height();
+	var currentTop           = this.moveSelectListSteps.eq(this.getCurrentStep()).position().top;
+	var currentScrollTop     = this.moveSelectList.scrollTop();
 	currentTop > bottomLine	&& this.moveSelectList.scrollTop(currentScrollTop + currentTop - bottomLine	);
 	currentTop < 0			&& this.moveSelectList.scrollTop(currentScrollTop + currentTop				);
 	return this;

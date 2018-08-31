@@ -11,7 +11,7 @@ fn.lastSituationIndex = function(){
 // 取得当前节点树路径下的所有 Fen 串
 fn.getFenList = function(){
 	if (!this.getTurnForMove()) {
-		return this.fenList;
+		return this.fenList.slice(0);
 	}
 
 	var result = [];
@@ -25,7 +25,17 @@ fn.getFenList = function(){
 
 // 取得当前节点树路径下的所有节点 ICCS 着法，[0] 为初始 Fen 串
 fn.getMoveList = function(){
-	return this.moveList.slice(0);
+	if (!this.getTurnForMove()) {
+		return this.moveList.slice(0);
+	}
+
+	var result = [];
+
+	for (var i = 0; i < this.moveList.length; ++i) {
+		result.push(vs.turnMove(this.moveList[i]));
+	}
+
+	return result;
 };
 
 // 取得指定局面号 Fen 串
@@ -67,9 +77,21 @@ fn.getUCCIList = function(step){
 		this.eatStatus[i] && (startIndex = i);
 	}
 
-	result.push(this.fenList[startIndex]);
-	result = result.concat(this.moveList.slice(startIndex + 1, step + 1));
+	result.push(this.getFenList()[startIndex]);
+	result = result.concat(this.getMoveList().slice(startIndex + 1, step + 1));
 	return result;
+};
+
+// 取得 UCCI 局面列表
+fn.getUCCIFenList = function(step){
+	step = vs.limit(step, 0, this.eatStatus.length - 1, this.getCurrentStep());
+	var startIndex = 0, result = [];
+
+	for (var i = step; i >= 0 && !startIndex; --i) {
+		this.eatStatus[i] && (startIndex = i);
+	}
+
+	return this.getFenList().slice(startIndex, step + 1);
 };
 
 // 取得重复长打着法（棋规判负）

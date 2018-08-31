@@ -32,7 +32,7 @@ vs.load = function(selector, options){
 	else {
 		var chessList = [];
 
-		$(selector).not(".vschess-loaded").each(function(){
+		$(selector).not(".vschess-loaded, .vschess-original-dom").each(function(){
 			chessList.push(new vs.load(this, options));
 		});
 
@@ -41,7 +41,7 @@ vs.load = function(selector, options){
 				var result = [];
 
 				for (var i = 0; i < this.length; ++i) {
-					result.push(this[i][name].apply(this[i], arguments));
+					result.push(vs.load.prototype[name].apply(this[i], arguments));
 				}
 
 				name === "toString" && (result = result.toString());

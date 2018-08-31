@@ -174,6 +174,7 @@ vs.compareFen = function(fromFen, toFen, format){
 		var move = vs.s2i[from] + vs.s2i[to];
 
 		switch (format) {
+			case "node": return move;
 			case "iccs": return vs.Node2ICCS_NoFen(move);
 			case "wxf" : return vs.Node2WXF    (move, fromFen).move;
 			default    : return vs.Node2Chinese(move, fromFen).move;
@@ -181,7 +182,8 @@ vs.compareFen = function(fromFen, toFen, format){
 	}
 
 	switch (format) {
-		case "iccs": return "none";
+		case "node": return "none";
+		case "iccs": return "Error";
 		case "wxf" : return "None";
 		default    : return "无效着法";
 	}
