@@ -4,10 +4,11 @@ date_default_timezone_set('Asia/Shanghai');
 header('Content-type: application/x-javascript; charset=utf-8');
 include 'develop/class.JavaScriptPacker.php';
 
-$version = '2.2.0';
+$version = '2.3.0';
 $developList = scandir('develop/module');
 unset($developList[0], $developList[1]);
-$module[] = 'start.js';
+$module[] = 'qwery.js';
+$module[] = 'frame.js';
 $module[] = 'main.js';
 
 foreach ($developList as $filename) {
@@ -44,6 +45,9 @@ $jsBegin = '
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
+ * 选择器引擎选用 Qwery
+ * https://github.com/ded/qwery/
+ *
  * 最后修改日期：北京时间 '. date('Y年n月j日', $edittime). '
  * '. date('r', $edittime). '
  */
@@ -59,7 +63,6 @@ foreach ($module as $filename) {
 	$code = str_replace('https://', 'https:##', $code);
 	$code = str_replace('vs.', 'vschess.', $code);
 	$code = str_replace('fn.', 'vschess.load.prototype.', $code);
-
 	$jsMain .= "/*** {$filename} ***/\n". trim($code). "\n\n";
 }
 

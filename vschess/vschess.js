@@ -1,5 +1,5 @@
 /*
- * 微思象棋播放器 V2.2.0
+ * 微思象棋播放器 V2.3.0
  * https://www.xiaxiangqi.com/
  *
  * Copyright @ 2009-2018 Margin.Top 版权所有
@@ -11,41 +11,1021 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2018年8月15日
- * Wed, 15 Aug 2018 21:17:30 +0800
+ * 选择器引擎选用 Qwery
+ * https://github.com/ded/qwery/
+ *
+ * 最后修改日期：北京时间 2018年9月1日
+ * Sat, 01 Sep 2018 02:40:03 +0800
  */
 
 (function(){
 
-// 检查 Zepto 或 jQuery 环境
-if (typeof Zepto !== "undefined") {
-	var $ = Zepto;
-}
-else if (typeof jQuery !== "undefined") {
-	var $ = jQuery;
-}
-else {
-	// 未引入 Zepto 或 jQuery，程序将自动加载 Zepto 或 jQuery
-	var currentElement = document.documentElement;
+// Qwery 选择器引擎
+var Qwery;
 
-	while (currentElement.tagName.toLowerCase() !== "script") {
-		currentElement = currentElement.lastChild;
-	}
+(function () {
+    var doc = document,
+        html = doc.documentElement,
+        byClass = 'getElementsByClassName',
+        byTag = 'getElementsByTagName',
+        qSA = 'querySelectorAll',
+        useNativeQSA = 'useNativeQSA',
+        tagName = 'tagName',
+        nodeType = 'nodeType',
+        select,
+        id = /#([\w\-]+)/,
+        clas = /\.[\w\-]+/g,
+        idOnly = /^#([\w\-]+)$/,
+        classOnly = /^\.([\w\-]+)$/,
+        tagOnly = /^([\w\-]+)$/,
+        tagAndOrClass = /^([\w]+)?\.([\w\-]+)$/,
+        splittable = /(^|,)\s*[>~+]/,
+        normalizr = /^\s+|\s*([,\s\+\~>]|$)\s*/g,
+        splitters = /[\s\>\+\~]/,
+        splittersMore = /(?![\s\w\-\/\?\&\=\:\.\(\)\!,@#%<>\{\}\$\*\^'"]*\]|[\s\w\+\-]*\))/,
+        specialChars = /([.*+?\^=!:${}()|\[\]\/\\])/g,
+        simple = /^(\*|[a-z0-9]+)?(?:([\.\#]+[\w\-\.#]+)?)/,
+        attr = /\[([\w\-]+)(?:([\|\^\$\*\~]?\=)['"]?([ \w\-\/\?\&\=\:\.\(\)\!,@#%<>\{\}\$\*\^]+)["']?)?\]/,
+        pseudo = /:([\w\-]+)(\(['"]?([^()]+)['"]?\))?/,
+        easy = new RegExp(idOnly.source + '|' + tagOnly.source + '|' + classOnly.source),
+        dividers = new RegExp('(' + splitters.source + ')' + splittersMore.source, 'g'),
+        tokenizr = new RegExp(splitters.source + splittersMore.source),
+        chunker = new RegExp(simple.source + '(' + attr.source + ')?' + '(' + pseudo.source + ')?');
 
-	window.ActiveXObject?
-	document.write('<script type="text/javascript" src="https://www.xiaxiangqi.com/static/js/jquery.js"></script>'):
-	document.write('<script type="text/javascript" src="https://www.xiaxiangqi.com/static/js/zepto.js"></script>');
-	document.write('<script type="text/javascript" src="' + currentElement.src + '"></script>');
-	return false;
-}
+    var walker = {
+        ' ': function (node) { return node && node !== html && node.parentNode; },
+        '>': function (node, contestant) { return node && node.parentNode == contestant.parentNode && node.parentNode; },
+        '~': function (node) { return node && node.previousSibling; },
+        '+': function (node, contestant, p1, p2) { if (!node) return false; return (p1 = previous(node)) && (p2 = previous(contestant)) && p1 == p2 && p1; }
+    };
+
+    function cache() {
+        this.c = {};
+    }
+
+    cache.prototype = {
+        g: function (k) { return this.c[k] || undefined; },
+        s: function (k, v, r) { v = r ? new RegExp(v) : v; return (this.c[k] = v); }
+    };
+
+    var classCache = new cache(), cleanCache = new cache(), attrCache = new cache(), tokenCache = new cache();
+
+    function classRegex(c) {
+        return classCache.g(c) || classCache.s(c, '(^|\\s+)' + c + '(\\s+|$)', 1);
+    }
+
+    function each(a, fn) {
+        var i = 0, l = a.length;
+        for (; i < l; i++) fn(a[i]);
+    }
+
+    function flatten(ar) {
+        for (var r = [], i = 0, l = ar.length; i < l; ++i) arrayLike(ar[i]) ? (r = r.concat(ar[i])) : (r[r.length] = ar[i]);
+        return r;
+    }
+
+    function arrayify(ar) {
+        var i = 0, l = ar.length, r = [];
+        for (; i < l; i++) r[i] = ar[i];
+        return r;
+    }
+
+    function previous(n) {
+        while (n = n.previousSibling) if (n[nodeType] == 1) break;
+        return n;
+    }
+
+    function q(query) {
+        return query.match(chunker);
+    }
+
+    function interpret(whole, tag, idsAndClasses, wholeAttribute, attribute, qualifier, value, wholePseudo, pseudo, wholePseudoVal, pseudoVal) {
+        var i, m, k, o, classes;
+
+        if (this[nodeType] !== 1) {
+            return false;
+        }
+
+        if (tag && tag !== '*' && this[tagName] && this[tagName].toLowerCase() !== tag) {
+            return false;
+        }
+
+        if (idsAndClasses && (m = idsAndClasses.match(id)) && m[1] !== this.id) {
+            return false;
+        }
+
+        if (idsAndClasses && (classes = idsAndClasses.match(clas))) {
+            for (i = classes.length; i--;) if (!classRegex(classes[i].slice(1)).test(this.className)) return false;
+        }
+
+        if (pseudo && qwery.pseudos[pseudo] && !qwery.pseudos[pseudo](this, pseudoVal)) {
+            return false;
+        }
+
+        if (wholeAttribute && !value) {
+            o = this.attributes;
+
+            for (k in o) {
+                if (Object.prototype.hasOwnProperty.call(o, k) && (o[k].name || k) == attribute) {
+                    return this;
+                }
+            }
+        }
+
+        if (wholeAttribute && !checkAttr(qualifier, getAttr(this, attribute) || '', value)) {
+            return false;
+        }
+
+        return this;
+    }
+
+    function clean(s) {
+        return cleanCache.g(s) || cleanCache.s(s, s.replace(specialChars, '\\$1'));
+    }
+
+    function checkAttr(qualify, actual, val) {
+        switch (qualify) {
+            case '=' : return actual == val;
+            case '^=': return actual.match(attrCache.g('^=' + val) || attrCache.s('^=' + val, '^'          + clean(val)               , 1));
+            case '$=': return actual.match(attrCache.g('$=' + val) || attrCache.s('$=' + val,                clean(val) + '$'         , 1));
+            case '*=': return actual.match(attrCache.g(       val) || attrCache.s(       val,                clean(val)               , 1));
+            case '~=': return actual.match(attrCache.g('~=' + val) || attrCache.s('~=' + val, '(?:^|\\s+)' + clean(val) + '(?:\\s+|$)', 1));
+            case '|=': return actual.match(attrCache.g('|=' + val) || attrCache.s('|=' + val, '^'          + clean(val) + '(-|$)'     , 1));
+        }
+
+        return 0;
+    }
+
+    function _qwery(selector, _root) {
+        var r = [], ret = [], i, l, m, token, tag, els, intr, item, root = _root;
+        var tokens = tokenCache.g(selector) || tokenCache.s(selector, selector.split(tokenizr));
+        var dividedTokens = selector.match(dividers);
+
+        if (!tokens.length) {
+            return r;
+        }
+
+        token = (tokens = tokens.slice(0)).pop();
+
+        if (tokens.length && (m = tokens[tokens.length - 1].match(idOnly))) {
+            root = byId(_root, m[1]);
+        }
+
+        if (!root) {
+            return r;
+        }
+
+        intr = q(token);
+        els = root !== _root && root[nodeType] !== 9 && dividedTokens && /^[+~]$/.test(dividedTokens[dividedTokens.length - 1]) ?
+            function (r) {
+                while (root = root.nextSibling) {
+                    root[nodeType] == 1 && (intr[1] ? intr[1] == root[tagName].toLowerCase() : 1) && (r[r.length] = root)
+                }
+                return r
+            }([]) :
+            root[byTag](intr[1] || '*');
+
+        for (i = 0, l = els.length; i < l; i++) {
+            if (item = interpret.apply(els[i], intr)) r[r.length] = item;
+        }
+
+        if (!tokens.length) {
+            return r;
+        }
+
+        each(r, function (e) { if (ancestorMatch(e, tokens, dividedTokens)) ret[ret.length] = e });
+        return ret;
+    }
+
+    function is(el, selector, root) {
+        if (isNode(selector)) {
+            return el == selector;
+        }
+
+        if (arrayLike(selector)) {
+            return !!~flatten(selector).indexOf(el);
+        }
+
+        var selectors = selector.split(','), tokens, dividedTokens;
+
+        while (selector = selectors.pop()) {
+            tokens = tokenCache.g(selector) || tokenCache.s(selector, selector.split(tokenizr));
+            dividedTokens = selector.match(dividers);
+            tokens = tokens.slice(0);
+
+            if (interpret.apply(el, q(tokens.pop())) && (!tokens.length || ancestorMatch(el, tokens, dividedTokens, root))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function ancestorMatch(el, tokens, dividedTokens, root) {
+        var cand;
+
+        function crawl(e, i, p) {
+            while (p = walker[dividedTokens[i]](p, e)) {
+                if (isNode(p) && (interpret.apply(p, q(tokens[i])))) {
+                    if (i) {
+                        if (cand = crawl(p, i - 1, p)) {
+                            return cand;
+                        }
+                    }
+                    else {
+                        return p;
+                    }
+                }
+            }
+        }
+
+        return (cand = crawl(el, tokens.length - 1, el)) && (!root || isAncestor(cand, root));
+    }
+
+    function isNode(el, t) {
+        return el && typeof el === 'object' && (t = el[nodeType]) && (t == 1 || t == 9);
+    }
+
+    function uniq(ar) {
+        var a = [], i, j;
+
+        o: for (i = 0; i < ar.length; ++i) {
+            for (j = 0; j < a.length; ++j) {
+                if (a[j] == ar[i]) {
+                    continue o;
+                }
+            }
+
+            a[a.length] = ar[i];
+        }
+
+        return a;
+    }
+
+    function arrayLike(o) {
+        return (typeof o === 'object' && isFinite(o.length));
+    }
+
+    function normalizeRoot(root) {
+        if (!root) {
+            return doc;
+        }
+
+        if (typeof root == 'string') {
+            return qwery(root)[0];
+        }
+
+        if (!root[nodeType] && arrayLike(root)) {
+            return root[0];
+        }
+
+        return root;
+    }
+
+    function byId(root, id, el) {
+        return root[nodeType] === 9 ? root.getElementById(id) :
+            root.ownerDocument &&
+            (((el = root.ownerDocument.getElementById(id)) && isAncestor(el, root) && el) ||
+            (!isAncestor(root, root.ownerDocument) && select('[id="' + id + '"]', root)[0]));
+    }
+
+    function qwery(selector, _root) {
+        var m, el, root = normalizeRoot(_root);
+
+        if (!root || !selector) {
+            return [];
+        }
+
+        if (selector === window || isNode(selector)) {
+            return !_root || (selector !== window && isNode(root) && isAncestor(selector, root)) ? [selector] : [];
+        }
+
+        if (selector && arrayLike(selector)) {
+            return flatten(selector);
+        }
+
+        if (m = selector.match(easy)) {
+            if (m[1]) {
+                return (el = byId(root, m[1])) ? [el] : [];
+            }
+
+            if (m[2]) {
+                return arrayify(root[byTag](m[2]));
+            }
+
+            if (hasByClass && m[3]) {
+                return arrayify(root[byClass](m[3]));
+            }
+        }
+
+        return select(selector, root);
+    }
+
+    function collectSelector(root, collector) {
+        return function (s) {
+            var oid, nid;
+
+            if (splittable.test(s)) {
+                if (root[nodeType] !== 9) {
+                    if (!(nid = oid = root.getAttribute('id'))) {
+                        root.setAttribute('id', nid = '__qwerymeupscotty');
+                    }
+
+                    s = '[id="' + nid + '"]' + s;
+                    collector(root.parentNode || root, s, true);
+                    oid || root.removeAttribute('id');
+                }
+
+                return;
+            }
+
+            s.length && collector(root, s, false);
+        }
+    }
+
+    var isAncestor = 'compareDocumentPosition' in html ?
+        function (element, container) {
+            return (container.compareDocumentPosition(element) & 16) == 16;
+        } : 'contains' in html ?
+        function (element, container) {
+            container = container[nodeType] === 9 || container == window ? html : container;
+            return container !== element && container.contains(element);
+        } :
+        function (element, container) {
+            while (element = element.parentNode) if (element === container) return 1;
+            return 0;
+        },
+        getAttr = function () {
+            var e = doc.createElement('p');
+            return ((e.innerHTML = '<a href="#x">x</a>') && e.firstChild.getAttribute('href') != '#x') ?
+                function (e, a) {
+                    return a === 'class' ? e.className : (a === 'href' || a === 'src') ?
+                    e.getAttribute(a, 2) : e.getAttribute(a);
+            } :
+            function (e, a) { return e.getAttribute(a); };
+        }(),
+    hasByClass = !!doc[byClass],
+    hasQSA = doc.querySelector && doc[qSA],
+    selectQSA = function (selector, root) {
+        var result = [], ss, e;
+
+        try {
+            if (root[nodeType] === 9 || !splittable.test(selector)) {
+                return arrayify(root[qSA](selector));
+            }
+
+            each(ss = selector.split(','), collectSelector(root, function (ctx, s) {
+                e = ctx[qSA](s);
+                if (e.length == 1) {
+                    result[result.length] = e.item(0);
+                }
+                else if (e.length) {
+                    result = result.concat(arrayify(e));
+                }
+            }))
+
+            return ss.length > 1 && result.length > 1 ? uniq(result) : result;
+        }
+        catch (ex) {}
+        return selectNonNative(selector, root);
+    },
+    selectNonNative = function (selector, root) {
+        var result = [], items, m, i, l, r, ss;
+        selector = selector.replace(normalizr, '$1');
+
+        if (m = selector.match(tagAndOrClass)) {
+            r = classRegex(m[2]);
+            items = root[byTag](m[1] || '*');
+
+            for (i = 0, l = items.length; i < l; i++) {
+                if (r.test(items[i].className)) {
+                    result[result.length] = items[i];
+                }
+            }
+
+            return result;
+        }
+
+        each(ss = selector.split(','), collectSelector(root, function (ctx, s, rewrite) {
+            r = _qwery(s, ctx);
+
+            for (i = 0, l = r.length; i < l; i++) {
+                if (ctx[nodeType] === 9 || rewrite || isAncestor(r[i], root)) {
+                    result[result.length] = r[i];
+                }
+            }
+        }))
+
+        return ss.length > 1 && result.length > 1 ? uniq(result) : result;
+    },
+    configure = function (options) {
+        if (typeof options[useNativeQSA] !== 'undefined') {
+            select = !options[useNativeQSA] ? selectNonNative : hasQSA ? selectQSA : selectNonNative;
+        }
+    }
+
+    configure({ useNativeQSA: true });
+
+    qwery.configure = configure;
+    qwery.uniq = uniq;
+    qwery.is = is;
+    qwery.pseudos = {};
+
+    Qwery = qwery;
+})();
+
+// 从 V2.3.0 版开始，播放器不再依赖 Zepto/jQuery 框架。
+// 模拟 Zepto/jQuery，仅限于播放器内部使用，因为我只模拟了播放器中用到的方法，没用到的方法没有模拟。
+var $ = function(selector) {
+    return new $.init(selector);
+};
+
+$.init = function(selector) {
+    if (!selector) {
+        return this;
+    }
+
+    if (selector instanceof $.init) {
+        return selector;
+    }
+
+    if (selector.nodeType) {
+        this[0] = selector;
+        this.length = 1;
+        return this;
+    }
+
+    if (typeof selector === "object" && typeof selector.length === "number") {
+        var list = selector;
+    }
+    else if (typeof selector === "string") {
+        if (~selector.indexOf("<")) {
+            var wrap = document.createElement("div"), list = [];
+            wrap.innerHTML = selector;
+
+            for (var i = 0; i < wrap.childNodes.length; ++i) {
+                wrap.childNodes[i].nodeType === 1 && list.push(wrap.childNodes[i]);
+            }
+        }
+        else {
+            var list = Qwery(selector);
+        }
+    }
+    else {
+        var list = [];
+    }
+
+    this.length = list.length;
+
+    for (var i = 0; i < list.length; ++i) {
+        this[i] = list[i];
+    }
+
+    return this;
+};
+
+$.expand = $.init.prototype;
+
+$.expand.not = function(selector){
+    var notList = Qwery(selector);
+    var newList = [];
+
+    for (var i = 0; i < this.length; ++i) {
+        ~notList.indexOf(this[i]) || newList.push(this[i]);
+    }
+
+    return $(newList);
+};
+
+$.expand.eq = function(index){
+    return $(this[index]);
+};
+
+$.expand.first = function(){
+    return $(this[0]);
+};
+
+$.expand.last = function(){
+    return $(this[this.length - 1]);
+};
+
+$.expand.clone = function(){
+    return $(this[0].cloneNode(true));
+};
+
+$.expand.after = function(selector){
+    for (var i = 0; i < this.length; ++i) {
+        var next   = this[i].nextSibling;
+        var parent = this[i].parentNode ;
+        var list   = $(selector);
+
+        for (var j = 0; j < list.length; ++j) {
+            parent.insertBefore(list[i], next);
+        }
+    }
+
+    return this;
+};
+
+$.expand.addClass = function(className){
+    for (var i = 0; i < this.length; ++i) {
+        var classNameList = $.trim(this[i].className).split(/[\s]+/);
+        var addList = $.trim(className).split(/[\s]+/);
+
+        for (var j = 0; j < addList.length; ++j) {
+            ~classNameList.indexOf(addList[j]) || classNameList.push(addList[j]);
+        }
+
+        this[i].className = classNameList.join(" ");
+    }
+
+    return this;
+};
+
+$.expand.removeClass = function(className){
+    for (var i = 0; i < this.length; ++i) {
+        if (className) {
+            var classNameList = $.trim(this[i].className).split(/[\s]+/);
+            var removeList = $.trim(className).split(/[\s]+/);
+            var resultList = [];
+
+            for (var j = 0; j < classNameList.length; ++j) {
+                ~removeList.indexOf(classNameList[j]) || resultList.push(classNameList[j]);
+            }
+
+            this[i].className = resultList.join(" ");
+        }
+        else {
+            this[i].className = "";
+        }
+    }
+
+    return this;
+};
+
+$.expand.hasClass = function(className){
+    if (this.length === 0) {
+        return false;
+    }
+
+    var classNameList = $.trim(this[0].className).split(/[\s]+/);
+    return !!~classNameList.indexOf(className);
+};
+
+$.expand.html = function(){
+    if (arguments.length) {
+        for (var i = 0; i < this.length; ++i) {
+            this[i].innerHTML = arguments[0];
+        }
+    }
+    else {
+        return this.length ? this[0].innerHTML : "";
+    }
+};
+
+$.expand.text = function(){
+    if (arguments.length) {
+        for (var i = 0; i < this.length; ++i) {
+            this[i].innerHTML = "";
+            this[i].appendChild(document.createTextNode(arguments[0]));
+        }
+    }
+    else {
+        if (this.length) {
+            var getText = function(elem) {
+        		var node, ret = "", i = 0, nodeType = elem.nodeType;
+
+        		if (!nodeType) {
+        			while ((node = elem[i++])) {
+        				ret += getText(node);
+        			}
+        		}
+                else if (nodeType === 1 || nodeType === 9 || nodeType === 11) {
+        			if (typeof elem.textContent === "string") {
+        				return elem.textContent;
+        			}
+                    else {
+        				for (elem = elem.firstChild; elem; elem = elem.nextSibling) {
+        					ret += getText(elem);
+        				}
+        			}
+        		}
+                else if (nodeType === 3 || nodeType === 4) {
+        			return elem.nodeValue;
+        		}
+
+        		return ret;
+        	};
+
+            var elem = this[0];
+            var node, ret = "", i = 0, nodeType = elem.nodeType;
+
+            if (!nodeType) {
+                while ((node = elem[i++])) {
+                    ret += getText(node);
+                }
+            }
+            else if (nodeType === 1 || nodeType === 9 || nodeType === 11) {
+                if (typeof elem.textContent === "string") {
+                    return elem.textContent;
+                }
+                else {
+                    for (elem = elem.firstChild; elem; elem = elem.nextSibling) {
+                        ret += getText(elem);
+                    }
+                }
+            }
+            else if (nodeType === 3 || nodeType === 4) {
+                return elem.nodeValue;
+            }
+
+            return ret;
+        }
+        else {
+            return "";
+        }
+    }
+};
+
+$.expand.empty = function(){
+    return this.html("");
+};
+
+$.expand.attr = function(attr){
+    if (arguments.length > 1) {
+        for (var i = 0; i < this.length; ++i) {
+            this[i].setAttribute(attr, arguments[1]);
+        }
+
+        return this;
+    }
+    else {
+        if (typeof attr === "object") {
+            for (var i = 0; i < this.length; ++i) {
+                for (var j in attr) {
+                    this[i].setAttribute(j, attr[j]);
+                }
+            }
+
+            return this;
+        }
+        else {
+            return this.length ? this[0].getAttribute(attr) : "";
+        }
+    }
+};
+
+$.expand.data = function(){
+    if (arguments.length > 1) {
+        return this.attr("data-" + arguments[0], arguments[1]);
+    }
+    else {
+        return this.attr("data-" + arguments[0]);
+    }
+};
+
+$.expand.removeAttr = function(attr){
+    for (var i = 0; i < this.length; ++i) {
+        this[i].removeAttribute(attr);
+    }
+
+    return this;
+};
+
+$.expand.children = function(selector){
+    var result = [];
+
+    for (var i = 0; i < this.length; ++i) {
+        if (typeof selector === "string") {
+            var list = Qwery(">" + selector, this[i]);
+        }
+        else {
+            var list = this[i].childNodes;
+        }
+
+        for (var j = 0; j < list.length; ++j) {
+            list[j].nodeType === 1 && result.push(list[j]);
+        }
+    }
+
+    return $(result);
+};
+
+$.expand.remove = function(){
+    for (var i = 0; i < this.length; ++i) {
+        this[i].parentNode.removeChild(this[i]);
+    }
+
+    return this;
+};
+
+$.expand.bind = function(event, func){
+    for (var i = 0; i < this.length; ++i) {
+        if (document.addEventListener) {
+            this[i].addEventListener(event, func);
+        }
+        else {
+            this[i].attachEvent(event, func);
+        }
+    }
+
+    return this;
+};
+
+$.expand.append = function(selector){
+    for (var i = 0; i < this.length; ++i) {
+        var list = $(selector);
+
+        for (var j = 0; j < list.length; ++j) {
+            this[i].appendChild(list[j]);
+        }
+    }
+
+    return this;
+};
+
+$.expand.each = function(func){
+    for (var i = 0; i < this.length; ++i) {
+        func.call(this[i], i, this[i]);
+    }
+
+    return this;
+};
+
+$.expand.appendTo = function(selector){
+    for (var i = 0; i < this.length; ++i) {
+        var list = $(selector);
+
+        for (var j = 0; j < list.length; ++j) {
+            list[i].appendChild(this[i]);
+        }
+    }
+
+    return this;
+};
+
+$.expand.css = function(config){
+    for (var i = 0; i < this.length; ++i) {
+        for (var j in config) {
+            var key = j;
+            var value = config[j];
+
+            key = key.replace(/-webkit-tr/g, "webkitTr");
+            key = key.replace(   /-moz-tr/g,    "mozTr");
+            key = key.replace(    /-ms-tr/g,     "msTr");
+            key = key.replace(     /-o-tr/g,      "oTr");
+
+            ~"height width top right bottom left".indexOf(j) && !isNaN(+config[j]) && (value += "px");
+
+            this[i].style[key] = value
+        }
+    }
+
+    return this;
+};
+
+$.expand.filter = function(selector){
+    var filterList = $.trim(selector.replace(/\./g, "")).split(/[\s]+/);
+    var result = [];
+
+    for (var i = 0; i < this.length; ++i) {
+        var classNameList = $.trim(this[i].className).split(/[\s]+/);
+
+        for (var j = 0; j < classNameList.length; ++j) {
+            if (~filterList.indexOf(classNameList[j])) {
+                result.push(this[i]);
+                break;
+            }
+        }
+    }
+
+    return $(result);
+};
+
+$.expand.val = function(){
+    if (arguments.length) {
+        for (var i = 0; i < this.length; ++i) {
+            this[i].value = arguments[0];
+        }
+    }
+    else {
+        return this.length ? this[0].value : "";
+    }
+};
+
+$.expand.height = function(){
+    if (arguments.length) {
+        for (var i = 0; i < this.length; ++i) {
+            this[i].style.height = arguments[0] + "px";
+        }
+    }
+    else {
+        return this.length ? this[0].offsetHeight : 0;
+    }
+};
+
+$.expand.width = function(){
+    if (arguments.length) {
+        for (var i = 0; i < this.length; ++i) {
+            this[i].style.width = arguments[0] + "px";
+        }
+    }
+    else {
+        return this.length ? this[0].offsetWidth : 0;
+    }
+};
+
+$.expand.scrollTop = function(){
+    if (arguments.length) {
+        for (var i = 0; i < this.length; ++i) {
+            this[i].scrollTop = arguments[0];
+        }
+    }
+    else {
+        return this.length ? this[0].scrollTop : 0;
+    }
+};
+
+$.expand.scrollLeft = function(){
+    if (arguments.length) {
+        for (var i = 0; i < this.length; ++i) {
+            this[i].scrollLeft = arguments[0];
+        }
+    }
+    else {
+        return this.length ? this[0].scrollLeft : 0;
+    }
+};
+
+$.expand.position = function(){
+    if (!this.length) {
+        return { top: 0, left: 0 };
+    }
+
+    var   selfPosition = this[0]           .getBoundingClientRect();
+    var parentPosition = this[0].parentNode.getBoundingClientRect();
+    var sl =   selfPosition.left;
+    var st =   selfPosition.top ;
+    var pl = parentPosition.left;
+    var pt = parentPosition.top ;
+    return { top: st - pt, left: sl - pl };
+};
+
+$.expand.show = function(){
+    for (var i = 0; i < this.length; ++i) {
+        this[i].style.display = "block";
+    }
+
+    return this;
+};
+
+$.expand.hide = function(){
+    for (var i = 0; i < this.length; ++i) {
+        this[i].style.display = "none";
+    }
+
+    return this;
+};
+
+$.extend = function(){
+    var arg = arguments;
+
+    if (arg[0] === true) {
+        if (typeof arg[1] !== "object") {
+            return {};
+        }
+
+        for (var i = 2; i < arg.length; ++i) {
+            if (typeof arg[i] !== "object") {
+                continue;
+            }
+
+            for (var j in arg[i]) {
+                if (typeof arg[1][j] === "object" && typeof arg[i][j] === "object") {
+                    $.extend(true, arg[1][j], arg[i][j]);
+                }
+                else {
+                    arg[1][j] = arg[i][j];
+                }
+            }
+        }
+
+        return arg[1];
+    }
+    else {
+        if (typeof arg[0] !== "object") {
+            return {};
+        }
+
+        for (var i = 1; i < arg.length; ++i) {
+            if (typeof arg[i] === "object") {
+                for (var j in arg[i]) {
+                    arg[0][j] = arg[i][j];
+                }
+            }
+        }
+
+        return arg[0];
+    }
+};
+
+$.each = function(arr, func){
+    for (var i in arr) {
+        func.call(arr[i], i, arr[i]);
+    }
+};
+
+$.trim = function(str){
+    return (str || "").replace(/^\s+|\s+$/gm, "");
+};
+
+$.uniqid = 0;
+
+$.ajax = function(config){
+    var cfg = { url: "", type: "POST", data: {}, dataType: "json" };
+    cfg = $.extend(true, {}, cfg, config);
+    typeof cfg.success === "function" || (cfg.success = function(){});
+    typeof cfg.error   === "function" || (cfg.error   = function(){});
+
+    if (cfg.dataType === "jsonp") {
+        var callbackName = "vschess_callback_" + new Date().getTime() + "_" + $.uniqid++;
+        var tag  = document.createElement("script");
+        var mask = ~cfg.url.indexOf("?") ? "&" : "?";
+        tag.src  =  cfg.url + mask + "callback=" + callbackName + "&" + new Date().getTime();
+        document.getElementsByTagName("body")[0].appendChild(tag);
+
+        window[callbackName] = function(response){
+            cfg.success(response);
+            delete window[callbackName];
+            document.getElementsByTagName("body")[0].removeChild(tag);
+        };
+    }
+    else {
+        var xhrs = [
+            function () { return new XMLHttpRequest(); },
+            function () { return new ActiveXObject("Microsoft.XMLHTTP" ); },
+            function () { return new ActiveXObject("MSXML2.XMLHTTP.3.0"); },
+            function () { return new ActiveXObject("MSXML2.XMLHTTP"    ); }
+        ];
+
+        var xhr = false;
+
+        for (var i = 0; i < xhrs.length; ++i) {
+            try {
+                xhr = xhrs[i]();
+                break;
+            }
+            catch (e) {
+            }
+        }
+
+        if (!xhr) {
+            cfg.error();
+            return false;
+        }
+
+        xhr.open(cfg.type.toUpperCase(), cfg.url);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        var data = [];
+
+        for (var i in cfg.data) {
+            data.push(i + "=" + encodeURIComponent(cfg.data[i]));
+        }
+
+        xhr.send(data.join("&"));
+
+        xhr.onreadystatechange = function(){
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                if (typeof xhr.responseText === "string" && cfg.dataType === "json") {
+                    cfg.success($.parseJSON(xhr.responseText));
+                }
+                else {
+                    cfg.success(xhr.responseText);
+                }
+            }
+        };
+    }
+
+    return true;
+};
+
+$.parseJSON = function(json){
+    if (JSON && typeof JSON.parse === "function") {
+        return JSON.parse(json);
+    }
+    else {
+        return eval("(" + json + ")");
+    }
+};
 
 // 主程序
 var vschess = {
 	// 当前版本号
-	version: "2.2.0",
+	version: "2.3.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 15 Aug 2018 21:17:30 +0800",
+	timestamp: "Sat, 01 Sep 2018 02:40:03 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1424,6 +2404,7 @@ vschess.compareFen = function(fromFen, toFen, format){
 		var move = vschess.s2i[from] + vschess.s2i[to];
 
 		switch (format) {
+			case "node": return move;
 			case "iccs": return vschess.Node2ICCS_NoFen(move);
 			case "wxf" : return vschess.Node2WXF    (move, fromFen).move;
 			default    : return vschess.Node2Chinese(move, fromFen).move;
@@ -1431,7 +2412,8 @@ vschess.compareFen = function(fromFen, toFen, format){
 	}
 
 	switch (format) {
-		case "iccs": return "none";
+		case "node": return "none";
+		case "iccs": return "Error";
 		case "wxf" : return "None";
 		default    : return "\u65e0\u6548\u7740\u6cd5";
 	}
@@ -2545,7 +3527,7 @@ vschess.load = function(selector, options){
 	else {
 		var chessList = [];
 
-		$(selector).not(".vschess-loaded").each(function(){
+		$(selector).not(".vschess-loaded, .vschess-original-dom").each(function(){
 			chessList.push(new vschess.load(this, options));
 		});
 
@@ -2554,7 +3536,7 @@ vschess.load = function(selector, options){
 				var result = [];
 
 				for (var i = 0; i < this.length; ++i) {
-					result.push(this[i][name].apply(this[i], arguments));
+					result.push(vschess.load.prototype[name].apply(this[i], arguments));
 				}
 
 				name === "toString" && (result = result.toString());
@@ -5097,7 +6079,7 @@ vschess.load.prototype.lastSituationIndex = function(){
 // 取得当前节点树路径下的所有 Fen 串
 vschess.load.prototype.getFenList = function(){
 	if (!this.getTurnForMove()) {
-		return this.fenList;
+		return this.fenList.slice(0);
 	}
 
 	var result = [];
@@ -5111,7 +6093,17 @@ vschess.load.prototype.getFenList = function(){
 
 // 取得当前节点树路径下的所有节点 ICCS 着法，[0] 为初始 Fen 串
 vschess.load.prototype.getMoveList = function(){
-	return this.moveList.slice(0);
+	if (!this.getTurnForMove()) {
+		return this.moveList.slice(0);
+	}
+
+	var result = [];
+
+	for (var i = 0; i < this.moveList.length; ++i) {
+		result.push(vschess.turnMove(this.moveList[i]));
+	}
+
+	return result;
 };
 
 // 取得指定局面号 Fen 串
@@ -5153,9 +6145,21 @@ vschess.load.prototype.getUCCIList = function(step){
 		this.eatStatus[i] && (startIndex = i);
 	}
 
-	result.push(this.fenList[startIndex]);
-	result = result.concat(this.moveList.slice(startIndex + 1, step + 1));
+	result.push(this.getFenList()[startIndex]);
+	result = result.concat(this.getMoveList().slice(startIndex + 1, step + 1));
 	return result;
+};
+
+// 取得 UCCI 局面列表
+vschess.load.prototype.getUCCIFenList = function(step){
+	step = vschess.limit(step, 0, this.eatStatus.length - 1, this.getCurrentStep());
+	var startIndex = 0, result = [];
+
+	for (var i = step; i >= 0 && !startIndex; --i) {
+		this.eatStatus[i] && (startIndex = i);
+	}
+
+	return this.getFenList().slice(startIndex, step + 1);
 };
 
 // 取得重复长打着法（棋规判负）
@@ -5486,7 +6490,7 @@ vschess.load.prototype.createEditPieceArea = function(){
 		});
 
 		this.bind("dragstart", function(e){
-			e.originalEvent.dataTransfer.setData("text", e.originalEvent.target.innerHTML);
+			e.dataTransfer.setData("text", e.target.innerHTML);
 			_this.dragPiece = currentIndex;
 			_this.editRemoveSelect();
 			_this.editSelectedIndex = -99;
@@ -5582,7 +6586,7 @@ vschess.load.prototype.createEditBoard = function(){
 		});
 
 		$(this).bind("dragstart", function(e){
-			e.originalEvent.dataTransfer.setData("text", e.originalEvent.target.innerHTML);
+			e.dataTransfer.setData("text", e.target.innerHTML);
 			_this.dragPiece = i;
 			_this.editRemoveSelect();
 			_this.editSelectedIndex = -99;
@@ -5912,15 +6916,15 @@ vschess.load.prototype.createEditOtherButton = function(){
 vschess.load.prototype.bindDrag = function(){
 	var _this = this;
 
-	this.DOM.on("dragover", function(e){
+	this.DOM.bind("dragover", function(e){
 		e.preventDefault();
 	});
 
-	this.DOM.on("drop", function(e){
+	this.DOM.bind("drop", function(e){
 		e.preventDefault();
 
-		if (e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.files.length) {
-			var file = e.originalEvent.dataTransfer.files[0];
+		if (e.dataTransfer && e.dataTransfer.files.length) {
+			var file = e.dataTransfer.files[0];
 			var reader = new FileReader();
 			reader.readAsArrayBuffer(file);
 			reader.onload = function(){
@@ -6562,9 +7566,9 @@ vschess.load.prototype.refreshMoveSelectListNodeColor = function(){
 
 // 避免当前着法进入滚动区域外
 vschess.load.prototype.setMoveLeaveHide = function(){
-	var bottomLine  = this.moveSelectList.height() - this.moveSelectListSteps.first().height();
-	var currentTop  = this.moveSelectListSteps.eq(this.getCurrentStep()).position().top;
-	var currentScrollTop = this.moveSelectList.scrollTop();
+	var bottomLine           = this.moveSelectList.height() - this.moveSelectListSteps.first().height();
+	var currentTop           = this.moveSelectListSteps.eq(this.getCurrentStep()).position().top;
+	var currentScrollTop     = this.moveSelectList.scrollTop();
 	currentTop > bottomLine	&& this.moveSelectList.scrollTop(currentScrollTop + currentTop - bottomLine	);
 	currentTop < 0			&& this.moveSelectList.scrollTop(currentScrollTop + currentTop				);
 	return this;

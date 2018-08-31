@@ -316,7 +316,7 @@ fn.createEditPieceArea = function(){
 		});
 
 		this.bind("dragstart", function(e){
-			e.originalEvent.dataTransfer.setData("text", e.originalEvent.target.innerHTML);
+			e.dataTransfer.setData("text", e.target.innerHTML);
 			_this.dragPiece = currentIndex;
 			_this.editRemoveSelect();
 			_this.editSelectedIndex = -99;
@@ -412,7 +412,7 @@ fn.createEditBoard = function(){
 		});
 
 		$(this).bind("dragstart", function(e){
-			e.originalEvent.dataTransfer.setData("text", e.originalEvent.target.innerHTML);
+			e.dataTransfer.setData("text", e.target.innerHTML);
 			_this.dragPiece = i;
 			_this.editRemoveSelect();
 			_this.editSelectedIndex = -99;
@@ -742,15 +742,15 @@ fn.createEditOtherButton = function(){
 fn.bindDrag = function(){
 	var _this = this;
 
-	this.DOM.on("dragover", function(e){
+	this.DOM.bind("dragover", function(e){
 		e.preventDefault();
 	});
 
-	this.DOM.on("drop", function(e){
+	this.DOM.bind("drop", function(e){
 		e.preventDefault();
 
-		if (e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.files.length) {
-			var file = e.originalEvent.dataTransfer.files[0];
+		if (e.dataTransfer && e.dataTransfer.files.length) {
+			var file = e.dataTransfer.files[0];
 			var reader = new FileReader();
 			reader.readAsArrayBuffer(file);
 			reader.onload = function(){
