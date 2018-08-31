@@ -153,6 +153,8 @@ $.expand.text = function(){
             this[i].innerHTML = "";
             this[i].appendChild(document.createTextNode(arguments[0]));
         }
+
+        return this;
     }
     else {
         if (this.length) {
@@ -341,7 +343,7 @@ $.expand.css = function(config){
 
             ~"height width top right bottom left".indexOf(j) && !isNaN(+config[j]) && (value += "px");
 
-            this[i].style[key] = value
+            this[i].style[key] = value;
         }
     }
 
