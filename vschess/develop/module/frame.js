@@ -141,6 +141,8 @@ $.expand.html = function(){
         for (var i = 0; i < this.length; ++i) {
             this[i].innerHTML = arguments[0];
         }
+
+        return this;
     }
     else {
         return this.length ? this[0].innerHTML : "";
@@ -373,6 +375,8 @@ $.expand.val = function(){
         for (var i = 0; i < this.length; ++i) {
             this[i].value = arguments[0];
         }
+
+        return this;
     }
     else {
         return this.length ? this[0].value : "";
@@ -384,6 +388,8 @@ $.expand.height = function(){
         for (var i = 0; i < this.length; ++i) {
             this[i].style.height = arguments[0] + "px";
         }
+
+        return this;
     }
     else {
         return this.length ? this[0].offsetHeight : 0;
@@ -395,6 +401,8 @@ $.expand.width = function(){
         for (var i = 0; i < this.length; ++i) {
             this[i].style.width = arguments[0] + "px";
         }
+
+        return this;
     }
     else {
         return this.length ? this[0].offsetWidth : 0;
@@ -406,6 +414,8 @@ $.expand.scrollTop = function(){
         for (var i = 0; i < this.length; ++i) {
             this[i].scrollTop = arguments[0];
         }
+
+        return this;
     }
     else {
         return this.length ? this[0].scrollTop : 0;
@@ -417,6 +427,8 @@ $.expand.scrollLeft = function(){
         for (var i = 0; i < this.length; ++i) {
             this[i].scrollLeft = arguments[0];
         }
+
+        return this;
     }
     else {
         return this.length ? this[0].scrollLeft : 0;
@@ -499,6 +511,8 @@ $.each = function(arr, func){
     for (var i in arr) {
         func.call(arr[i], i, arr[i]);
     }
+
+    return this;
 };
 
 $.trim = function(str){
