@@ -93,7 +93,11 @@ var Qwery;
         }
 
         if (idsAndClasses && (classes = idsAndClasses.match(clas))) {
-            for (i = classes.length; i--;) if (!classRegex(classes[i].slice(1)).test(this.className)) return false;
+            for (i = classes.length; i--;) {
+                if (!classRegex(classes[i].slice(1)).test(this.className)) {
+                    return false;
+                }
+            }
         }
 
         if (pseudo && qwery.pseudos[pseudo] && !qwery.pseudos[pseudo](this, pseudoVal)) {
@@ -171,7 +175,12 @@ var Qwery;
             return r;
         }
 
-        each(r, function (e) { if (ancestorMatch(e, tokens, dividedTokens)) ret[ret.length] = e });
+        each(r, function (e) {
+            if (ancestorMatch(e, tokens, dividedTokens)) {
+                ret[ret.length] = e;
+            }
+        });
+
         return ret;
     }
 
@@ -360,7 +369,7 @@ var Qwery;
                 else if (e.length) {
                     result = result.concat(arrayify(e));
                 }
-            }))
+            }));
 
             return ss.length > 1 && result.length > 1 ? uniq(result) : result;
         }
@@ -392,7 +401,7 @@ var Qwery;
                     result[result.length] = r[i];
                 }
             }
-        }))
+        }));
 
         return ss.length > 1 && result.length > 1 ? uniq(result) : result;
     },
@@ -400,7 +409,7 @@ var Qwery;
         if (typeof options[useNativeQSA] !== 'undefined') {
             select = !options[useNativeQSA] ? selectNonNative : hasQSA ? selectQSA : selectNonNative;
         }
-    }
+    };
 
     configure({ useNativeQSA: true });
 

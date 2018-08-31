@@ -15,7 +15,7 @@
  * https://github.com/ded/qwery/
  *
  * 最后修改日期：北京时间 2018年9月1日
- * Sat, 01 Sep 2018 02:40:03 +0800
+ * Sat, 01 Sep 2018 03:03:10 +0800
  */
 
 (function(){
@@ -115,7 +115,11 @@ var Qwery;
         }
 
         if (idsAndClasses && (classes = idsAndClasses.match(clas))) {
-            for (i = classes.length; i--;) if (!classRegex(classes[i].slice(1)).test(this.className)) return false;
+            for (i = classes.length; i--;) {
+                if (!classRegex(classes[i].slice(1)).test(this.className)) {
+                    return false;
+                }
+            }
         }
 
         if (pseudo && qwery.pseudos[pseudo] && !qwery.pseudos[pseudo](this, pseudoVal)) {
@@ -193,7 +197,12 @@ var Qwery;
             return r;
         }
 
-        each(r, function (e) { if (ancestorMatch(e, tokens, dividedTokens)) ret[ret.length] = e });
+        each(r, function (e) {
+            if (ancestorMatch(e, tokens, dividedTokens)) {
+                ret[ret.length] = e;
+            }
+        });
+
         return ret;
     }
 
@@ -382,7 +391,7 @@ var Qwery;
                 else if (e.length) {
                     result = result.concat(arrayify(e));
                 }
-            }))
+            }));
 
             return ss.length > 1 && result.length > 1 ? uniq(result) : result;
         }
@@ -414,7 +423,7 @@ var Qwery;
                     result[result.length] = r[i];
                 }
             }
-        }))
+        }));
 
         return ss.length > 1 && result.length > 1 ? uniq(result) : result;
     },
@@ -422,7 +431,7 @@ var Qwery;
         if (typeof options[useNativeQSA] !== 'undefined') {
             select = !options[useNativeQSA] ? selectNonNative : hasQSA ? selectQSA : selectNonNative;
         }
-    }
+    };
 
     configure({ useNativeQSA: true });
 
@@ -1025,7 +1034,7 @@ var vschess = {
 	version: "2.3.0",
 
 	// 版本时间戳
-	timestamp: "Sat, 01 Sep 2018 02:40:03 +0800",
+	timestamp: "Sat, 01 Sep 2018 03:03:10 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
