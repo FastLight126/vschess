@@ -39,8 +39,13 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 		this.setSelectByPieceIndex(from);
 		this.setSelectByPieceIndex(-1);
 
-		// IE+jQuery 模式下，使用 jQuery 的动画效果
-		if (window.ActiveXObject && typeof jQuery !== "undefined") {
+		var ua = navigator.userAgent.toLowerCase();
+		var isIE6 = ~ua.indexOf("msie 6");
+		var isIE7 = ~ua.indexOf("msie 7");
+		var isIE8 = ~ua.indexOf("msie 8");
+
+		// 低版本 IE 模式下，使用 js 的动画效果
+		if (isIE6 || isIE7 || isIE8) {
 			var _playSound = true;
 			var finishHandlerRunned = false;
 
@@ -76,13 +81,13 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 
 			this.stopAnimate = function(playSound){
 				typeof playSound !== "undefined" && (_playSound = playSound);
-				_this.animatePiece.stop(true, true);
+				_this.animatePiece.stop();
 			};
 
 			setTimeout(function(){ finishHandlerRunned || finishHandler(); }, animationTime + 500);
 		}
 
-		// 其他浏览器或 Zepto 模式下，使用原生 CSS3 动画效果
+		// 其他浏览器使用原生 CSS3 动画效果
 		else {
 			var finishHandlerRunned = false;
 

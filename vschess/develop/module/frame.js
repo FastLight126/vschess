@@ -1,4 +1,4 @@
-// 从 V2.3.0 版开始，播放器不再依赖 Zepto/jQuery 框架。
+// 从 V2.4.0 版开始，播放器不再依赖 Zepto/jQuery 框架。
 // 模拟 Zepto/jQuery，仅限于播放器内部使用，因为我只模拟了播放器中用到的方法，没用到的方法没有模拟。
 var $ = function(selector) {
     return new $.init(selector);
@@ -122,6 +122,19 @@ $.expand.removeClass = function(className){
         else {
             this[i].className = "";
         }
+    }
+
+    return this;
+};
+
+$.expand.toggleClass = function(className){
+    for (var i = 0; i < this.length; ++i) {
+        if (!className) {
+            continue;
+        }
+
+        var _this = $(this[0]);
+        _this.hasClass(className) ? _this.removeClass(className) : _this.addClass(className);
     }
 
     return this;
@@ -462,6 +475,63 @@ $.expand.hide = function(){
         this[i].style.display = "none";
     }
 
+    return this;
+};
+
+$.expand.animate = function(config, time, callback){
+    this._config   = config;
+    this._time     = time;
+    this._callback = callback;
+    this._start    = new Date().getTime();
+    this._param    = [];
+
+    for (var i = 0; i < this.length; ++i) {
+        this._param[i] = $(this[i]).position();
+    }
+
+    var _this = this;
+    this._nextFrame = setTimeout(function(){ _this.nextFrame(); }, vs.threadTimeout);
+    return this;
+};
+
+$.expand.nextFrame = function(){
+    var time = new Date().getTime();
+    var deltaTime = time - this._start;
+    var deltaPercent = deltaTime / this._time;
+
+    if (deltaTime >= this._time) {
+        this.stop();
+    }
+    else {
+        for (var i = 0; i < this.length; ++i) {
+            var targetTop  = this._param[i].top  + (this._config.top  - this._param[i].top ) * deltaPercent;
+            var targetLeft = this._param[i].left + (this._config.left - this._param[i].left) * deltaPercent;
+            this[i].style.top  = targetTop  + "px";
+            this[i].style.left = targetLeft + "px";
+        }
+
+        var _this = this;
+        this._nextFrame = setTimeout(function(){ _this.nextFrame(); }, vs.threadTimeout);
+    }
+
+    return this;
+};
+
+$.expand.stop = function(){
+    clearTimeout(this._nextFrame);
+
+    for (var i = 0; i < this.length; ++i) {
+        this[i].style.top  = this._config.top  + "px";
+        this[i].style.left = this._config.left + "px";
+    }
+
+    typeof this._callback === "function" && this._callback();
+    delete this._config;
+    delete this._time;
+    delete this._callback;
+    delete this._start;
+    delete this._param;
+    delete this._nextFrame;
     return this;
 };
 

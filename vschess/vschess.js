@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2018年9月1日
- * Sat, 01 Sep 2018 03:33:47 +0800
+ * 最后修改日期：北京时间 2018年9月9日
+ * Sun, 09 Sep 2018 03:17:27 +0800
  */
 
 (function(){
@@ -443,7 +443,7 @@ var Qwery;
     Qwery = qwery;
 })();
 
-// 从 V2.3.0 版开始，播放器不再依赖 Zepto/jQuery 框架。
+// 从 V2.4.0 版开始，播放器不再依赖 Zepto/jQuery 框架。
 // 模拟 Zepto/jQuery，仅限于播放器内部使用，因为我只模拟了播放器中用到的方法，没用到的方法没有模拟。
 var $ = function(selector) {
     return new $.init(selector);
@@ -567,6 +567,19 @@ $.expand.removeClass = function(className){
         else {
             this[i].className = "";
         }
+    }
+
+    return this;
+};
+
+$.expand.toggleClass = function(className){
+    for (var i = 0; i < this.length; ++i) {
+        if (!className) {
+            continue;
+        }
+
+        var _this = $(this[0]);
+        _this.hasClass(className) ? _this.removeClass(className) : _this.addClass(className);
     }
 
     return this;
@@ -910,6 +923,63 @@ $.expand.hide = function(){
     return this;
 };
 
+$.expand.animate = function(config, time, callback){
+    this._config   = config;
+    this._time     = time;
+    this._callback = callback;
+    this._start    = new Date().getTime();
+    this._param    = [];
+
+    for (var i = 0; i < this.length; ++i) {
+        this._param[i] = $(this[i]).position();
+    }
+
+    var _this = this;
+    this._nextFrame = setTimeout(function(){ _this.nextFrame(); }, vschess.threadTimeout);
+    return this;
+};
+
+$.expand.nextFrame = function(){
+    var time = new Date().getTime();
+    var deltaTime = time - this._start;
+    var deltaPercent = deltaTime / this._time;
+
+    if (deltaTime >= this._time) {
+        this.stop();
+    }
+    else {
+        for (var i = 0; i < this.length; ++i) {
+            var targetTop  = this._param[i].top  + (this._config.top  - this._param[i].top ) * deltaPercent;
+            var targetLeft = this._param[i].left + (this._config.left - this._param[i].left) * deltaPercent;
+            this[i].style.top  = targetTop  + "px";
+            this[i].style.left = targetLeft + "px";
+        }
+
+        var _this = this;
+        this._nextFrame = setTimeout(function(){ _this.nextFrame(); }, vschess.threadTimeout);
+    }
+
+    return this;
+};
+
+$.expand.stop = function(){
+    clearTimeout(this._nextFrame);
+
+    for (var i = 0; i < this.length; ++i) {
+        this[i].style.top  = this._config.top  + "px";
+        this[i].style.left = this._config.left + "px";
+    }
+
+    typeof this._callback === "function" && this._callback();
+    delete this._config;
+    delete this._time;
+    delete this._callback;
+    delete this._start;
+    delete this._param;
+    delete this._nextFrame;
+    return this;
+};
+
 $.extend = function(){
     var arg = arguments;
 
@@ -1050,7 +1120,7 @@ var vschess = {
 	version: "2.3.0",
 
 	// 版本时间戳
-	timestamp: "Sat, 01 Sep 2018 03:33:47 +0800",
+	timestamp: "Sun, 09 Sep 2018 03:17:27 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -6042,7 +6112,7 @@ vschess.load.prototype.getPlayGap = function(){
 
 // 创建复制用文本框
 vschess.load.prototype.createCopyTextarea = function(){
-	this.copyTextarea = $('<textarea class="vschess-copy"></textarea>').appendTo(this.DOM);
+	this.copyTextarea = $('<textarea class="vschess-copy" readonly="readonly"></textarea>').appendTo(this.DOM);
 	return this;
 };
 
@@ -6053,6 +6123,7 @@ vschess.load.prototype.copy = function(str, success){
 	if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported('copy')) {
 		this.copyTextarea.val(str);
 		this.copyTextarea[0].select();
+		this.copyTextarea[0].setSelectionRange(0, str.length);
 
 		if (document.execCommand("copy")) {
 			success();
@@ -7805,8 +7876,13 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 		this.setSelectByPieceIndex(from);
 		this.setSelectByPieceIndex(-1);
 
-		// IE+jQuery 模式下，使用 jQuery 的动画效果
-		if (window.ActiveXObject && typeof jQuery !== "undefined") {
+		var ua = navigator.userAgent.toLowerCase();
+		var isIE6 = ~ua.indexOf("msie 6");
+		var isIE7 = ~ua.indexOf("msie 7");
+		var isIE8 = ~ua.indexOf("msie 8");
+
+		// 低版本 IE 模式下，使用 js 的动画效果
+		if (isIE6 || isIE7 || isIE8) {
 			var _playSound = true;
 			var finishHandlerRunned = false;
 
@@ -7842,13 +7918,13 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 
 			this.stopAnimate = function(playSound){
 				typeof playSound !== "undefined" && (_playSound = playSound);
-				_this.animatePiece.stop(true, true);
+				_this.animatePiece.stop();
 			};
 
 			setTimeout(function(){ finishHandlerRunned || finishHandler(); }, animationTime + 500);
 		}
 
-		// 其他浏览器或 Zepto 模式下，使用原生 CSS3 动画效果
+		// 其他浏览器使用原生 CSS3 动画效果
 		else {
 			var finishHandlerRunned = false;
 
