@@ -1,6 +1,6 @@
 // 创建复制用文本框
 fn.createCopyTextarea = function(){
-	this.copyTextarea = $('<textarea class="vschess-copy"></textarea>').appendTo(this.DOM);
+	this.copyTextarea = $('<textarea class="vschess-copy" readonly="readonly"></textarea>').appendTo(this.DOM);
 	return this;
 };
 
@@ -11,6 +11,7 @@ fn.copy = function(str, success){
 	if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported('copy')) {
 		this.copyTextarea.val(str);
 		this.copyTextarea[0].select();
+		this.copyTextarea[0].setSelectionRange(0, str.length);
 
 		if (document.execCommand("copy")) {
 			success();
