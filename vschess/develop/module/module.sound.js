@@ -58,10 +58,10 @@ fn.speakMove = function(move){
 		return this;
 	}
 
-	if (SpeechSynthesisUtterance && speechSynthesis) {
+	if (window.SpeechSynthesisUtterance && window.speechSynthesis) {
 		var speech    = new SpeechSynthesisUtterance();
 		speech.text   = move;
-		speech.lang   = "zh-cn";
+		speech.lang   = "zh-CN";
 		speech.volume = this.getVolume() / 100;
 		speechSynthesis.speak(speech);
 	}
