@@ -1,5 +1,5 @@
 /*
- * 微思象棋播放器 V2.3.0
+ * 微思象棋播放器 V2.4.0
  * https://www.xiaxiangqi.com/
  *
  * Copyright @ 2009-2018 Margin.Top 版权所有
@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2018年9月9日
- * Sun, 09 Sep 2018 03:17:27 +0800
+ * 最后修改日期：北京时间 2018年9月11日
+ * Tue, 11 Sep 2018 03:33:36 +0800
  */
 
 (function(){
@@ -1117,10 +1117,10 @@ $.parseJSON = function(json){
 // 主程序
 var vschess = {
 	// 当前版本号
-	version: "2.3.0",
+	version: "2.4.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 09 Sep 2018 03:17:27 +0800",
+	timestamp: "Tue, 11 Sep 2018 03:33:36 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -2929,20 +2929,8 @@ vschess.init = function(options){
 			var soundSrc  = options.soundPath ? options.soundPath + name + ".mp3" : vschess.defaultPath + 'sound/' + options.soundStyle + '/' + name + ".mp3";
 			vschess.soundObject[soundName] = function(){};
 
-			// IE 下利用 Windows Media Player 来实现走子音效
-			if (window.ActiveXObject) {
-				var soundHTML = '<object id="' + soundId + '" classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" style="display:none;">';
-				$("body").append(soundHTML + '<param name="url" value="' + soundSrc + '" /><param name="autostart" value="false" /></object>');
-				var soundObject = document.getElementById(soundId);
-				vschess.soundObject[soundName] = function(volume){
-					soundObject.settings.volume = volume;
-					soundObject.controls.stop();
-					soundObject.controls.play();
-				};
-			}
-
 			// 支持 Web Audio 的浏览器使用 Web Audio API
-			else if (vschess.AudioContext) {
+			if (vschess.AudioContext) {
 				var xhr = new XMLHttpRequest();
 				xhr.open("GET", soundSrc, true);
 				xhr.responseType = "arraybuffer";
@@ -2963,6 +2951,18 @@ vschess.init = function(options){
 				};
 
 				xhr.send();
+			}
+
+			// 低版本 IE 下利用 Windows Media Player 来实现走子音效
+			else if (window.ActiveXObject) {
+				var soundHTML = '<object id="' + soundId + '" classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" style="display:none;">';
+				$("body").append(soundHTML + '<param name="url" value="' + soundSrc + '" /><param name="autostart" value="false" /></object>');
+				var soundObject = document.getElementById(soundId);
+				vschess.soundObject[soundName] = function(volume){
+					soundObject.settings.volume = volume;
+					soundObject.controls.stop();
+					soundObject.controls.play();
+				};
 			}
 
 			// 其他浏览器通过 HTML5 中的 audio 标签来实现走子音效
@@ -8663,10 +8663,10 @@ vschess.load.prototype.speakMove = function(move){
 		return this;
 	}
 
-	if (SpeechSynthesisUtterance && speechSynthesis) {
+	if (window.SpeechSynthesisUtterance && window.speechSynthesis) {
 		var speech    = new SpeechSynthesisUtterance();
 		speech.text   = move;
-		speech.lang   = "zh-cn";
+		speech.lang   = "zh-CN";
 		speech.volume = this.getVolume() / 100;
 		speechSynthesis.speak(speech);
 	}

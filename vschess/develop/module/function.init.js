@@ -69,20 +69,8 @@ vs.init = function(options){
 			var soundSrc  = options.soundPath ? options.soundPath + name + ".mp3" : vs.defaultPath + 'sound/' + options.soundStyle + '/' + name + ".mp3";
 			vs.soundObject[soundName] = function(){};
 
-			// IE 下利用 Windows Media Player 来实现走子音效
-			if (window.ActiveXObject) {
-				var soundHTML = '<object id="' + soundId + '" classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" style="display:none;">';
-				$("body").append(soundHTML + '<param name="url" value="' + soundSrc + '" /><param name="autostart" value="false" /></object>');
-				var soundObject = document.getElementById(soundId);
-				vs.soundObject[soundName] = function(volume){
-					soundObject.settings.volume = volume;
-					soundObject.controls.stop();
-					soundObject.controls.play();
-				};
-			}
-
 			// 支持 Web Audio 的浏览器使用 Web Audio API
-			else if (vs.AudioContext) {
+			if (vs.AudioContext) {
 				var xhr = new XMLHttpRequest();
 				xhr.open("GET", soundSrc, true);
 				xhr.responseType = "arraybuffer";
@@ -103,6 +91,18 @@ vs.init = function(options){
 				};
 
 				xhr.send();
+			}
+
+			// 低版本 IE 下利用 Windows Media Player 来实现走子音效
+			else if (window.ActiveXObject) {
+				var soundHTML = '<object id="' + soundId + '" classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" style="display:none;">';
+				$("body").append(soundHTML + '<param name="url" value="' + soundSrc + '" /><param name="autostart" value="false" /></object>');
+				var soundObject = document.getElementById(soundId);
+				vs.soundObject[soundName] = function(volume){
+					soundObject.settings.volume = volume;
+					soundObject.controls.stop();
+					soundObject.controls.play();
+				};
 			}
 
 			// 其他浏览器通过 HTML5 中的 audio 标签来实现走子音效
