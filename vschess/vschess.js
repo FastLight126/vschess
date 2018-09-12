@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2018年9月11日
- * Tue, 11 Sep 2018 03:33:36 +0800
+ * 最后修改日期：北京时间 2018年9月12日
+ * Wed, 12 Sep 2018 18:15:14 +0800
  */
 
 (function(){
@@ -537,25 +537,55 @@ $.expand.after = function(selector){
 };
 
 $.expand.addClass = function(className){
-    for (var i = 0; i < this.length; ++i) {
-        var classNameList = $.trim(this[i].className).split(/[\s]+/);
-        var addList = $.trim(className).split(/[\s]+/);
+    if (!className) {
+        return this;
+    }
 
-        for (var j = 0; j < addList.length; ++j) {
-            ~classNameList.indexOf(addList[j]) || classNameList.push(addList[j]);
+    var addList = $.trim(className).split(/[\s]+/);
+
+    if (this[0] && this[0].classList) {
+        for (var i = 0; i < this.length; ++i) {
+            for (var j = 0; j < addList.length; ++j) {
+                this[i].classList.add(addList[j]);
+            }
         }
+    }
+    else {
+        for (var i = 0; i < this.length; ++i) {
+            var classNameList = $.trim(this[i].className).split(/[\s]+/);
 
-        this[i].className = classNameList.join(" ");
+            for (var j = 0; j < addList.length; ++j) {
+                ~classNameList.indexOf(addList[j]) || classNameList.push(addList[j]);
+            }
+
+            this[i].className = classNameList.join(" ");
+        }
     }
 
     return this;
 };
 
 $.expand.removeClass = function(className){
-    for (var i = 0; i < this.length; ++i) {
-        if (className) {
+    if (!className) {
+        for (var i = 0; i < this.length; ++i) {
+            this[i].className = "";
+        }
+
+        return this;
+    }
+
+    var removeList = $.trim(className).split(/[\s]+/);
+
+    if (this[0] && this[0].classList) {
+        for (var i = 0; i < this.length; ++i) {
+            for (var j = 0; j < removeList.length; ++j) {
+                this[i].classList.remove(removeList[j]);
+            }
+        }
+    }
+    else {
+        for (var i = 0; i < this.length; ++i) {
             var classNameList = $.trim(this[i].className).split(/[\s]+/);
-            var removeList = $.trim(className).split(/[\s]+/);
             var resultList = [];
 
             for (var j = 0; j < classNameList.length; ++j) {
@@ -564,22 +594,33 @@ $.expand.removeClass = function(className){
 
             this[i].className = resultList.join(" ");
         }
-        else {
-            this[i].className = "";
-        }
     }
 
     return this;
 };
 
 $.expand.toggleClass = function(className){
-    for (var i = 0; i < this.length; ++i) {
-        if (!className) {
-            continue;
-        }
+    if (!className) {
+        return this;
+    }
 
-        var _this = $(this[0]);
-        _this.hasClass(className) ? _this.removeClass(className) : _this.addClass(className);
+    var toggleList = $.trim(className).split(/[\s]+/);
+
+    if (this[0] && this[0].classList) {
+        for (var i = 0; i < this.length; ++i) {
+            for (var j = 0; j < toggleList.length; ++j) {
+                this[i].classList.toggle(toggleList[j]);
+            }
+        }
+    }
+    else {
+        for (var i = 0; i < this.length; ++i) {
+            var _this = $(this[i]);
+
+            for (var j = 0; j < toggleList.length; ++j) {
+                _this.hasClass(toggleList[j]) ? _this.removeClass(toggleList[j]) : _this.addClass(toggleList[j]);
+            }
+        }
     }
 
     return this;
@@ -701,6 +742,14 @@ $.expand.attr = function(attr){
     }
 };
 
+$.expand.removeAttr = function(attr){
+    for (var i = 0; i < this.length; ++i) {
+        this[i].removeAttribute(attr);
+    }
+
+    return this;
+};
+
 $.expand.data = function(){
     if (arguments.length > 1) {
         return this.attr("data-" + arguments[0], arguments[1]);
@@ -708,14 +757,6 @@ $.expand.data = function(){
     else {
         return this.attr("data-" + arguments[0]);
     }
-};
-
-$.expand.removeAttr = function(attr){
-    for (var i = 0; i < this.length; ++i) {
-        this[i].removeAttribute(attr);
-    }
-
-    return this;
 };
 
 $.expand.children = function(selector){
@@ -746,11 +787,13 @@ $.expand.remove = function(){
 };
 
 $.expand.bind = function(event, func){
-    for (var i = 0; i < this.length; ++i) {
-        if (document.addEventListener) {
+    if (document.addEventListener) {
+        for (var i = 0; i < this.length; ++i) {
             this[i].addEventListener(event, func);
         }
-        else {
+    }
+    else {
+        for (var i = 0; i < this.length; ++i) {
             this[i].attachEvent(event, func);
         }
     }
@@ -1120,7 +1163,7 @@ var vschess = {
 	version: "2.4.0",
 
 	// 版本时间戳
-	timestamp: "Tue, 11 Sep 2018 03:33:36 +0800",
+	timestamp: "Wed, 12 Sep 2018 18:15:14 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -2073,7 +2116,7 @@ vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 			var start	  = l.indexOf("]");
 			var commentId = l.substring(16, start);
 			~commentId.indexOf("_") || (commentId = "0_" + commentId);
-			DhtmlXQ_Comment[commentId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_")).replace(/\|\|/g, "\n");
+			DhtmlXQ_Comment[commentId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_")).replace(/\|\|/g, "\n").replace(/\\u([0-9a-zA-Z]{4})/g, function(){ return vschess.fcc(parseInt(arguments[1], 16)); });
 		}
 		else if (~l.indexOf("[DhtmlXQ_binit")) {
 			DhtmlXQ_Start = l.substring(l.indexOf("[DhtmlXQ_binit") + 15, l.indexOf("[/DhtmlXQ_"));
@@ -2958,6 +3001,7 @@ vschess.init = function(options){
 				var soundHTML = '<object id="' + soundId + '" classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" style="display:none;">';
 				$("body").append(soundHTML + '<param name="url" value="' + soundSrc + '" /><param name="autostart" value="false" /></object>');
 				var soundObject = document.getElementById(soundId);
+
 				vschess.soundObject[soundName] = function(volume){
 					soundObject.settings.volume = volume;
 					soundObject.controls.stop();
@@ -2969,6 +3013,7 @@ vschess.init = function(options){
 			else {
 				$("body").append('<audio id="' + soundId + '" src="' + soundSrc + '" preload="auto"></audio>');
 				var soundObject = document.getElementById(soundId);
+
 				vschess.soundObject[soundName] = function(volume){
 					soundObject.volume = volume / 100;
 					soundObject.pause();

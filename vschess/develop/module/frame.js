@@ -92,25 +92,55 @@ $.expand.after = function(selector){
 };
 
 $.expand.addClass = function(className){
-    for (var i = 0; i < this.length; ++i) {
-        var classNameList = $.trim(this[i].className).split(/[\s]+/);
-        var addList = $.trim(className).split(/[\s]+/);
+    if (!className) {
+        return this;
+    }
 
-        for (var j = 0; j < addList.length; ++j) {
-            ~classNameList.indexOf(addList[j]) || classNameList.push(addList[j]);
+    var addList = $.trim(className).split(/[\s]+/);
+
+    if (this[0] && this[0].classList) {
+        for (var i = 0; i < this.length; ++i) {
+            for (var j = 0; j < addList.length; ++j) {
+                this[i].classList.add(addList[j]);
+            }
         }
+    }
+    else {
+        for (var i = 0; i < this.length; ++i) {
+            var classNameList = $.trim(this[i].className).split(/[\s]+/);
 
-        this[i].className = classNameList.join(" ");
+            for (var j = 0; j < addList.length; ++j) {
+                ~classNameList.indexOf(addList[j]) || classNameList.push(addList[j]);
+            }
+
+            this[i].className = classNameList.join(" ");
+        }
     }
 
     return this;
 };
 
 $.expand.removeClass = function(className){
-    for (var i = 0; i < this.length; ++i) {
-        if (className) {
+    if (!className) {
+        for (var i = 0; i < this.length; ++i) {
+            this[i].className = "";
+        }
+
+        return this;
+    }
+
+    var removeList = $.trim(className).split(/[\s]+/);
+
+    if (this[0] && this[0].classList) {
+        for (var i = 0; i < this.length; ++i) {
+            for (var j = 0; j < removeList.length; ++j) {
+                this[i].classList.remove(removeList[j]);
+            }
+        }
+    }
+    else {
+        for (var i = 0; i < this.length; ++i) {
             var classNameList = $.trim(this[i].className).split(/[\s]+/);
-            var removeList = $.trim(className).split(/[\s]+/);
             var resultList = [];
 
             for (var j = 0; j < classNameList.length; ++j) {
@@ -119,22 +149,33 @@ $.expand.removeClass = function(className){
 
             this[i].className = resultList.join(" ");
         }
-        else {
-            this[i].className = "";
-        }
     }
 
     return this;
 };
 
 $.expand.toggleClass = function(className){
-    for (var i = 0; i < this.length; ++i) {
-        if (!className) {
-            continue;
-        }
+    if (!className) {
+        return this;
+    }
 
-        var _this = $(this[0]);
-        _this.hasClass(className) ? _this.removeClass(className) : _this.addClass(className);
+    var toggleList = $.trim(className).split(/[\s]+/);
+
+    if (this[0] && this[0].classList) {
+        for (var i = 0; i < this.length; ++i) {
+            for (var j = 0; j < toggleList.length; ++j) {
+                this[i].classList.toggle(toggleList[j]);
+            }
+        }
+    }
+    else {
+        for (var i = 0; i < this.length; ++i) {
+            var _this = $(this[i]);
+
+            for (var j = 0; j < toggleList.length; ++j) {
+                _this.hasClass(toggleList[j]) ? _this.removeClass(toggleList[j]) : _this.addClass(toggleList[j]);
+            }
+        }
     }
 
     return this;
@@ -256,6 +297,14 @@ $.expand.attr = function(attr){
     }
 };
 
+$.expand.removeAttr = function(attr){
+    for (var i = 0; i < this.length; ++i) {
+        this[i].removeAttribute(attr);
+    }
+
+    return this;
+};
+
 $.expand.data = function(){
     if (arguments.length > 1) {
         return this.attr("data-" + arguments[0], arguments[1]);
@@ -263,14 +312,6 @@ $.expand.data = function(){
     else {
         return this.attr("data-" + arguments[0]);
     }
-};
-
-$.expand.removeAttr = function(attr){
-    for (var i = 0; i < this.length; ++i) {
-        this[i].removeAttribute(attr);
-    }
-
-    return this;
 };
 
 $.expand.children = function(selector){
@@ -301,11 +342,13 @@ $.expand.remove = function(){
 };
 
 $.expand.bind = function(event, func){
-    for (var i = 0; i < this.length; ++i) {
-        if (document.addEventListener) {
+    if (document.addEventListener) {
+        for (var i = 0; i < this.length; ++i) {
             this[i].addEventListener(event, func);
         }
-        else {
+    }
+    else {
+        for (var i = 0; i < this.length; ++i) {
             this[i].attachEvent(event, func);
         }
     }
