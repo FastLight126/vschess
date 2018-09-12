@@ -98,6 +98,7 @@ vs.init = function(options){
 				var soundHTML = '<object id="' + soundId + '" classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" style="display:none;">';
 				$("body").append(soundHTML + '<param name="url" value="' + soundSrc + '" /><param name="autostart" value="false" /></object>');
 				var soundObject = document.getElementById(soundId);
+
 				vs.soundObject[soundName] = function(volume){
 					soundObject.settings.volume = volume;
 					soundObject.controls.stop();
@@ -109,6 +110,7 @@ vs.init = function(options){
 			else {
 				$("body").append('<audio id="' + soundId + '" src="' + soundSrc + '" preload="auto"></audio>');
 				var soundObject = document.getElementById(soundId);
+
 				vs.soundObject[soundName] = function(volume){
 					soundObject.volume = volume / 100;
 					soundObject.pause();
