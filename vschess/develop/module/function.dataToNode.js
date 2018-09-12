@@ -232,7 +232,7 @@ vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 			var start	  = l.indexOf("]");
 			var commentId = l.substring(16, start);
 			~commentId.indexOf("_") || (commentId = "0_" + commentId);
-			DhtmlXQ_Comment[commentId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_")).replace(/\|\|/g, "\n");
+			DhtmlXQ_Comment[commentId] = l.substring(start + 1, l.indexOf("[/DhtmlXQ_")).replace(/\|\|/g, "\n").replace(/\\u([0-9a-zA-Z]{4})/g, function(){ return vs.fcc(parseInt(arguments[1], 16)); });
 		}
 		else if (~l.indexOf("[DhtmlXQ_binit")) {
 			DhtmlXQ_Start = l.substring(l.indexOf("[DhtmlXQ_binit") + 15, l.indexOf("[/DhtmlXQ_"));
