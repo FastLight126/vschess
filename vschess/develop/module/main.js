@@ -519,6 +519,7 @@ vs.defaultOptions = {
 
 	// 云服务 API 地址
 	cloudApi: {
+		gif: "https://www.xiaxiangqi.com/api/cloud/gif",
 		startFen: "https://www.xiaxiangqi.com/api/cloud/startfen",
 		saveBook: "https://www.xiaxiangqi.com/api/cloud/savebook",
 		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save"

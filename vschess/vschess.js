@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2018年9月12日
- * Wed, 12 Sep 2018 18:15:14 +0800
+ * 最后修改日期：北京时间 2018年10月6日
+ * Sat, 06 Oct 2018 00:35:09 +0800
  */
 
 (function(){
@@ -1163,7 +1163,7 @@ var vschess = {
 	version: "2.4.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 12 Sep 2018 18:15:14 +0800",
+	timestamp: "Sat, 06 Oct 2018 00:35:09 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1678,6 +1678,7 @@ vschess.defaultOptions = {
 
 	// 云服务 API 地址
 	cloudApi: {
+		gif: "https://www.xiaxiangqi.com/api/cloud/gif",
 		startFen: "https://www.xiaxiangqi.com/api/cloud/startfen",
 		saveBook: "https://www.xiaxiangqi.com/api/cloud/savebook",
 		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save"
@@ -8469,6 +8470,8 @@ vschess.load.prototype.createShare = function(){
 	this.shareTitle.bind(this.options.click, function(){ _this.showTab("share"); });
 	this.createShareGenerateButton();
 	this.createShareUBB();
+	this.createGifGenerateButton();
+	this.createGifArea();
 	return this;
 };
 
@@ -8519,6 +8522,44 @@ vschess.load.prototype.createShareUBB = function(){
 		_this.copy(_this.shareUBBTextInput.val(), function(){ _this.showMessage("\u8bba\u575b UBB \u4ee3\u7801\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u5728 BBS \u8bba\u575b\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01"); });
 	});
 
+	return this;
+};
+
+// 创建生成 Gif 图按钮
+vschess.load.prototype.createGifGenerateButton = function(){
+	var _this = this;
+	this.gifGenerateButton = $('<input type="button" class="vschess-button vschess-tab-body-gif-generate-button" value="\u751f\u6210 Gif \u52a8\u753b" />');
+	this.gifGenerateButton.appendTo(this.shareArea);
+
+	this.gifGenerateButton.bind(this.options.click, function(){
+		if (_this.options.cloudApi && _this.options.cloudApi.gif) {
+			_this.gifAreaTitle.text("\u6b63\u5728\u751f\u6210\uff0c\u8bf7\u7a0d\u5019\u3002");
+
+			$.ajax({
+				url: _this.options.cloudApi.gif,
+				type: "post",
+				data: { movelist: _this.getMoveList().join(",") },
+				dataType: "json",
+				success: function(response){
+					if (response.code === 0) {
+						_this.gifAreaTitle.html('<a href="' + response.data.url + '" target="_blank"><img src="' + response.data.url + '" /></a>');
+					}
+				},
+				error: function(){
+					alert("\u60a8\u7684\u6d4f\u89c8\u5668\u4e0d\u5141\u8bb8\u8de8\u57df\uff0c\u4e0d\u80fd\u4f7f\u7528\u6b64\u529f\u80fd\u3002");
+				}
+			});
+		}
+	});
+
+	return this;
+};
+
+// 创建 Gif 图片显示区域
+vschess.load.prototype.createGifArea = function(){
+	var _this = this;
+	this.gifAreaTitle = $('<div class="vschess-tab-body-gif-area"></div>');
+	this.gifAreaTitle.appendTo(this.shareArea);
 	return this;
 };
 
