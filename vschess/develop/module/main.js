@@ -386,6 +386,9 @@ var vschess = {
 	// 粘贴棋谱组件列表
 	editNodeModuleList: ["editNodeEndButton", "editNodeCancelButton", "editNodeTextarea", "editNodeTextareaPlaceholder"],
 
+	// 分享代码组件列表
+	shareCodeModuleList: ["shareUBBTitle", "shareUBBTextBox"],
+
 	// 状态参数语义化
 	code: {
 		// 棋子单击事件是否响应状态，0(0x00) 双方不响应，1(0x01) 仅黑方响应，2(0x10) 仅红方响应，3(0x11) 双方响应
@@ -522,7 +525,8 @@ vs.defaultOptions = {
 		gif: "https://www.xiaxiangqi.com/api/cloud/gif",
 		startFen: "https://www.xiaxiangqi.com/api/cloud/startfen",
 		saveBook: "https://www.xiaxiangqi.com/api/cloud/savebook",
-		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save"
+		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save",
+		saveBookForWeixin: "https://www.xiaxiangqi.com/api/cloud/book/weixincode"
 	},
 
 	// 默认推荐起始局面列表

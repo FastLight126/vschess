@@ -1,12 +1,12 @@
 /*
- * 微思象棋播放器 V2.4.0
+ * 微思象棋播放器 V2.5.0
  * https://www.xiaxiangqi.com/
  *
  * Copyright @ 2009-2018 Margin.Top 版权所有
  * https://margin.top/
  *
- * 本程序遵循 GPL 协议
- * https://www.gnu.org/licenses/fdl.html
+ * 本程序遵循 LGPL 协议
+ * http://www.gnu.org/licenses/lgpl.html
  *
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2018年10月6日
- * Sat, 06 Oct 2018 00:35:09 +0800
+ * 最后修改日期：北京时间 2018年10月11日
+ * Thu, 11 Oct 2018 03:04:59 +0800
  */
 
 (function(){
@@ -1160,10 +1160,10 @@ $.parseJSON = function(json){
 // 主程序
 var vschess = {
 	// 当前版本号
-	version: "2.4.0",
+	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Sat, 06 Oct 2018 00:35:09 +0800",
+	timestamp: "Thu, 11 Oct 2018 03:04:59 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1545,6 +1545,9 @@ var vschess = {
 	// 粘贴棋谱组件列表
 	editNodeModuleList: ["editNodeEndButton", "editNodeCancelButton", "editNodeTextarea", "editNodeTextareaPlaceholder"],
 
+	// 分享代码组件列表
+	shareCodeModuleList: ["shareUBBTitle", "shareUBBTextBox"],
+
 	// 状态参数语义化
 	code: {
 		// 棋子单击事件是否响应状态，0(0x00) 双方不响应，1(0x01) 仅黑方响应，2(0x10) 仅红方响应，3(0x11) 双方响应
@@ -1681,7 +1684,8 @@ vschess.defaultOptions = {
 		gif: "https://www.xiaxiangqi.com/api/cloud/gif",
 		startFen: "https://www.xiaxiangqi.com/api/cloud/startfen",
 		saveBook: "https://www.xiaxiangqi.com/api/cloud/savebook",
-		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save"
+		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save",
+		saveBookForWeixin: "https://www.xiaxiangqi.com/api/cloud/book/weixincode"
 	},
 
 	// 默认推荐起始局面列表
@@ -8469,9 +8473,10 @@ vschess.load.prototype.createShare = function(){
 	this.tabArea.append(this.shareArea );
 	this.shareTitle.bind(this.options.click, function(){ _this.showTab("share"); });
 	this.createShareGenerateButton();
-	this.createShareUBB();
 	this.createGifGenerateButton();
-	this.createGifArea();
+	this.createWeixinGenerateButton();
+	this.createShareUBB();
+	this.createShareImage();
 	return this;
 };
 
@@ -8482,6 +8487,12 @@ vschess.load.prototype.createShareGenerateButton = function(){
 	this.shareGenerateButton.appendTo(this.shareArea);
 
 	this.shareGenerateButton.bind(this.options.click, function(){
+		for (var i = 0; i < vschess.shareCodeModuleList.length; ++i) {
+			_this[vschess.shareCodeModuleList[i]].addClass("vschess-tab-body-share-current");
+		}
+
+		_this.shareImageTitle.removeClass("vschess-tab-body-image-current");
+
 		if (_this.options.cloudApi && _this.options.cloudApi.saveBookForShare) {
 			_this.shareUBBTextInput.val("\u6b63\u5728\u751f\u6210\uff0c\u8bf7\u7a0d\u5019\u3002");
 			_this.rebuildExportDhtmlXQ();
@@ -8528,12 +8539,17 @@ vschess.load.prototype.createShareUBB = function(){
 // 创建生成 Gif 图按钮
 vschess.load.prototype.createGifGenerateButton = function(){
 	var _this = this;
-	this.gifGenerateButton = $('<input type="button" class="vschess-button vschess-tab-body-gif-generate-button" value="\u751f\u6210 Gif \u52a8\u753b" />');
+	this.gifGenerateButton = $('<input type="button" class="vschess-button vschess-tab-body-image-generate-button" value="\u751f\u6210 Gif \u52a8\u753b" />');
 	this.gifGenerateButton.appendTo(this.shareArea);
 
 	this.gifGenerateButton.bind(this.options.click, function(){
 		if (_this.options.cloudApi && _this.options.cloudApi.gif) {
-			_this.gifAreaTitle.text("\u6b63\u5728\u751f\u6210\uff0c\u8bf7\u7a0d\u5019\u3002");
+			for (var i = 0; i < vschess.shareCodeModuleList.length; ++i) {
+				_this[vschess.shareCodeModuleList[i]].removeClass("vschess-tab-body-share-current");
+			}
+
+			_this.shareImageTitle.addClass("vschess-tab-body-image-current");
+			_this.shareImageTitle.text("\u6b63\u5728\u751f\u6210\uff0c\u8bf7\u7a0d\u5019\u3002");
 
 			$.ajax({
 				url: _this.options.cloudApi.gif,
@@ -8542,7 +8558,7 @@ vschess.load.prototype.createGifGenerateButton = function(){
 				dataType: "json",
 				success: function(response){
 					if (response.code === 0) {
-						_this.gifAreaTitle.html('<a href="' + response.data.url + '" target="_blank"><img src="' + response.data.url + '" /></a>');
+						_this.shareImageTitle.html('<a href="' + response.data.url + '" target="_blank"><img src="' + response.data.url + '" /></a>');
 					}
 				},
 				error: function(){
@@ -8555,11 +8571,48 @@ vschess.load.prototype.createGifGenerateButton = function(){
 	return this;
 };
 
-// 创建 Gif 图片显示区域
-vschess.load.prototype.createGifArea = function(){
+// 创建分享图片显示区域
+vschess.load.prototype.createShareImage = function(){
 	var _this = this;
-	this.gifAreaTitle = $('<div class="vschess-tab-body-gif-area"></div>');
-	this.gifAreaTitle.appendTo(this.shareArea);
+	this.shareImageTitle = $('<div class="vschess-tab-body-image-area"></div>');
+	this.shareImageTitle.appendTo(this.shareArea);
+	return this;
+};
+
+// 创建生成小程序码按钮
+vschess.load.prototype.createWeixinGenerateButton = function(){
+	var _this = this;
+	this.weixinGenerateButton = $('<input type="button" class="vschess-button vschess-tab-body-share-generate-button" value="\u751f\u6210\u5c0f\u7a0b\u5e8f\u7801" />');
+	this.weixinGenerateButton.appendTo(this.shareArea);
+
+	this.weixinGenerateButton.bind(this.options.click, function(){
+		for (var i = 0; i < vschess.shareCodeModuleList.length; ++i) {
+			_this[vschess.shareCodeModuleList[i]].removeClass("vschess-tab-body-share-current");
+		}
+
+		_this.shareImageTitle.addClass("vschess-tab-body-image-current");
+
+		if (_this.options.cloudApi && _this.options.cloudApi.saveBookForWeixin) {
+			_this.shareImageTitle.text("\u6b63\u5728\u751f\u6210\uff0c\u8bf7\u7a0d\u5019\u3002");
+			_this.rebuildExportDhtmlXQ();
+
+			$.ajax({
+				url: _this.options.cloudApi.saveBookForWeixin,
+				type: "post",
+				data: { book: _this.exportData.DhtmlXQ, step: _this.getCurrentStep() },
+				dataType: "json",
+				success: function(response){
+					if (response.code === 0) {
+						_this.shareImageTitle.html('<a href="' + response.data.url + '" target="_blank"><img src="' + response.data.url + '" /></a>');
+					}
+				},
+				error: function(){
+					alert("\u60a8\u7684\u6d4f\u89c8\u5668\u4e0d\u5141\u8bb8\u8de8\u57df\uff0c\u4e0d\u80fd\u4f7f\u7528\u6b64\u529f\u80fd\u3002");
+				}
+			});
+		}
+	});
+
 	return this;
 };
 

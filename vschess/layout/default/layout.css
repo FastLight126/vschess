@@ -103,13 +103,15 @@
 .vschess-layout-default .vschess-tab-body-info-list  { position:absolute; width:174px; height:272px; top:  2px; left: 0px; padding:5px; overflow-y:auto; }
 .vschess-layout-default .vschess-tab-body-info-item  { position:relative; line-height:20px; font-size:12px; }
 .vschess-layout-default .vschess-tab-body-share-generate-button { position:relative; width:172px; height:24px; display:block; margin:8px auto 0; }
-.vschess-layout-default .vschess-tab-body-share-title      { position:relative; width:172px; margin:8px auto 0; }
-.vschess-layout-default .vschess-tab-body-share-text       { position:relative; width:172px; height:24px; display:block; margin:5px auto 0; }
+.vschess-layout-default .vschess-tab-body-share-title      { position:relative; width:172px; display:none; margin:8px auto 0; }
+.vschess-layout-default .vschess-tab-body-share-text       { position:relative; width:172px; height:24px; display:none ; margin:5px auto 0; }
 .vschess-layout-default .vschess-tab-body-share-text-input { position:relative; width:132px; height:23px; display:block; float: left; border:none; border-bottom:1px solid #bfbfbf; }
 .vschess-layout-default .vschess-tab-body-share-text-copy  { position:relative; width: 40px; height:24px; display:block; float:right; }
-.vschess-layout-default .vschess-tab-body-gif-generate-button { position:relative; width:172px; height:24px; display:block; margin:8px auto 0; }
-.vschess-layout-default .vschess-tab-body-gif-area { position:relative; width:172px; margin:8px auto 0; text-align:center; }
-.vschess-layout-default .vschess-tab-body-gif-area img { width: 172px; }
+.vschess-layout-default .vschess-tab-body-share-current { display:block; }
+.vschess-layout-default .vschess-tab-body-image-generate-button { position:relative; width:172px; height:24px; display:block; margin:8px auto 0; }
+.vschess-layout-default .vschess-tab-body-image-area { position:relative; width:172px; margin:8px auto 0; text-align:center; display:none; }
+.vschess-layout-default .vschess-tab-body-image-area img { width: 172px; }
+.vschess-layout-default .vschess-tab-body-image-current { display:block; }
 .vschess-layout-default .vschess-info-editor-area { position:absolute; top:30px; left:1px; width:754px; height:490px; padding:1px; background-color:#fff; z-index:50; display:none; }
 .vschess-layout-default .vschess-info-editor-show { display:block; }
 .vschess-layout-default .vschess-info-editor-list { position:absolute; top:20px; left:0px; width:730px; overflow:hidden; }

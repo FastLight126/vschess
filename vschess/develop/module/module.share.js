@@ -8,9 +8,10 @@ fn.createShare = function(){
 	this.tabArea.append(this.shareArea );
 	this.shareTitle.bind(this.options.click, function(){ _this.showTab("share"); });
 	this.createShareGenerateButton();
-	this.createShareUBB();
 	this.createGifGenerateButton();
-	this.createGifArea();
+	this.createWeixinGenerateButton();
+	this.createShareUBB();
+	this.createShareImage();
 	return this;
 };
 
@@ -21,6 +22,12 @@ fn.createShareGenerateButton = function(){
 	this.shareGenerateButton.appendTo(this.shareArea);
 
 	this.shareGenerateButton.bind(this.options.click, function(){
+		for (var i = 0; i < vs.shareCodeModuleList.length; ++i) {
+			_this[vs.shareCodeModuleList[i]].addClass("vschess-tab-body-share-current");
+		}
+
+		_this.shareImageTitle.removeClass("vschess-tab-body-image-current");
+
 		if (_this.options.cloudApi && _this.options.cloudApi.saveBookForShare) {
 			_this.shareUBBTextInput.val("正在生成，请稍候。");
 			_this.rebuildExportDhtmlXQ();
@@ -67,12 +74,17 @@ fn.createShareUBB = function(){
 // 创建生成 Gif 图按钮
 fn.createGifGenerateButton = function(){
 	var _this = this;
-	this.gifGenerateButton = $('<input type="button" class="vschess-button vschess-tab-body-gif-generate-button" value="生成 Gif 动画" />');
+	this.gifGenerateButton = $('<input type="button" class="vschess-button vschess-tab-body-image-generate-button" value="生成 Gif 动画" />');
 	this.gifGenerateButton.appendTo(this.shareArea);
 
 	this.gifGenerateButton.bind(this.options.click, function(){
 		if (_this.options.cloudApi && _this.options.cloudApi.gif) {
-			_this.gifAreaTitle.text("正在生成，请稍候。");
+			for (var i = 0; i < vs.shareCodeModuleList.length; ++i) {
+				_this[vs.shareCodeModuleList[i]].removeClass("vschess-tab-body-share-current");
+			}
+
+			_this.shareImageTitle.addClass("vschess-tab-body-image-current");
+			_this.shareImageTitle.text("正在生成，请稍候。");
 
 			$.ajax({
 				url: _this.options.cloudApi.gif,
@@ -81,7 +93,7 @@ fn.createGifGenerateButton = function(){
 				dataType: "json",
 				success: function(response){
 					if (response.code === 0) {
-						_this.gifAreaTitle.html('<a href="' + response.data.url + '" target="_blank"><img src="' + response.data.url + '" /></a>');
+						_this.shareImageTitle.html('<a href="' + response.data.url + '" target="_blank"><img src="' + response.data.url + '" /></a>');
 					}
 				},
 				error: function(){
@@ -94,10 +106,47 @@ fn.createGifGenerateButton = function(){
 	return this;
 };
 
-// 创建 Gif 图片显示区域
-fn.createGifArea = function(){
+// 创建分享图片显示区域
+fn.createShareImage = function(){
 	var _this = this;
-	this.gifAreaTitle = $('<div class="vschess-tab-body-gif-area"></div>');
-	this.gifAreaTitle.appendTo(this.shareArea);
+	this.shareImageTitle = $('<div class="vschess-tab-body-image-area"></div>');
+	this.shareImageTitle.appendTo(this.shareArea);
+	return this;
+};
+
+// 创建生成小程序码按钮
+fn.createWeixinGenerateButton = function(){
+	var _this = this;
+	this.weixinGenerateButton = $('<input type="button" class="vschess-button vschess-tab-body-share-generate-button" value="生成小程序码" />');
+	this.weixinGenerateButton.appendTo(this.shareArea);
+
+	this.weixinGenerateButton.bind(this.options.click, function(){
+		for (var i = 0; i < vs.shareCodeModuleList.length; ++i) {
+			_this[vs.shareCodeModuleList[i]].removeClass("vschess-tab-body-share-current");
+		}
+
+		_this.shareImageTitle.addClass("vschess-tab-body-image-current");
+
+		if (_this.options.cloudApi && _this.options.cloudApi.saveBookForWeixin) {
+			_this.shareImageTitle.text("正在生成，请稍候。");
+			_this.rebuildExportDhtmlXQ();
+
+			$.ajax({
+				url: _this.options.cloudApi.saveBookForWeixin,
+				type: "post",
+				data: { book: _this.exportData.DhtmlXQ, step: _this.getCurrentStep() },
+				dataType: "json",
+				success: function(response){
+					if (response.code === 0) {
+						_this.shareImageTitle.html('<a href="' + response.data.url + '" target="_blank"><img src="' + response.data.url + '" /></a>');
+					}
+				},
+				error: function(){
+					alert("您的浏览器不允许跨域，不能使用此功能。");
+				}
+			});
+		}
+	});
+
 	return this;
 };

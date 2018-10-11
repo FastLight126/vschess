@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Shanghai');
 header('Content-type: application/x-javascript; charset=utf-8');
 include 'develop/class.JavaScriptPacker.php';
 
-$version = '2.4.0';
+$version = '2.5.0';
 $developList = scandir('develop/module');
 unset($developList[0], $developList[1]);
 $module[] = 'qwery.js';
@@ -39,8 +39,8 @@ $jsBegin = '
  * Copyright @ 2009-'. date('Y'). ' Margin.Top 版权所有
  * https://margin.top/
  *
- * 本程序遵循 GPL 协议
- * https://www.gnu.org/licenses/fdl.html
+ * 本程序遵循 LGPL 协议
+ * http://www.gnu.org/licenses/lgpl.html
  *
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
