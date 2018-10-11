@@ -1,6 +1,6 @@
 // 显示指定索引号的局面，负值表示从最后一个局面向前
 fn.setBoardByStep = function(step, indexUnChange){
-	step = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
+	step = vs.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
 	var _this = this;
 	this._.currentStep = vs.limit(step, 0, this.lastSituationIndex());
 	this.clearBoard(  );
