@@ -18,7 +18,7 @@ fn.createShare = function(){
 // 创建生成分享信息按钮
 fn.createShareGenerateButton = function(){
 	var _this = this;
-	this.shareGenerateButton = $('<input type="button" class="vschess-button vschess-tab-body-share-generate-button" value="生成分享代码" />');
+	this.shareGenerateButton = $('<button type="button" class="vschess-button vschess-tab-body-share-generate-button">生成分享代码</button>');
 	this.shareGenerateButton.appendTo(this.shareArea);
 
 	this.shareGenerateButton.bind(this.options.click, function(){
@@ -61,7 +61,7 @@ fn.createShareUBB = function(){
 	this.shareUBBTextBox.appendTo(this.shareArea);
 	this.shareUBBTextInput = $('<input class="vschess-tab-body-share-text-input" value="请点击“生成分享代码”按钮。" readonly="readonly" />');
 	this.shareUBBTextInput.appendTo(this.shareUBBTextBox);
-	this.shareUBBTextCopy = $('<input type="button" class="vschess-button vschess-tab-body-share-text-copy" value="复 制" />');
+	this.shareUBBTextCopy = $('<button type="button" class="vschess-button vschess-tab-body-share-text-copy">复 制</button>');
 	this.shareUBBTextCopy.appendTo(this.shareUBBTextBox);
 
 	this.shareUBBTextCopy.bind(this.options.click, function(){
@@ -74,7 +74,7 @@ fn.createShareUBB = function(){
 // 创建生成 Gif 图按钮
 fn.createGifGenerateButton = function(){
 	var _this = this;
-	this.gifGenerateButton = $('<input type="button" class="vschess-button vschess-tab-body-image-generate-button" value="生成 Gif 动画" />');
+	this.gifGenerateButton = $('<button type="button" class="vschess-button vschess-tab-body-image-generate-button">生成 Gif 动画</button>');
 	this.gifGenerateButton.appendTo(this.shareArea);
 
 	this.gifGenerateButton.bind(this.options.click, function(){
@@ -117,7 +117,7 @@ fn.createShareImage = function(){
 // 创建生成小程序码按钮
 fn.createWeixinGenerateButton = function(){
 	var _this = this;
-	this.weixinGenerateButton = $('<input type="button" class="vschess-button vschess-tab-body-share-generate-button" value="生成小程序码" />');
+	this.weixinGenerateButton = $('<button type="button" class="vschess-button vschess-tab-body-share-generate-button">生成小程序码</button>');
 	this.weixinGenerateButton.appendTo(this.shareArea);
 
 	this.weixinGenerateButton.bind(this.options.click, function(){

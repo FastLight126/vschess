@@ -3,14 +3,14 @@ fn.createControlBar = function(){
 	var _this = this;
 	this.controlBar = $('<div class="vschess-control-bar"></div>');
 	this.controlBarButton = {
-		first: $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-first" value="开 局" />'),
-		prevQ: $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-prevQ" value="快 退" />'),
-		prev : $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-prev"  value="后 退" />'),
-		play : $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-play"  value="播 放" />'),
-		pause: $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-pause" value="暂 停" />'),
-		next : $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-next"  value="前 进" />'),
-		nextQ: $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-nextQ" value="快 进" />'),
-		last : $('<input type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-last"  value="终 局" />')
+		first: $('<button type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-first">开 局</button>'),
+		prevQ: $('<button type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-prevQ">快 退</button>'),
+		prev : $('<button type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-prev" >后 退</button>'),
+		play : $('<button type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-play" >播 放</button>'),
+		pause: $('<button type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-pause">暂 停</button>'),
+		next : $('<button type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-next" >前 进</button>'),
+		nextQ: $('<button type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-nextQ">快 进</button>'),
+		last : $('<button type="button" class="vschess-button vschess-control-bar-button vschess-control-bar-last" >终 局</button>')
 	};
 
 	this.controlBarButton.first.bind(this.options.click, function(){ _this.pause(false).setBoardByStep(0); });
@@ -61,13 +61,13 @@ fn.createFormatBar = function(){
 	}
 
 	this.formatBarButton = {
-		copy		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-copy" value="复 制" />'),
-		format		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-format" value="格 式" />'),
-		help		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-help" value="帮 助" />'),
-		save		: $('<input type="submit" class="vschess-button vschess-format-bar-button vschess-format-bar-save" value="保 存" />'),
-		chinese		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-chinese" value="中 文" />'),
-		wxf			: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-wxf" value="WXF" />'),
-		iccs		: $('<input type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-iccs" value="ICCS" />'),
+		copy		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-copy"   >复 制</button>'),
+		format		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-format" >格 式</button>'),
+		help		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-help"   >帮 助</button>'),
+		save		: $('<button type="submit" class="vschess-button vschess-format-bar-button vschess-format-bar-save"   >保 存</button>'),
+		chinese		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-chinese">中 文</button>'),
+		wxf			: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-wxf"    >WXF</button>'),
+		iccs		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-iccs"   >ICCS</button>'),
 		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" class="vschess-format-bar-save-format" />'),
 		saveInput	: $('<input type="hidden" name="data" class="vschess-format-bar-save-input" />')
 	};

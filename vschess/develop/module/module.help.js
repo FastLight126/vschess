@@ -10,7 +10,7 @@ fn.createHelp = function(){
 	this.helpArea = $('<div class="vschess-help-area"></div>');
 	this.helpArea.html('<div class="vschess-help-area-detail">' + helpDetail + '</div>');
 	this.DOM.append(this.helpArea);
-	this.helpAreaClose = $('<input type="button" class="vschess-button vschess-help-close" value="关 闭" />');
+	this.helpAreaClose = $('<button type="button" class="vschess-button vschess-help-close">关 闭</button>');
 	this.helpAreaClose.bind(this.options.click, function(){ _this.hideHelpArea(); });
 	this.helpArea.append(this.helpAreaClose);
 	return this;

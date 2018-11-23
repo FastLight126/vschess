@@ -127,7 +127,7 @@ fn.hideNodeEditModule = function(){
 // 创建编辑局面区域开始编辑按钮
 fn.createEditStartButton = function(){
 	var _this = this;
-	this.editStartButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-start-button" value="编辑局面" />');
+	this.editStartButton = $('<button type="button" class="vschess-button vschess-tab-body-edit-start-button">编辑局面</button>');
 	this.editStartButton.appendTo(this.editArea);
 	this.editStartButton.bind(this.options.click, function(){ _this.showEditBoard(); });
 	return this;
@@ -151,7 +151,7 @@ fn.showEditBoard = function(){
 // 创建编辑局面区域结束编辑按钮
 fn.createEditEndButton = function(){
 	var _this = this;
-	this.editEndButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-end-button" value="确 定" />');
+	this.editEndButton = $('<button type="button" class="vschess-button vschess-tab-body-edit-end-button">确 定</button>');
 	this.editEndButton.appendTo(this.editArea);
 
 	this.editEndButton.bind(this.options.click, function(){
@@ -208,7 +208,7 @@ fn.createEditEndButton = function(){
 // 创建编辑局面区域取消编辑按钮
 fn.createEditCancelButton = function(){
 	var _this = this;
-	this.editCancelButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-cancel-button" value="取 消" />');
+	this.editCancelButton = $('<button type="button" class="vschess-button vschess-tab-body-edit-cancel-button">取 消</button>');
 	this.editCancelButton.appendTo(this.editArea);
 
 	this.editCancelButton.bind(this.options.click, function(){
@@ -561,7 +561,7 @@ fn.fillEditBoard = function(ignoreSelect){
 // 创建粘贴棋谱区域开始编辑按钮
 fn.createNodeStartButton = function(){
 	var _this = this;
-	this.editNodeStartButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-node-start-button" value="粘贴棋谱" />');
+	this.editNodeStartButton = $('<button type="button" class="vschess-button vschess-tab-body-edit-node-start-button">粘贴棋谱</button>');
 	this.editNodeStartButton.appendTo(this.editArea);
 
 	this.editNodeStartButton.bind(this.options.click, function(){
@@ -578,7 +578,7 @@ fn.createNodeStartButton = function(){
 // 创建粘贴棋谱区域完成编辑按钮
 fn.createNodeEndButton = function(){
 	var _this = this;
-	this.editNodeEndButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-node-end-button" value="确 定" />');
+	this.editNodeEndButton = $('<button type="button" class="vschess-button vschess-tab-body-edit-node-end-button">确 定</button>');
 	this.editNodeEndButton.appendTo(this.editArea);
 
 	this.editNodeEndButton.bind(this.options.click, function(){
@@ -608,7 +608,7 @@ fn.createNodeEndButton = function(){
 // 创建粘贴棋谱区域取消编辑按钮
 fn.createNodeCancelButton = function(){
 	var _this = this;
-	this.editNodeCancelButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-node-cancel-button" value="取 消" />');
+	this.editNodeCancelButton = $('<button type="button" class="vschess-button vschess-tab-body-edit-node-cancel-button">取 消</button>');
 	this.editNodeCancelButton.appendTo(this.editArea);
 
 	this.editNodeCancelButton.bind(this.options.click, function(){
@@ -698,7 +698,7 @@ fn.createEditOtherButton = function(){
 	});
 
 	// 重新开局按钮
-	this.editBeginButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-begin-button" value="重新开局" />');
+	this.editBeginButton = $('<button type="button" class="vschess-button vschess-tab-body-edit-begin-button">重新开局</button>');
 	this.editBeginButton.appendTo(this.editArea);
 
 	this.editBeginButton.bind(this.options.click, function(){
@@ -720,7 +720,7 @@ fn.createEditOtherButton = function(){
 	});
 
 	// 清空棋盘按钮
-	this.editBlankButton = $('<input type="button" class="vschess-button vschess-tab-body-edit-blank-button" value="清空棋盘" />');
+	this.editBlankButton = $('<button type="button" class="vschess-button vschess-tab-body-edit-blank-button">清空棋盘</button>');
 	this.editBlankButton.appendTo(this.editArea);
 
 	this.editBlankButton.bind(this.options.click, function(){

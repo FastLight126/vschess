@@ -5,9 +5,9 @@ fn.createExport = function(){
 	this.exportArea     = $('<form method="post" action="' + this.options.cloudApi.saveBook + '" class="vschess-tab-body vschess-tab-body-export"></form>');
 	this.exportTextarea = $('<textarea class="vschess-tab-body-export-textarea" readonly="readonly" name="data"></textarea>').appendTo(this.exportArea);
 	this.exportFormat   = $('<select class="vschess-tab-body-export-format" name="format"></select>').appendTo(this.exportArea);
-	this.exportGenerate = $('<input type="button" class="vschess-button vschess-tab-body-export-generate" value="生成棋谱" />').appendTo(this.exportArea);
-	this.exportCopy     = $('<input type="button" class="vschess-button vschess-tab-body-export-copy     vschess-tab-body-export-current" value="复制" />').appendTo(this.exportArea);
-	this.exportDownload = $('<input type="submit" class="vschess-button vschess-tab-body-export-download vschess-tab-body-export-current" value="保存" />').appendTo(this.exportArea);
+	this.exportGenerate = $('<button type="button" class="vschess-button vschess-tab-body-export-generate">生成棋谱</button>').appendTo(this.exportArea);
+	this.exportCopy     = $('<button type="button" class="vschess-button vschess-tab-body-export-copy     vschess-tab-body-export-current">复制</button>').appendTo(this.exportArea);
+	this.exportDownload = $('<button type="submit" class="vschess-button vschess-tab-body-export-download vschess-tab-body-export-current">保存</button>').appendTo(this.exportArea);
 	this.exportData     = {};
 	this.tabArea.children(".vschess-tab-title-export, .vschess-tab-body-export").remove();
 	this.tabArea.append(this.exportTitle);
