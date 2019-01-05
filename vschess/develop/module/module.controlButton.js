@@ -57,19 +57,20 @@ fn.createFormatBar = function(){
 	switch (this.getMoveFormat()) {
 		case "wxf"		: var formarButton = "WXF"	; break;
 		case "iccs"		: var formarButton = "ICCS"	; break;
-		case "chinese"	: var formarButton = "中 文"	; break;
+		case "chinese"	: var formarButton = "中 文"; break;
 	}
 
 	this.formatBarButton = {
 		copy		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-copy"   >复 制</button>'),
 		format		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-format" >格 式</button>'),
 		help		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-help"   >帮 助</button>'),
-		save		: $('<button type="submit" class="vschess-button vschess-format-bar-button vschess-format-bar-save"   >保 存</button>'),
+		save		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-save"   >保 存</button>'),
 		chinese		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-chinese">中 文</button>'),
 		wxf			: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-wxf"    >WXF</button>'),
 		iccs		: $('<button type="button" class="vschess-button vschess-format-bar-button vschess-format-bar-iccs"   >ICCS</button>'),
-		saveFormat	: $('<input type="hidden" name="format" value="DhtmlXQ" class="vschess-format-bar-save-format" />'),
-		saveInput	: $('<input type="hidden" name="data" class="vschess-format-bar-save-input" />')
+		saveFormat	: $('<input  type="hidden" class="vschess-format-bar-save-format"   name="format" value="DhtmlXQ" />'),
+		saveInput	: $('<input  type="hidden" class="vschess-format-bar-save-input"    name="data" />'),
+		saveFilename: $('<input  type="hidden" class="vschess-format-bar-save-filename" name="filename" />')
 	};
 
 	this.formatBarButton.format.bind(this.options.click, function(){
@@ -82,10 +83,18 @@ fn.createFormatBar = function(){
 		_this.showHelpArea();
 	});
 
-	this.formatBar.bind("submit", function(){
+	this.formatBarButton.save.bind(this.options.click, function(){
 		_this.rebuildExportDhtmlXQ();
-		_this.formatBarButton.saveInput.val(_this.exportData.DhtmlXQ);
 		_this.setSaved(true);
+
+		if (vs.localDownload) {
+			_this.localDownload(_this.chessInfo.title + ".txt", _this.exportData.DhtmlXQ, { type: "text/plain" });
+		}
+		else {
+			_this.formatBarButton.saveInput   .val(_this.exportData.DhtmlXQ);
+			_this.formatBarButton.saveFilename.val(_this.chessInfo .title  );
+			_this.formatBar.trigger("submit");
+		}
 	});
 
 	this.formatBarButton.chinese.bind(this.options.click, function(){

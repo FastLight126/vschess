@@ -74,6 +74,7 @@ fn.createBoard = function(){
 	this.initPieceRotateDeg();
 
 	// 其他组件
+	this.createLocalDownloadLink();
 	this.createChangeSelectList();
 	this.createMoveSelectList();
 	this.createCopyTextarea();

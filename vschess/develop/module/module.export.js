@@ -4,10 +4,11 @@ fn.createExport = function(){
 	this.exportTitle    = $('<div class="vschess-tab-title vschess-tab-title-export">棋谱导出</div>');
 	this.exportArea     = $('<form method="post" action="' + this.options.cloudApi.saveBook + '" class="vschess-tab-body vschess-tab-body-export"></form>');
 	this.exportTextarea = $('<textarea class="vschess-tab-body-export-textarea" readonly="readonly" name="data"></textarea>').appendTo(this.exportArea);
-	this.exportFormat   = $('<select class="vschess-tab-body-export-format" name="format"></select>').appendTo(this.exportArea);
+	this.exportFormat   = $('<select class="vschess-tab-body-export-format"   name="format"></select>').appendTo(this.exportArea);
+	this.exportFilename = $('<input  class="vschess-tab-body-export-filename" name="filename" type="hidden" />').appendTo(this.exportArea);
 	this.exportGenerate = $('<button type="button" class="vschess-button vschess-tab-body-export-generate">生成棋谱</button>').appendTo(this.exportArea);
 	this.exportCopy     = $('<button type="button" class="vschess-button vschess-tab-body-export-copy     vschess-tab-body-export-current">复制</button>').appendTo(this.exportArea);
-	this.exportDownload = $('<button type="submit" class="vschess-button vschess-tab-body-export-download vschess-tab-body-export-current">保存</button>').appendTo(this.exportArea);
+	this.exportDownload = $('<button type="button" class="vschess-button vschess-tab-body-export-download vschess-tab-body-export-current">保存</button>').appendTo(this.exportArea);
 	this.exportData     = {};
 	this.tabArea.children(".vschess-tab-title-export, .vschess-tab-body-export").remove();
 	this.tabArea.append(this.exportTitle);
@@ -69,6 +70,30 @@ fn.createExportList = function(){
 		_this.copy(_this.exportTextarea.val(), function(){ _this.showMessage("棋谱复制成功，您可以直接粘贴使用！"); });
 	});
 
+	this.exportDownload.bind(this.options.click, function(){
+		if (vs.localDownload) {
+			var UTF8Text = _this.exportTextarea.val();
+			var GBKArray = new Uint8Array(vs.iconv2GBK(UTF8Text));
+			var exportFormat = _this.exportFormat.val();
+
+			if (exportFormat.indexOf("PGN") === 0) {
+				_this.localDownload(_this.chessInfo.title + ".pgn", GBKArray, { type: "application/octet-stream" });
+			}
+			else if (exportFormat.indexOf("QQ") === 0) {
+				_this.localDownload(_this.chessInfo.title + ".che", GBKArray, { type: "application/octet-stream" });
+			}
+			else if (exportFormat === "PengFei") {
+				_this.localDownload(_this.chessInfo.title + ".pfc", UTF8Text, { type: "application/octet-stream" });
+			}
+			else {
+				_this.localDownload(_this.chessInfo.title + ".txt", GBKArray, { type: "text/plain" });
+			}
+		}
+		else {
+			_this.exportArea.trigger("submit");
+		}
+	});
+
 	return this;
 };
 
@@ -82,6 +107,7 @@ fn.setExportFormat = function(format, force){
 	format = format || this.getExportFormat();
 	this._.exportFormat = vs.exportFormatList[format] ? format : this.getExportFormat();
 	this.exportTextarea.removeClass().addClass("vschess-tab-body-export-textarea vschess-tab-body-export-textarea-format-" + format);
+	this.exportFilename.val(this.chessInfo.title);
 
 	if (format === "TextBoard") {
 		this.exportGenerate.removeClass("vschess-tab-body-export-current");
