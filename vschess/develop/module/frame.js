@@ -356,6 +356,16 @@ $.expand.bind = function(event, func){
     return this;
 };
 
+$.expand.trigger = function(event){
+    ~["click", "submit"].indexOf(event) || (event = "click");
+
+    for (var i = 0; i < this.length; ++i) {
+        this[i][event]();
+    }
+
+    return this;
+};
+
 $.expand.append = function(selector){
     for (var i = 0; i < this.length; ++i) {
         var list = $(selector);
