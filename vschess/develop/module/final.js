@@ -5,7 +5,7 @@ fn.toString = function(){
 
 // 程序转换为字符串信息
 vs.toString = function(){
-	return "微思象棋播放器 V" + vs.version + " https://www.xiaxiangqi.com/ Copyright © 2009-#YEAR# Margin.Top 版权所有";
+	return "微思象棋播放器 V" + vs.version + " https://www.xiaxiangqi.com/vschess/ Copyright © 2009-#YEAR# Margin.Top 版权所有";
 };
 
 // 将 vschess 提升为全局变量，这样外部脚本就可以调用了
