@@ -15,7 +15,7 @@
  * https://github.com/ded/qwery/
  *
  * 最后修改日期：北京时间 2019年1月7日
- * Mon, 07 Jan 2019 00:07:10 +0800
+ * Mon, 07 Jan 2019 00:10:09 +0800
  */
 
 (function(){
@@ -1111,10 +1111,10 @@ $.ajax = function(config){
     }
     else {
         var xhrs = [
-            function () { return new XMLHttpRequest(); },
-            function () { return new ActiveXObject("Microsoft.XMLHTTP" ); },
-            function () { return new ActiveXObject("MSXML2.XMLHTTP.3.0"); },
-            function () { return new ActiveXObject("MSXML2.XMLHTTP"    ); }
+            function(){ return new XMLHttpRequest(); },
+            function(){ return new ActiveXObject("Microsoft.XMLHTTP" ); },
+            function(){ return new ActiveXObject("MSXML2.XMLHTTP.3.0"); },
+            function(){ return new ActiveXObject("MSXML2.XMLHTTP"    ); }
         ];
 
         var xhr = false;
@@ -1174,7 +1174,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Mon, 07 Jan 2019 00:07:10 +0800",
+	timestamp: "Mon, 07 Jan 2019 00:10:09 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方

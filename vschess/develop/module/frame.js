@@ -666,10 +666,10 @@ $.ajax = function(config){
     }
     else {
         var xhrs = [
-            function () { return new XMLHttpRequest(); },
-            function () { return new ActiveXObject("Microsoft.XMLHTTP" ); },
-            function () { return new ActiveXObject("MSXML2.XMLHTTP.3.0"); },
-            function () { return new ActiveXObject("MSXML2.XMLHTTP"    ); }
+            function(){ return new XMLHttpRequest(); },
+            function(){ return new ActiveXObject("Microsoft.XMLHTTP" ); },
+            function(){ return new ActiveXObject("MSXML2.XMLHTTP.3.0"); },
+            function(){ return new ActiveXObject("MSXML2.XMLHTTP"    ); }
         ];
 
         var xhr = false;
