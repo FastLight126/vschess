@@ -72,7 +72,7 @@ fn.createExportList = function(){
 
 	this.exportDownload.bind(this.options.click, function(){
 		if (vs.localDownload) {
-			var UTF8Text = _this.exportTextarea.val();
+			var UTF8Text = _this.exportTextarea.val().replace(/\n/g, "\r\n").replace(/\r\r/g, "\r");
 			var GBKArray = new Uint8Array(vs.iconv2GBK(UTF8Text));
 			var exportFormat = _this.exportFormat.val();
 
@@ -86,7 +86,7 @@ fn.createExportList = function(){
 				_this.localDownload(_this.chessInfo.title + ".pfc", UTF8Text, { type: "application/octet-stream" });
 			}
 			else {
-				_this.localDownload(_this.chessInfo.title + ".txt", GBKArray, { type: "text/plain" });
+				_this.localDownload(_this.chessInfo.title + ".txt", UTF8Text, { type: "text/plain" });
 			}
 		}
 		else {
