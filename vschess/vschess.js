@@ -6,7 +6,7 @@
  * https://margin.top/
  *
  * 本程序遵循 LGPL 协议
- * http://www.gnu.org/licenses/lgpl.html
+ * https://www.gnu.org/licenses/lgpl.html
  *
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
