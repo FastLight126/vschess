@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年1月6日
- * Sun, 06 Jan 2019 23:55:20 +0800
+ * 最后修改日期：北京时间 2019年1月7日
+ * Mon, 07 Jan 2019 00:07:10 +0800
  */
 
 (function(){
@@ -1100,13 +1100,14 @@ $.ajax = function(config){
         var tag  = document.createElement("script");
         var mask = ~cfg.url.indexOf("?") ? "&" : "?";
         tag.src  =  cfg.url + mask + "callback=" + callbackName + "&" + new Date().getTime();
-        document.getElementsByTagName("body")[0].appendChild(tag);
 
         window[callbackName] = function(response){
             cfg.success(response);
             delete window[callbackName];
             document.getElementsByTagName("body")[0].removeChild(tag);
         };
+
+        document.getElementsByTagName("body")[0].appendChild(tag);
     }
     else {
         var xhrs = [
@@ -1173,7 +1174,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 06 Jan 2019 23:55:20 +0800",
+	timestamp: "Mon, 07 Jan 2019 00:07:10 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方

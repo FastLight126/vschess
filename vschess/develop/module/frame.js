@@ -655,13 +655,14 @@ $.ajax = function(config){
         var tag  = document.createElement("script");
         var mask = ~cfg.url.indexOf("?") ? "&" : "?";
         tag.src  =  cfg.url + mask + "callback=" + callbackName + "&" + new Date().getTime();
-        document.getElementsByTagName("body")[0].appendChild(tag);
 
         window[callbackName] = function(response){
             cfg.success(response);
             delete window[callbackName];
             document.getElementsByTagName("body")[0].removeChild(tag);
         };
+
+        document.getElementsByTagName("body")[0].appendChild(tag);
     }
     else {
         var xhrs = [
