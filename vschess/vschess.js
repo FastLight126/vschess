@@ -15,7 +15,7 @@
  * https://github.com/ded/qwery/
  *
  * 最后修改日期：北京时间 2019年1月6日
- * Sun, 06 Jan 2019 23:23:27 +0800
+ * Sun, 06 Jan 2019 23:55:20 +0800
  */
 
 (function(){
@@ -1173,7 +1173,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 06 Jan 2019 23:23:27 +0800",
+	timestamp: "Sun, 06 Jan 2019 23:55:20 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1393,8 +1393,8 @@ var vschess = {
 	// Placeholder 支持情况
 	placeholder: "placeholder" in document.createElement("input"),
 
-	// Blob 支持情况
-	localDownload: !!window.Blob && !!window.URL,
+	// 本地保存支持情况
+	localDownload: !!window.Blob && !!window.URL && "download" in document.createElement("a"),
 
 	// 已创建棋盘对象列表
 	chessList: [],
@@ -7754,13 +7754,13 @@ vschess.load.prototype.getAutoResultByCurrent = function(){
 	return !vschess.hasLegalMove(lastSituation) ? lastSituation[0] === 1 ? "0-1" : "1-0" : "*";
 };
 
-// 创建本地下载链接标签
+// 创建本地保存链接标签
 vschess.load.prototype.createLocalDownloadLink = function(){
 	this.localDownloadLink = $('<a class="vschess-local-download-link"></a>').appendTo(this.DOM);
 	return this;
 };
 
-// 本地下载
+// 本地保存
 vschess.load.prototype.localDownload = function(filename, filedata, param){
 	if (!vschess.localDownload) {
 		return this;

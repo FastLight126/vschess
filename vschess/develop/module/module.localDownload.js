@@ -1,10 +1,10 @@
-// 创建本地下载链接标签
+// 创建本地保存链接标签
 fn.createLocalDownloadLink = function(){
 	this.localDownloadLink = $('<a class="vschess-local-download-link"></a>').appendTo(this.DOM);
 	return this;
 };
 
-// 本地下载
+// 本地保存
 fn.localDownload = function(filename, filedata, param){
 	if (!vs.localDownload) {
 		return this;

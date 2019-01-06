@@ -224,8 +224,8 @@ var vschess = {
 	// Placeholder 支持情况
 	placeholder: "placeholder" in document.createElement("input"),
 
-	// Blob 支持情况
-	localDownload: !!window.Blob && !!window.URL,
+	// 本地保存支持情况
+	localDownload: !!window.Blob && !!window.URL && "download" in document.createElement("a"),
 
 	// 已创建棋盘对象列表
 	chessList: [],
