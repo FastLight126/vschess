@@ -26,7 +26,7 @@ vs.UTF82GBKCharset = (function(){
 	var result = [];
 
 	for (var i in vs.GBK2UTF8Charset) {
-		result[vs.GBK2UTF8Charset[i]] = +i;
+		result[vs.GBK2UTF8Charset[+i]] = +i;
 	}
 
 	return result;
