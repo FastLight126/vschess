@@ -75,18 +75,19 @@ fn.createExportList = function(){
 			var UTF8Text = _this.exportTextarea.val().replace(/\n/g, "\r\n").replace(/\r\r/g, "\r");
 			var GBKArray = new Uint8Array(vs.iconv2GBK(UTF8Text));
 			var exportFormat = _this.exportFormat.val();
+			var fileName = _this.chessInfo.title || "中国象棋";
 
 			if (exportFormat.indexOf("PGN") === 0) {
-				_this.localDownload(_this.chessInfo.title + ".pgn", GBKArray, { type: "application/octet-stream" });
+				_this.localDownload(fileName + ".pgn", GBKArray, { type: "application/octet-stream" });
 			}
 			else if (exportFormat.indexOf("QQ") === 0) {
-				_this.localDownload(_this.chessInfo.title + ".che", GBKArray, { type: "application/octet-stream" });
+				_this.localDownload(fileName + ".che", GBKArray, { type: "application/octet-stream" });
 			}
 			else if (exportFormat === "PengFei") {
-				_this.localDownload(_this.chessInfo.title + ".pfc", UTF8Text, { type: "application/octet-stream" });
+				_this.localDownload(fileName + ".pfc", UTF8Text, { type: "application/octet-stream" });
 			}
 			else {
-				_this.localDownload(_this.chessInfo.title + ".txt", UTF8Text, { type: "text/plain" });
+				_this.localDownload(fileName + ".txt", UTF8Text, { type: "text/plain" });
 			}
 		}
 		else {
@@ -107,7 +108,7 @@ fn.setExportFormat = function(format, force){
 	format = format || this.getExportFormat();
 	this._.exportFormat = vs.exportFormatList[format] ? format : this.getExportFormat();
 	this.exportTextarea.removeClass().addClass("vschess-tab-body-export-textarea vschess-tab-body-export-textarea-format-" + format);
-	this.exportFilename.val(this.chessInfo.title);
+	this.exportFilename.val(this.chessInfo.title || "中国象棋");
 
 	if (format === "TextBoard") {
 		this.exportGenerate.removeClass("vschess-tab-body-export-current");

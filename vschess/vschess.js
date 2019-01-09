@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年1月7日
- * Mon, 07 Jan 2019 00:10:09 +0800
+ * 最后修改日期：北京时间 2019年1月10日
+ * Thu, 10 Jan 2019 03:11:49 +0800
  */
 
 (function(){
@@ -1174,7 +1174,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Mon, 07 Jan 2019 00:10:09 +0800",
+	timestamp: "Thu, 10 Jan 2019 03:11:49 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -2866,7 +2866,7 @@ vschess.UTF82GBKCharset = (function(){
 	var result = [];
 
 	for (var i in vschess.GBK2UTF8Charset) {
-		result[vschess.GBK2UTF8Charset[i]] = +i;
+		result[vschess.GBK2UTF8Charset[+i]] = +i;
 	}
 
 	return result;
@@ -6173,7 +6173,7 @@ vschess.load.prototype.createFormatBar = function(){
 
 		if (vschess.localDownload) {
 			var UTF8Text = _this.exportData.DhtmlXQ.replace(/\n/g, "\r\n").replace(/\r\r/g, "\r");
-			_this.localDownload(_this.chessInfo.title + ".txt", UTF8Text, { type: "text/plain" });
+			_this.localDownload((_this.chessInfo.title || "\u4e2d\u56fd\u8c61\u68cb") + ".txt", UTF8Text, { type: "text/plain" });
 		}
 		else {
 			_this.formatBarButton.saveInput   .val(_this.exportData.DhtmlXQ);
@@ -7296,18 +7296,19 @@ vschess.load.prototype.createExportList = function(){
 			var UTF8Text = _this.exportTextarea.val().replace(/\n/g, "\r\n").replace(/\r\r/g, "\r");
 			var GBKArray = new Uint8Array(vschess.iconv2GBK(UTF8Text));
 			var exportFormat = _this.exportFormat.val();
+			var fileName = _this.chessInfo.title || "\u4e2d\u56fd\u8c61\u68cb";
 
 			if (exportFormat.indexOf("PGN") === 0) {
-				_this.localDownload(_this.chessInfo.title + ".pgn", GBKArray, { type: "application/octet-stream" });
+				_this.localDownload(fileName + ".pgn", GBKArray, { type: "application/octet-stream" });
 			}
 			else if (exportFormat.indexOf("QQ") === 0) {
-				_this.localDownload(_this.chessInfo.title + ".che", GBKArray, { type: "application/octet-stream" });
+				_this.localDownload(fileName + ".che", GBKArray, { type: "application/octet-stream" });
 			}
 			else if (exportFormat === "PengFei") {
-				_this.localDownload(_this.chessInfo.title + ".pfc", UTF8Text, { type: "application/octet-stream" });
+				_this.localDownload(fileName + ".pfc", UTF8Text, { type: "application/octet-stream" });
 			}
 			else {
-				_this.localDownload(_this.chessInfo.title + ".txt", UTF8Text, { type: "text/plain" });
+				_this.localDownload(fileName + ".txt", UTF8Text, { type: "text/plain" });
 			}
 		}
 		else {
@@ -7328,7 +7329,7 @@ vschess.load.prototype.setExportFormat = function(format, force){
 	format = format || this.getExportFormat();
 	this._.exportFormat = vschess.exportFormatList[format] ? format : this.getExportFormat();
 	this.exportTextarea.removeClass().addClass("vschess-tab-body-export-textarea vschess-tab-body-export-textarea-format-" + format);
-	this.exportFilename.val(this.chessInfo.title);
+	this.exportFilename.val(this.chessInfo.title || "\u4e2d\u56fd\u8c61\u68cb");
 
 	if (format === "TextBoard") {
 		this.exportGenerate.removeClass("vschess-tab-body-export-current");

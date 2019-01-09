@@ -89,7 +89,7 @@ fn.createFormatBar = function(){
 
 		if (vs.localDownload) {
 			var UTF8Text = _this.exportData.DhtmlXQ.replace(/\n/g, "\r\n").replace(/\r\r/g, "\r");
-			_this.localDownload(_this.chessInfo.title + ".txt", UTF8Text, { type: "text/plain" });
+			_this.localDownload((_this.chessInfo.title || "中国象棋") + ".txt", UTF8Text, { type: "text/plain" });
 		}
 		else {
 			_this.formatBarButton.saveInput   .val(_this.exportData.DhtmlXQ);
