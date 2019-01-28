@@ -18,9 +18,9 @@ fn.playSoundBySituation = function(step){
 		// TTS 部分读音有错误，用同音字强行纠正
 		move = move.replace(/卒/g, "足");
 		move = move.replace(/相/g, "象");
-		move = move.replace(/将/g, "降");
-		move = move.replace(/一/g, "衣");
-		move = move.replace(/１/g, "衣");
+		move = move.replace(/将/g, "酱");
+		move = move.replace(/一/g, "医");
+		move = move.replace(/１/g, "医");
 		this.speakMove(move);
 	}
 	// 普通音效
