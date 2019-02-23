@@ -342,14 +342,16 @@ $.expand.remove = function(){
 };
 
 $.expand.bind = function(event, func){
-    if (document.addEventListener) {
-        for (var i = 0; i < this.length; ++i) {
-            this[i].addEventListener(event, func);
-        }
-    }
-    else {
-        for (var i = 0; i < this.length; ++i) {
-            this[i].attachEvent(event, func);
+    var eventList = event.split(" ");
+
+    for (var i = 0; i < eventList.length; ++i) {
+        for (var j = 0; j < this.length; ++j) {
+            if (document.addEventListener) {
+                this[j].addEventListener(eventList[i], func);
+            }
+            else {
+                this[j].attachEvent(eventList[i], func);
+            }
         }
     }
 
