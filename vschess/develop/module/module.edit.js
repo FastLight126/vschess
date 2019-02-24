@@ -398,7 +398,8 @@ fn.createEditBoard = function(){
 			_this.editTips.val(currentFen.split(" ")[0] === vs.blankFen.split(" ")[0] ? _this.editTipsText : currentFen);
 		});
 
-		$(this).bind("contextmenu", function(){
+		$(this).bind("contextmenu", function(e){
+			e.preventDefault();
 			_this.editRemovePiece(i);
 			_this.fillEditBoard();
 			var currentFen = vs.situationToFen(_this.editSituation);
@@ -530,6 +531,9 @@ fn.fillEditBoardByText = function(chessData){
 	}
 	else if (RegExp_Match = RegExp.FenShort.exec(chessData)) {
 		fen = RegExp_Match[0] + " - - 0 1";
+	}
+	else if (RegExp_Match = RegExp.FenMini.exec(chessData)) {
+		fen = RegExp_Match[0] + " w - - 0 1";
 	}
 
 	return this.fillEditBoardByFen(fen);
