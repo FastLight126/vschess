@@ -45,11 +45,17 @@ fn.refreshMoveSelectListNodeColor = function(){
 	this.moveSelectListSteps || this.refreshMoveListNode();
 	this.moveSelectListSteps.removeClass("vschess-move-select-node-lose vschess-move-select-node-threat vschess-move-select-node-normal");
 
-	if (vs.legalList(this.situationList[this.getCurrentStep()]).length === 0) {
+	var legalLength = this.legalList ? this.legalList.length : 0;
+	var repeatLongThreatLength = this.repeatLongThreatMoveList ? this.repeatLongThreatMoveList.length : 0;
+
+	if (legalLength === 0) {
 		this.moveSelectListSteps.eq(this.getCurrentStep()).addClass("vschess-move-select-node-lose");
 	}
 	else if (vs.checkThreat(this.situationList[this.getCurrentStep()])) {
 		this.moveSelectListSteps.eq(this.getCurrentStep()).addClass("vschess-move-select-node-threat");
+	}
+	else if (this.getBanRepeatLongThreat() && legalLength <= repeatLongThreatLength) {
+			this.moveSelectListSteps.eq(this.getCurrentStep()).addClass("vschess-move-select-node-lose");
 	}
 	else {
 		this.moveSelectListSteps.eq(this.getCurrentStep()).addClass("vschess-move-select-node-normal");

@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年2月25日
- * Mon, 25 Feb 2019 03:41:58 +0800
+ * 最后修改日期：北京时间 2019年3月10日
+ * Sun, 10 Mar 2019 22:20:39 +0800
  */
 
 (function(){
@@ -1176,7 +1176,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Mon, 25 Feb 2019 03:41:58 +0800",
+	timestamp: "Sun, 10 Mar 2019 22:20:39 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -3632,6 +3632,10 @@ vschess.repeatLongThreatMove = function(moveList){
 
 	for (var i = fenList.length - 2; i >= 0; i -= 2) {
 		if (vschess.checkThreat(fenList[i])) {
+			if (vschess.checkThreat(fenList[i + 1])) {
+				break;
+			}
+
 			var shortFen = fenList[i].split(" ", 2).join(" ");
 			shortFen in threatFenList ? ++threatFenList[shortFen] : (threatFenList[shortFen] = 1);
 		}
@@ -3655,7 +3659,7 @@ vschess.repeatLongThreatMove = function(moveList){
 		threatFenList[movedFen] >= 3 ? banMoveList.push(move) : canMoveList.push(move);
 	}
 
-	return canMoveList.length ? banMoveList : [];
+	return banMoveList;
 };
 
 // 计算一将一杀着法
@@ -6934,6 +6938,9 @@ vschess.load.prototype.fillEditBoardByText = function(chessData){
 	else if (RegExp_Match = RegExp.FenShort.exec(chessData)) {
 		fen = RegExp_Match[0] + " - - 0 1";
 	}
+	else if (RegExp_Match = RegExp.FenMini.exec(chessData)) {
+		fen = RegExp_Match[0] + " w - - 0 1";
+	}
 
 	return this.fillEditBoardByFen(fen);
 };
@@ -7755,7 +7762,14 @@ vschess.load.prototype.getResultByCurrent = function(){
 
 // 自动识别当前分支的对弈结果
 vschess.load.prototype.getAutoResultByCurrent = function(){
+	var legalLength = this.legalList ? this.legalList.length : 0;
+	var repeatLongThreatLength = this.repeatLongThreatMoveList ? this.repeatLongThreatMoveList.length : 0;
 	var lastSituation = this.situationList[this.lastSituationIndex()];
+
+	if (this.getBanRepeatLongThreat() && legalLength <= repeatLongThreatLength) {
+		return lastSituation[0] === 1 ? "0-1" : "1-0";
+	}
+
 	return !vschess.hasLegalMove(lastSituation) ? lastSituation[0] === 1 ? "0-1" : "1-0" : "*";
 };
 
@@ -7824,11 +7838,17 @@ vschess.load.prototype.refreshMoveSelectListNodeColor = function(){
 	this.moveSelectListSteps || this.refreshMoveListNode();
 	this.moveSelectListSteps.removeClass("vschess-move-select-node-lose vschess-move-select-node-threat vschess-move-select-node-normal");
 
-	if (vschess.legalList(this.situationList[this.getCurrentStep()]).length === 0) {
+	var legalLength = this.legalList ? this.legalList.length : 0;
+	var repeatLongThreatLength = this.repeatLongThreatMoveList ? this.repeatLongThreatMoveList.length : 0;
+
+	if (legalLength === 0) {
 		this.moveSelectListSteps.eq(this.getCurrentStep()).addClass("vschess-move-select-node-lose");
 	}
 	else if (vschess.checkThreat(this.situationList[this.getCurrentStep()])) {
 		this.moveSelectListSteps.eq(this.getCurrentStep()).addClass("vschess-move-select-node-threat");
+	}
+	else if (this.getBanRepeatLongThreat() && legalLength <= repeatLongThreatLength) {
+			this.moveSelectListSteps.eq(this.getCurrentStep()).addClass("vschess-move-select-node-lose");
 	}
 	else {
 		this.moveSelectListSteps.eq(this.getCurrentStep()).addClass("vschess-move-select-node-normal");
@@ -8913,6 +8933,11 @@ vschess.load.prototype.playSoundBySituation = function(step){
 		// 播放炮吃子、普通吃子音效
 		else if (toPiece > 1) {
 			(fromPiece & 15) === 6 ? this.playSound("bomb") : this.playSound("eat");
+		}
+
+		// 禁止长打并且不可变着，按困毙处理
+		else if (this.getBanRepeatLongThreat() && this.legalList.length <= this.repeatLongThreatMoveList.length) {
+			this.playSound("lose");
 		}
 
 		// 播放移动棋子音效

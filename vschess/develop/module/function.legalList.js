@@ -525,6 +525,10 @@ vs.repeatLongThreatMove = function(moveList){
 
 	for (var i = fenList.length - 2; i >= 0; i -= 2) {
 		if (vs.checkThreat(fenList[i])) {
+			if (vs.checkThreat(fenList[i + 1])) {
+				break;
+			}
+
 			var shortFen = fenList[i].split(" ", 2).join(" ");
 			shortFen in threatFenList ? ++threatFenList[shortFen] : (threatFenList[shortFen] = 1);
 		}
@@ -548,7 +552,7 @@ vs.repeatLongThreatMove = function(moveList){
 		threatFenList[movedFen] >= 3 ? banMoveList.push(move) : canMoveList.push(move);
 	}
 
-	return canMoveList.length ? banMoveList : [];
+	return banMoveList;
 };
 
 // 计算一将一杀着法

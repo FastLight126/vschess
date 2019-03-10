@@ -238,6 +238,13 @@ fn.getResultByCurrent = function(){
 
 // 自动识别当前分支的对弈结果
 fn.getAutoResultByCurrent = function(){
+	var legalLength = this.legalList ? this.legalList.length : 0;
+	var repeatLongThreatLength = this.repeatLongThreatMoveList ? this.repeatLongThreatMoveList.length : 0;
 	var lastSituation = this.situationList[this.lastSituationIndex()];
+
+	if (this.getBanRepeatLongThreat() && legalLength <= repeatLongThreatLength) {
+		return lastSituation[0] === 1 ? "0-1" : "1-0";
+	}
+
 	return !vs.hasLegalMove(lastSituation) ? lastSituation[0] === 1 ? "0-1" : "1-0" : "*";
 };

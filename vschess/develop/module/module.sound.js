@@ -43,6 +43,11 @@ fn.playSoundBySituation = function(step){
 			(fromPiece & 15) === 6 ? this.playSound("bomb") : this.playSound("eat");
 		}
 
+		// 禁止长打并且不可变着，按困毙处理
+		else if (this.getBanRepeatLongThreat() && this.legalList.length <= this.repeatLongThreatMoveList.length) {
+			this.playSound("lose");
+		}
+
 		// 播放移动棋子音效
 		else {
 			this.playSound("move");
