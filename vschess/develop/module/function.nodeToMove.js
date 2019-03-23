@@ -73,7 +73,7 @@ vs.Node2WXF = function(move, fen){
 		}
 		else {
 			for (var i = 59, pList = []; i > 50; --i) {
-				for (j = i, pColList = []; j < 204; j += 16) {
+				for (var j = i, pColList = []; j < 204; j += 16) {
 					situation[j] === situation[from] && pColList.push(j);
 				}
 
