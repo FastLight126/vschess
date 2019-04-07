@@ -1,6 +1,7 @@
 // 从原始数据中抽取棋局信息
 vs.dataToInfo = function(chessData, parseType){
 	var replaceQuote = chessData.replace(/\'/g, '"');
+	parseType = parseType || "auto";
 
 	// 标准节点树格式，即鹏飞象棋 PFC 格式
 	if (parseType === "auto" && ~replaceQuote.indexOf("n version") || parseType === "pfc") {
