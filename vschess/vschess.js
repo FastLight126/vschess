@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年3月24日
- * Sun, 24 Mar 2019 02:23:42 +0800
+ * 最后修改日期：北京时间 2019年4月8日
+ * Mon, 08 Apr 2019 02:42:09 +0800
  */
 
 (function(){
@@ -851,10 +851,10 @@ $.expand.css = function(config){
             var key = j;
             var value = config[j];
 
-            key = key.replace(/-webkit-tr/g, "webkitTr");
-            key = key.replace(   /-moz-tr/g,    "mozTr");
-            key = key.replace(    /-ms-tr/g,     "msTr");
-            key = key.replace(     /-o-tr/g,      "oTr");
+            key = key.replace(/-webkit-t/g, "webkitT");
+            key = key.replace(   /-moz-t/g,    "mozT");
+            key = key.replace(    /-ms-t/g,     "msT");
+            key = key.replace(     /-o-t/g,      "oT");
 
             ~"height width top right bottom left".indexOf(j) && !isNaN(+config[j]) && (value += "px");
 
@@ -1147,7 +1147,7 @@ $.ajax = function(config){
         xhr.send(data.join("&"));
 
         xhr.onreadystatechange = function(){
-            if (xhr.readyState == 4 && xhr.status == 200) {
+            if (xhr.readyState === 4 && xhr.status === 200) {
                 if (typeof xhr.responseText === "string" && cfg.dataType === "json") {
                     cfg.success($.parseJSON(xhr.responseText));
                 }
@@ -1176,7 +1176,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 24 Mar 2019 02:23:42 +0800",
+	timestamp: "Mon, 08 Apr 2019 02:42:09 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1781,6 +1781,7 @@ vschess.IE6Compatible_setPieceTransparent = function(options){
 // 从原始数据中抽取棋局信息
 vschess.dataToInfo = function(chessData, parseType){
 	var replaceQuote = chessData.replace(/\'/g, '"');
+	parseType = parseType || "auto";
 
 	// 标准节点树格式，即鹏飞象棋 PFC 格式
 	if (parseType === "auto" && ~replaceQuote.indexOf("n version") || parseType === "pfc") {
@@ -1901,6 +1902,70 @@ vschess.dataToInfo_DHJHtmlXQ = function(chessData){
 	}
 
 	return vschess.dataToInfo_DhtmlXQ(chessData);
+};
+
+// 检查原始数据中是否包含棋谱
+vschess.isDataHasBook = function(chessData, parseType){
+	var match, RegExp = vschess.RegExp();
+	parseType = parseType || "auto";
+
+	// 鹏飞象棋 PFC 格式
+	if (parseType === "auto" && ~chessData.indexOf("n version") || parseType === "pfc") {
+		return true;
+	}
+
+	// 东萍象棋 DhtmlXQ 格式
+	if (parseType === "auto" && ~chessData.indexOf("[DhtmlXQ") || parseType === "DhtmlXQ") {
+		return true;
+	}
+
+	// 打虎将 DHJHtmlXQ 格式
+	if (parseType === "auto" && ~chessData.indexOf("[DHJHtmlXQ") || parseType === "DHJHtmlXQ") {
+		return true;
+	}
+
+	// QQ新中国象棋格式
+	if (parseType === "auto" && RegExp.QQNew.test(chessData) || parseType === "qqnew") {
+		return true;
+	}
+
+	// 象棋世家格式
+	if (parseType === "auto" && RegExp.ShiJia.test(chessData) || parseType === "shijia") {
+		return true;
+	}
+
+	// 标准 PGN 格式
+	if (parseType === "auto" && ~chessData.indexOf('[Game "Chinese Chess"]') || parseType === "pgn") {
+		return true;
+	}
+
+	// 中国游戏中心 CCM 格式
+	if (parseType === "auto" && vschess.cca(chessData) === 1 || parseType === "ccm") {
+		return true;
+	}
+
+	// 发现着法，尝试识别
+	if (RegExp.Chinese.test(chessData)) {
+		return true;
+	}
+
+	if (RegExp.WXF.test(chessData)) {
+		return true;
+	}
+
+	if (RegExp.ICCS.test(chessData)) {
+		return true;
+	}
+
+	if (RegExp.Node.test(chessData)) {
+		return true;
+	}
+
+	if (RegExp.FenMini.exec(chessData)) {
+		return true;
+	}
+
+	return false;
 };
 
 // 将原始数据转换为棋谱节点树，这里的变招都是节点，变招的切换即为默认节点的切换
@@ -7001,7 +7066,7 @@ vschess.load.prototype.createNodeEndButton = function(){
 		_this.setBoardByStep(0);
 		_this.setNode(vschess.dataToNode(chessData));
 		_this.rebuildSituation().refreshMoveSelectListNode().setBoardByStep(0);
-		_this.chessInfo = vschess.dataToInfo(chessData, "auto");
+		_this.chessInfo = vschess.dataToInfo(chessData);
 		_this.insertInfoByCurrent();
 		_this.refreshInfoEditor();
 		_this.rebuildExportAll();
@@ -7087,7 +7152,7 @@ vschess.load.prototype.createEditOtherButton = function(){
 					_this.rebuildSituation();
 					_this.refreshMoveSelectListNode();
 					_this.setBoardByStep(0);
-					_this.chessInfo = vschess.dataToInfo(chessData, "auto");
+					_this.chessInfo = vschess.dataToInfo(chessData);
 					_this.insertInfoByCurrent();
 					_this.refreshInfoEditor();
 					_this.rebuildExportAll();
@@ -7177,7 +7242,7 @@ vschess.load.prototype.bindDrag = function(){
 				_this.rebuildSituation();
 				_this.refreshMoveSelectListNode();
 				_this.setBoardByStep(0);
-				_this.chessInfo = vschess.dataToInfo(chessData, "auto");
+				_this.chessInfo = vschess.dataToInfo(chessData);
 				_this.insertInfoByCurrent();
 				_this.refreshInfoEditor();
 				_this.rebuildExportAll();

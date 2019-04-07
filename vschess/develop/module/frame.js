@@ -406,10 +406,10 @@ $.expand.css = function(config){
             var key = j;
             var value = config[j];
 
-            key = key.replace(/-webkit-tr/g, "webkitTr");
-            key = key.replace(   /-moz-tr/g,    "mozTr");
-            key = key.replace(    /-ms-tr/g,     "msTr");
-            key = key.replace(     /-o-tr/g,      "oTr");
+            key = key.replace(/-webkit-t/g, "webkitT");
+            key = key.replace(   /-moz-t/g,    "mozT");
+            key = key.replace(    /-ms-t/g,     "msT");
+            key = key.replace(     /-o-t/g,      "oT");
 
             ~"height width top right bottom left".indexOf(j) && !isNaN(+config[j]) && (value += "px");
 
@@ -702,7 +702,7 @@ $.ajax = function(config){
         xhr.send(data.join("&"));
 
         xhr.onreadystatechange = function(){
-            if (xhr.readyState == 4 && xhr.status == 200) {
+            if (xhr.readyState === 4 && xhr.status === 200) {
                 if (typeof xhr.responseText === "string" && cfg.dataType === "json") {
                     cfg.success($.parseJSON(xhr.responseText));
                 }
