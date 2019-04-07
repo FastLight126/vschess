@@ -595,7 +595,7 @@ fn.createNodeEndButton = function(){
 		_this.setBoardByStep(0);
 		_this.setNode(vs.dataToNode(chessData));
 		_this.rebuildSituation().refreshMoveSelectListNode().setBoardByStep(0);
-		_this.chessInfo = vs.dataToInfo(chessData, "auto");
+		_this.chessInfo = vs.dataToInfo(chessData);
 		_this.insertInfoByCurrent();
 		_this.refreshInfoEditor();
 		_this.rebuildExportAll();
@@ -681,7 +681,7 @@ fn.createEditOtherButton = function(){
 					_this.rebuildSituation();
 					_this.refreshMoveSelectListNode();
 					_this.setBoardByStep(0);
-					_this.chessInfo = vs.dataToInfo(chessData, "auto");
+					_this.chessInfo = vs.dataToInfo(chessData);
 					_this.insertInfoByCurrent();
 					_this.refreshInfoEditor();
 					_this.rebuildExportAll();
@@ -771,7 +771,7 @@ fn.bindDrag = function(){
 				_this.rebuildSituation();
 				_this.refreshMoveSelectListNode();
 				_this.setBoardByStep(0);
-				_this.chessInfo = vs.dataToInfo(chessData, "auto");
+				_this.chessInfo = vs.dataToInfo(chessData);
 				_this.insertInfoByCurrent();
 				_this.refreshInfoEditor();
 				_this.rebuildExportAll();
