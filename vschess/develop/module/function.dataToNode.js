@@ -1,3 +1,67 @@
+// 检查原始数据中是否包含棋谱
+vs.isDataHasBook = function(chessData, parseType){
+	var match, RegExp = vs.RegExp();
+	parseType = parseType || "auto";
+
+	// 鹏飞象棋 PFC 格式
+	if (parseType === "auto" && ~chessData.indexOf("n version") || parseType === "pfc") {
+		return true;
+	}
+
+	// 东萍象棋 DhtmlXQ 格式
+	if (parseType === "auto" && ~chessData.indexOf("[DhtmlXQ") || parseType === "DhtmlXQ") {
+		return true;
+	}
+
+	// 打虎将 DHJHtmlXQ 格式
+	if (parseType === "auto" && ~chessData.indexOf("[DHJHtmlXQ") || parseType === "DHJHtmlXQ") {
+		return true;
+	}
+
+	// QQ新中国象棋格式
+	if (parseType === "auto" && RegExp.QQNew.test(chessData) || parseType === "qqnew") {
+		return true;
+	}
+
+	// 象棋世家格式
+	if (parseType === "auto" && RegExp.ShiJia.test(chessData) || parseType === "shijia") {
+		return true;
+	}
+
+	// 标准 PGN 格式
+	if (parseType === "auto" && ~chessData.indexOf('[Game "Chinese Chess"]') || parseType === "pgn") {
+		return true;
+	}
+
+	// 中国游戏中心 CCM 格式
+	if (parseType === "auto" && vs.cca(chessData) === 1 || parseType === "ccm") {
+		return true;
+	}
+
+	// 发现着法，尝试识别
+	if (RegExp.Chinese.test(chessData)) {
+		return true;
+	}
+
+	if (RegExp.WXF.test(chessData)) {
+		return true;
+	}
+
+	if (RegExp.ICCS.test(chessData)) {
+		return true;
+	}
+
+	if (RegExp.Node.test(chessData)) {
+		return true;
+	}
+
+	if (RegExp.FenMini.exec(chessData)) {
+		return true;
+	}
+
+	return false;
+};
+
 // 将原始数据转换为棋谱节点树，这里的变招都是节点，变招的切换即为默认节点的切换
 vs.dataToNode = function(chessData, parseType){
 	var match, RegExp = vs.RegExp();
