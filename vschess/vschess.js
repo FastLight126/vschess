@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年4月21日
- * Sun, 21 Apr 2019 04:40:23 +0800
+ * 最后修改日期：北京时间 2019年5月27日
+ * Mon, 27 May 2019 01:17:37 +0800
  */
 
 (function(){
@@ -1176,7 +1176,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 21 Apr 2019 04:40:23 +0800",
+	timestamp: "Mon, 27 May 2019 01:17:37 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -6372,12 +6372,12 @@ vschess.load.prototype.showMessage = function(msg){
 
 // 取得当前节点树路径下局面数量
 vschess.load.prototype.getSituationListLength = function(){
-	return this.situationList.length;
+	return this.situationList ? this.situationList.length : 0;
 };
 
 // 取得当前节点树路径下最后局面的索引号
 vschess.load.prototype.lastSituationIndex = function(){
-	return this.situationList.length - 1;
+	return this.situationList ? this.situationList.length - 1 : 0
 };
 
 // 取得当前节点树路径下的所有 Fen 串

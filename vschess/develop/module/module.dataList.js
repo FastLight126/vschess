@@ -1,11 +1,11 @@
 // 取得当前节点树路径下局面数量
 fn.getSituationListLength = function(){
-	return this.situationList.length;
+	return this.situationList ? this.situationList.length : 0;
 };
 
 // 取得当前节点树路径下最后局面的索引号
 fn.lastSituationIndex = function(){
-	return this.situationList.length - 1;
+	return this.situationList ? this.situationList.length - 1 : 0
 };
 
 // 取得当前节点树路径下的所有 Fen 串
