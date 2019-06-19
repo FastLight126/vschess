@@ -32,7 +32,12 @@ fn.getMoveList = function(){
 	var result = [];
 
 	for (var i = 0; i < this.moveList.length; ++i) {
-		result.push(vs.turnMove(this.moveList[i]));
+		if (i === 0) {
+			result.push(vs.turnFen(this.moveList[i]));
+		}
+		else {
+			result.push(vs.turnMove(this.moveList[i]));
+		}
 	}
 
 	return result;
