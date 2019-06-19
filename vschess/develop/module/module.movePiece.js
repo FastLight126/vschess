@@ -183,6 +183,7 @@ fn.movePieceByPieceIndex = function(from, to, animationTime, callback, callbackI
 
 // 根据节点 ICCS 移动一枚棋子
 fn.movePieceByNode = function(move, animationTime, callback, callbackIllegal){
+	this.getTurnForMove() && (move = vs.turnMove(move));
 	var from = vs.turn[this.getTurn()][vs.i2b[move.substring(0, 2)]];
 	var to   = vs.turn[this.getTurn()][vs.i2b[move.substring(2, 4)]];
 	return this.movePieceByPieceIndex(from, to, animationTime, callback, callbackIllegal);

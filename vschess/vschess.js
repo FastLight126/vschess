@@ -15,7 +15,7 @@
  * https://github.com/ded/qwery/
  *
  * 最后修改日期：北京时间 2019年6月19日
- * Wed, 19 Jun 2019 17:24:45 +0800
+ * Wed, 19 Jun 2019 17:38:56 +0800
  */
 
 (function(){
@@ -1176,7 +1176,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 19 Jun 2019 17:24:45 +0800",
+	timestamp: "Wed, 19 Jun 2019 17:38:56 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -8295,6 +8295,7 @@ vschess.load.prototype.movePieceByPieceIndex = function(from, to, animationTime,
 
 // 根据节点 ICCS 移动一枚棋子
 vschess.load.prototype.movePieceByNode = function(move, animationTime, callback, callbackIllegal){
+	this.getTurnForMove() && (move = vschess.turnMove(move));
 	var from = vschess.turn[this.getTurn()][vschess.i2b[move.substring(0, 2)]];
 	var to   = vschess.turn[this.getTurn()][vschess.i2b[move.substring(2, 4)]];
 	return this.movePieceByPieceIndex(from, to, animationTime, callback, callbackIllegal);
