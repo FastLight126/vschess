@@ -60,7 +60,7 @@ vs.Node2WXF = function(move, fen){
 
 	// 相象仕士
 	if (piece === 3 || piece === 4) {
-		result = vs.n2f[16 | piece] + fromCol;
+		result = vs.n2f[piece | 16] + fromCol;
 	}
 	// 兵卒
 	else if (piece === 7) {
@@ -94,14 +94,14 @@ vs.Node2WXF = function(move, fen){
 	// 车马帅将炮
 	else {
 		for (var i = from + 16; i < 204 && !result; i += 16) {
-			situation[i] === situation[from] && (result = vs.n2f[16 | piece] + "+");
+			situation[i] === situation[from] && (result = vs.n2f[piece | 16] + "+");
 		}
 
 		for (var i = from - 16; i >  50 && !result; i -= 16) {
-			situation[i] === situation[from] && (result = vs.n2f[16 | piece] + "-");
+			situation[i] === situation[from] && (result = vs.n2f[piece | 16] + "-");
 		}
 
-		result || (result = vs.n2f[16 | piece] + fromCol);
+		result || (result = vs.n2f[piece | 16] + fromCol);
 	}
 
 	// 马相象仕士
