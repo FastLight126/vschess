@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年7月23日
- * Tue, 23 Jul 2019 00:01:22 +0800
+ * 最后修改日期：北京时间 2019年7月24日
+ * Wed, 24 Jul 2019 04:43:51 +0800
  */
 
 (function(){
@@ -1176,7 +1176,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Tue, 23 Jul 2019 00:01:22 +0800",
+	timestamp: "Wed, 24 Jul 2019 04:43:51 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1862,6 +1862,7 @@ vschess.binaryToNode_CCM = function(buffer) {
 
 // 将象棋演播室 XQF 格式转换为棋谱节点树
 vschess.binaryToNode_XQF = function(buffer) {
+    // 计算开局 Fen 串
     var fenArray = new Array(91).join("*").split("");
     var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
 
@@ -1889,6 +1890,7 @@ vschess.binaryToNode_XQF = function(buffer) {
     fen +=  XQF_Header.WhoPlay === 1 ? " b - - 0 " : " w - - 0 ";
     fen += (XQF_Header.PlayStepNo >> 1) || 1;
 
+    // 解密数据
     if (XQF_Header.Version >= 16) {
         var decode = [];
 
@@ -1900,13 +1902,23 @@ vschess.binaryToNode_XQF = function(buffer) {
         var decode = Array.from(buffer.slice(1024));
     }
 
-    console.log(XQF_Key, decode);
+    // 求和函数
+    var K = function(start, length){
+        var array = decode.slice(start, start + length), sum = 0;
 
-    var pos = 0;
+        for (var i = 0; i < array.length; ++i) {
+            sum += array[i] * Math.pow(256, i);
+        }
+
+        return sum;
+    };
+
+    // 生成节点树
     var node = { fen: fen, comment: comment, next: [], defaultIndex: 0 };
-    var currentNode = node;
+    var parent = node, changeNode = [];
 
-    while (pos < decode.length && pos < 1679) {
+    for (var pos = 0; pos < decode.length;) {
+        // 着法计算
         if (XQF_Header.Version >= 16) {
             var f = decode[pos    ] - 24 - XQF_Key.XYf & 255;
             var t = decode[pos + 1] - 32 - XQF_Key.XYt & 255;
@@ -1921,11 +1933,10 @@ vschess.binaryToNode_XQF = function(buffer) {
         var Xt = Math.floor(t / 10);
         var Yt = 9 - t % 10;
 
-        //console.log(pos, decode.length);
-
+        // 注释提取
         if (XQF_Header.Version > 10) {
-            if (decode[pos + 2] & 224 & 32) {
-                var commentLen = decode[pos + 4] + decode[pos + 5] * 256 + decode[pos + 6] * 65536 + decode[pos + 7] * 16777216 - XQF_Key.RMK;
+            if (decode[pos + 2] & 32) {
+                var commentLen = K(pos + 4, 4) - XQF_Key.RMK;
                 var comment = vschess.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
                 var nextOffset = commentLen + 8;
             }
@@ -1935,22 +1946,29 @@ vschess.binaryToNode_XQF = function(buffer) {
             }
         }
         else {
-            var commentLen = decode[pos + 4] + decode[pos + 5] * 256 + decode[pos + 6] * 65536 + decode[pos + 7] * 16777216 - XQF_Key.RMK;
+            var commentLen = K(pos + 4, 4);
             var comment = vschess.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
             var nextOffset = commentLen + 8;
         }
 
+        // 生成节点树
         if (pos) {
             var move = vschess.b2i[Yf * 9 + Xf] + vschess.b2i[Yt * 9 + Xt];
-            currentNode.next.push({ move: move, comment: comment, next: [], defaultIndex: 0 });
-            currentNode = currentNode.next[0];
+            parent.next.push({ move: move, comment: comment, next: [], defaultIndex: 0 });
+
+            var k1 = XQF_Header.Version > 10 ? 128 : 240;
+            var k2 = XQF_Header.Version > 10 ?  64 :  15;
+
+            (decode[pos + 2] & k1) || (parent = changeNode.pop());
+            (decode[pos + 2] & k2) && changeNode.push(parent);
+            (decode[pos + 2] & k1) && (parent = parent.next[parent.next.length - 1]);
         }
         else {
             node.comment = comment;
         }
 
+        // 指针往前走
         pos += nextOffset;
-        //console.log(commentLen, pos);
     }
 
     return node;
