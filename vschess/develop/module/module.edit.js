@@ -260,13 +260,13 @@ fn.createEditPlaceholder = function(){
 // 创建编辑局面区域棋子容器
 fn.createEditPieceArea = function(){
 	var _this = this;
-	var editPieceNameList = "RNBAKCP*rnbakcp".split("");
+	var editPieceNameList = "RNBAKCP*rnbakcp";
 	this.editPieceArea = $('<div class="vschess-tab-body-edit-area"></div>');
 	this.editArea.append(this.editPieceArea);
 	this.editPieceList = {};
 
 	for (var i = 0; i < editPieceNameList.length; ++i) {
-		var k = editPieceNameList[i];
+		var k = editPieceNameList.charAt(i);
 
 		if (k === "*") {
 			this.editPieceArea.append('<div class="vschess-piece-disabled"></div>');
@@ -541,6 +541,7 @@ fn.fillEditBoardByText = function(chessData){
 
 // 将 Fen 串导入局面编辑区
 fn.fillEditBoardByFen = function(fen){
+	(this.getTurn() >> 1) && (fen = vs.roundFen(fen));
 	this.editSituation = vs.fenToSituation(fen);
 	this.fillEditBoard();
 	return this;
@@ -665,6 +666,7 @@ fn.createEditOtherButton = function(){
 		if (typeof FileReader === "function") {
 			if (this.files.length) {
 				var file = this.files[0];
+				var ext = file.name.split(".").pop().toLowerCase();
 				var reader = new FileReader();
 				reader.readAsArrayBuffer(file);
 				reader.onload = function(){
@@ -675,13 +677,23 @@ fn.createEditOtherButton = function(){
 					var RegExp    = vs.RegExp();
 					var fileData  = new Uint8Array(this.result);
 					var chessData = vs.join(fileData);
-					fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vs.iconv2UTF8(fileData));
+
+					if (~vs.binaryExt.indexOf(ext)) {
+						var chessNode = vs.binaryToNode(fileData);
+						var chessInfo = vs.binaryToInfo(fileData);
+					}
+					else {
+						!RegExp.ShiJia.test(chessData) && (chessData = vs.iconv2UTF8(fileData));
+						var chessNode = vs.dataToNode(chessData);
+						var chessInfo = vs.dataToInfo(chessData);
+					}
+
 					_this.setBoardByStep(0);
-					_this.setNode(vs.dataToNode(chessData));
+					_this.setNode(chessNode);
 					_this.rebuildSituation();
 					_this.refreshMoveSelectListNode();
 					_this.setBoardByStep(0);
-					_this.chessInfo = vs.dataToInfo(chessData);
+					_this.chessInfo = chessInfo;
 					_this.insertInfoByCurrent();
 					_this.refreshInfoEditor();
 					_this.rebuildExportAll();
@@ -755,6 +767,7 @@ fn.bindDrag = function(){
 
 		if (e.dataTransfer && e.dataTransfer.files.length) {
 			var file = e.dataTransfer.files[0];
+			var ext = file.name.split(".").pop().toLowerCase();
 			var reader = new FileReader();
 			reader.readAsArrayBuffer(file);
 			reader.onload = function(){
@@ -765,13 +778,23 @@ fn.bindDrag = function(){
 				var RegExp    = vs.RegExp();
 				var fileData  = new Uint8Array(this.result);
 				var chessData = vs.join(fileData);
-				fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vs.iconv2UTF8(fileData));
+
+				if (~vs.binaryExt.indexOf(ext)) {
+					var chessNode = vs.binaryToNode(fileData);
+					var chessInfo = vs.binaryToInfo(fileData);
+				}
+				else {
+					!RegExp.ShiJia.test(chessData) && (chessData = vs.iconv2UTF8(fileData));
+					var chessNode = vs.dataToNode(chessData);
+					var chessInfo = vs.dataToInfo(chessData);
+				}
+
 				_this.setBoardByStep(0);
-				_this.setNode(vs.dataToNode(chessData));
+				_this.setNode(chessNode);
 				_this.rebuildSituation();
 				_this.refreshMoveSelectListNode();
 				_this.setBoardByStep(0);
-				_this.chessInfo = vs.dataToInfo(chessData);
+				_this.chessInfo = chessInfo;
 				_this.insertInfoByCurrent();
 				_this.refreshInfoEditor();
 				_this.rebuildExportAll();

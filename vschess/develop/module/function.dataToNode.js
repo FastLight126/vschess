@@ -1,5 +1,6 @@
 // 检查原始数据中是否包含棋谱
 vs.isDataHasBook = function(chessData, parseType){
+	chessData = vs.replaceNbsp(chessData);
 	var match, RegExp = vs.RegExp();
 	parseType = parseType || "auto";
 
@@ -30,11 +31,6 @@ vs.isDataHasBook = function(chessData, parseType){
 
 	// 标准 PGN 格式
 	if (parseType === "auto" && ~chessData.indexOf('[Game "Chinese Chess"]') || parseType === "pgn") {
-		return true;
-	}
-
-	// 中国游戏中心 CCM 格式
-	if (parseType === "auto" && vs.cca(chessData) === 1 || parseType === "ccm") {
 		return true;
 	}
 
@@ -322,11 +318,11 @@ vs.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 	else {
 		if (DhtmlXQ_Start) {
 			var DhtmlXQ_ToFen = new Array(91).join("*").split(""), DhtmlXQ_ToFenFinal = [];
-			var DhtmlXQ_ToFenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp".split("");
+			var DhtmlXQ_ToFenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
 
 			for (var i = 0; i < 32; ++i) {
 				var move = DhtmlXQ_Start.substring(i * 2, i * 2 + 2).split("");
-				DhtmlXQ_ToFen[+move[0] + move[1] * 9] = DhtmlXQ_ToFenPiece[i];
+				DhtmlXQ_ToFen[+move[0] + move[1] * 9] = DhtmlXQ_ToFenPiece.charAt(i);
 			}
 
 			DhtmlXQ_ToFenFinal = vs.arrayToFen(DhtmlXQ_ToFen);
@@ -489,12 +485,12 @@ vs.dataToNode_ShiJia = function(chessData, onlyFen) {
 	var match = RegExp_Fen.exec(chessData), stepList = [];
 
 	if (match) {
-		var chessman  = "*PPPPPCCNNRRBBAAKpppppccnnrrbbaak".split("");
+		var chessman  = "*PPPPPCCNNRRBBAAKpppppccnnrrbbaak";
 		var situation = vs.fenToSituation(vs.blankFen);
 		situation[0]  = match[33].toUpperCase() === "B" ? 2 : 1;
 
 		for (var i = 1; i < 33; ++i) {
-			situation[match[i] - 1] = vs.f2n[chessman[i]];
+			situation[match[i] - 1] = vs.f2n[chessman.charAt(i)];
 		}
 
 		var fen = vs.situationToFen(situation);
@@ -513,23 +509,6 @@ vs.dataToNode_ShiJia = function(chessData, onlyFen) {
 	}
 
 	return vs.stepListToNode(fen, stepList);
-};
-
-// 将中国游戏中心 CCM 格式转换为棋谱节点树
-vs.dataToNode_CCM = function(chessData) {
-	chessData = chessData.substring(1);
-	var stepList = [];
-
-	while (chessData.length) {
-		var fromX = 8 - chessData.charCodeAt(2);
-		var   toX = 8 - chessData.charCodeAt(3);
-		var fromY = 9 - chessData.charCodeAt(4);
-		var   toY = 9 - chessData.charCodeAt(5);
-		chessData =     chessData.substring (7);
-		stepList.push(vs.b2i[fromY * 9 + fromX] + vs.b2i[toY * 9 + toX]);
-	}
-
-	return vs.stepListToNode(vs.defaultFen, stepList);
 };
 
 // 将着法列表转换为棋谱节点树

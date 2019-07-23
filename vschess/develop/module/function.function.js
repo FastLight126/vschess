@@ -450,3 +450,8 @@ vs.dateFormat = function(date){
 
 	return date;
 };
+
+// 替换不间断空格
+vs.replaceNbsp = function(str){
+	return str.replace(new RegExp(vs.fcc(160), "g"), " ");
+};

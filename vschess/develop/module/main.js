@@ -242,6 +242,9 @@ var vschess = {
 	// 空白 Fen 串
 	blankFen: "9/9/9/9/9/9/9/9/9/9 w - - 0 1",
 
+	// 二进制棋谱扩展名列表
+	binaryExt: "ccm xqf".split(" "),
+
 	// 全局样式是否已加载完成的标记
 	globalLoaded: false,
 

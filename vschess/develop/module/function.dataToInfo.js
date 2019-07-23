@@ -1,5 +1,6 @@
 // 从原始数据中抽取棋局信息
 vs.dataToInfo = function(chessData, parseType){
+	chessData = vs.replaceNbsp(chessData);
 	var replaceQuote = chessData.replace(/\'/g, '"');
 	parseType = parseType || "auto";
 

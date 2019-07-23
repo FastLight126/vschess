@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年6月19日
- * Wed, 19 Jun 2019 17:38:56 +0800
+ * 最后修改日期：北京时间 2019年7月23日
+ * Tue, 23 Jul 2019 00:01:22 +0800
  */
 
 (function(){
@@ -1176,7 +1176,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 19 Jun 2019 17:38:56 +0800",
+	timestamp: "Tue, 23 Jul 2019 00:01:22 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1413,6 +1413,9 @@ var vschess = {
 
 	// 空白 Fen 串
 	blankFen: "9/9/9/9/9/9/9/9/9/9 w - - 0 1",
+
+	// 二进制棋谱扩展名列表
+	binaryExt: "ccm xqf".split(" "),
 
 	// 全局样式是否已加载完成的标记
 	globalLoaded: false,
@@ -1778,8 +1781,184 @@ vschess.IE6Compatible_setPieceTransparent = function(options){
 	return this;
 };
 
+// 从二进制原始数据中抽取棋局信息
+vschess.binaryToInfo = function(buffer, parseType){
+    parseType = parseType || "auto";
+
+    // 象棋演播室 XQF 格式
+	if (parseType === "auto" && buffer[0] === 88 && buffer[1] === 81 || parseType === "xqf") {
+		return vschess.binaryToInfo_XQF(buffer);
+	}
+
+    // 未能识别的数据，返回空
+	return {};
+};
+
+// 从象棋演播室 XQF 格式中抽取棋局信息
+vschess.binaryToInfo_XQF = function(buffer){
+    var header = vschess.XQF_Header(buffer), r = {};
+
+    header.Title    .length && (r.title     = vschess.GBK2UTF8(header.Title    ));
+    header.MatchName.length && (r.event     = vschess.GBK2UTF8(header.MatchName));
+    header.MatchTime.length && (r.date      = vschess.GBK2UTF8(header.MatchTime));
+    header.MatchAddr.length && (r.place     = vschess.GBK2UTF8(header.MatchAddr));
+    header.RedPlayer.length && (r.redname   = vschess.GBK2UTF8(header.RedPlayer));
+    header.BlkPlayer.length && (r.blackname = vschess.GBK2UTF8(header.BlkPlayer));
+    header.RedTime  .length && (r.redtime   = vschess.GBK2UTF8(header.RedTime  ));
+    header.BlkTime  .length && (r.blacktime = vschess.GBK2UTF8(header.BlkTime  ));
+    header.RMKWriter.length && (r.remark    = vschess.GBK2UTF8(header.RMKWriter));
+    header.Author   .length && (r.author    = vschess.GBK2UTF8(header.Author   ));
+    header.TimeRule .length && (r.timerule  = vschess.GBK2UTF8(header.TimeRule ));
+
+    switch (header.PlayResult) {
+        case  1: r.result = "1-0"; break;
+        case  2: r.result = "0-1"; break;
+        case  3: r.result = "1/2-1/2"; break;
+        default: r.result = "*"; break;
+    }
+
+    switch (header.Type) {
+        case  1: r.result = "\u5f00\u5c40"; break;
+        case  2: r.result = "\u4e2d\u5c40"; break;
+        case  3: r.result = "\u6b8b\u5c40"; break;
+        default: r.result = "\u5168\u5c40"; break;
+    }
+
+    return r;
+};
+
+// 将二进制原始数据转换为棋谱节点树，这里的变招都是节点，变招的切换即为默认节点的切换
+vschess.binaryToNode = function(buffer, parseType){
+    parseType = parseType || "auto";
+
+    // 象棋演播室 XQF 格式
+	if (parseType === "auto" && buffer[0] === 88 && buffer[1] === 81 || parseType === "xqf") {
+		return vschess.binaryToNode_XQF(buffer);
+	}
+
+    // 中国游戏中心 CCM 格式
+	if (parseType === "auto" && buffer[0] === 1 || parseType === "ccm") {
+		return vschess.binaryToNode_CCM(buffer);
+	}
+
+    // 未能识别的数据，返回起始局面
+	return { fen: vschess.defaultFen, comment: "", next: [], defaultIndex: 0 };
+};
+
+// 将中国游戏中心 CCM 格式转换为棋谱节点树
+vschess.binaryToNode_CCM = function(buffer) {
+	var stepList = [];
+
+	for (k = 1; k < buffer.length; k += 7) {
+		var fromX = 8 - buffer[k + 2];
+		var   toX = 8 - buffer[k + 3];
+		var fromY = 9 - buffer[k + 4];
+		var   toY = 9 - buffer[k + 5];
+		stepList.push(vschess.b2i[fromY * 9 + fromX] + vschess.b2i[toY * 9 + toX]);
+	}
+
+	return vschess.stepListToNode(vschess.defaultFen, stepList);
+};
+
+// 将象棋演播室 XQF 格式转换为棋谱节点树
+vschess.binaryToNode_XQF = function(buffer) {
+    var fenArray = new Array(91).join("*").split("");
+    var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
+
+    var XQF_Header = vschess.XQF_Header(buffer    );
+    var XQF_Key    = vschess.XQF_Key   (XQF_Header);
+
+    for (var i = 0; i < 32; ++i) {
+        if (XQF_Header.Version >= 16) {
+            var pieceKey = XQF_Key .XYp + i + 1 & 31;
+            var piecePos = XQF_Header.QiziXY[i] - XQF_Key.XYp & 255;
+        }
+        else {
+            var pieceKey = i;
+            var piecePos = XQF_Header.QiziXY[i];
+        }
+
+        if (piecePos < 90) {
+            var X = Math.floor(piecePos / 10);
+            var Y = 9 - piecePos % 10;
+            fenArray[Y * 9 + X] = fenPiece.charAt(pieceKey);
+        }
+    }
+
+    var fen = vschess.arrayToFen(fenArray);
+    fen +=  XQF_Header.WhoPlay === 1 ? " b - - 0 " : " w - - 0 ";
+    fen += (XQF_Header.PlayStepNo >> 1) || 1;
+
+    if (XQF_Header.Version >= 16) {
+        var decode = [];
+
+        for (var i = 1024; i < buffer.length; ++i) {
+            decode.push(buffer[i] - XQF_Key.F32[i % 32] & 255);
+        }
+    }
+    else {
+        var decode = Array.from(buffer.slice(1024));
+    }
+
+    console.log(XQF_Key, decode);
+
+    var pos = 0;
+    var node = { fen: fen, comment: comment, next: [], defaultIndex: 0 };
+    var currentNode = node;
+
+    while (pos < decode.length && pos < 1679) {
+        if (XQF_Header.Version >= 16) {
+            var f = decode[pos    ] - 24 - XQF_Key.XYf & 255;
+            var t = decode[pos + 1] - 32 - XQF_Key.XYt & 255;
+        }
+        else {
+            var f = decode[pos    ] - 24;
+            var t = decode[pos + 1] - 32;
+        }
+
+        var Xf = Math.floor(f / 10);
+        var Yf = 9 - f % 10;
+        var Xt = Math.floor(t / 10);
+        var Yt = 9 - t % 10;
+
+        //console.log(pos, decode.length);
+
+        if (XQF_Header.Version > 10) {
+            if (decode[pos + 2] & 224 & 32) {
+                var commentLen = decode[pos + 4] + decode[pos + 5] * 256 + decode[pos + 6] * 65536 + decode[pos + 7] * 16777216 - XQF_Key.RMK;
+                var comment = vschess.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
+                var nextOffset = commentLen + 8;
+            }
+            else {
+                var comment = "";
+                var nextOffset = 4;
+            }
+        }
+        else {
+            var commentLen = decode[pos + 4] + decode[pos + 5] * 256 + decode[pos + 6] * 65536 + decode[pos + 7] * 16777216 - XQF_Key.RMK;
+            var comment = vschess.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
+            var nextOffset = commentLen + 8;
+        }
+
+        if (pos) {
+            var move = vschess.b2i[Yf * 9 + Xf] + vschess.b2i[Yt * 9 + Xt];
+            currentNode.next.push({ move: move, comment: comment, next: [], defaultIndex: 0 });
+            currentNode = currentNode.next[0];
+        }
+        else {
+            node.comment = comment;
+        }
+
+        pos += nextOffset;
+        //console.log(commentLen, pos);
+    }
+
+    return node;
+};
+
 // 从原始数据中抽取棋局信息
 vschess.dataToInfo = function(chessData, parseType){
+	chessData = vschess.replaceNbsp(chessData);
 	var replaceQuote = chessData.replace(/\'/g, '"');
 	parseType = parseType || "auto";
 
@@ -1906,6 +2085,7 @@ vschess.dataToInfo_DHJHtmlXQ = function(chessData){
 
 // 检查原始数据中是否包含棋谱
 vschess.isDataHasBook = function(chessData, parseType){
+	chessData = vschess.replaceNbsp(chessData);
 	var match, RegExp = vschess.RegExp();
 	parseType = parseType || "auto";
 
@@ -1936,11 +2116,6 @@ vschess.isDataHasBook = function(chessData, parseType){
 
 	// 标准 PGN 格式
 	if (parseType === "auto" && ~chessData.indexOf('[Game "Chinese Chess"]') || parseType === "pgn") {
-		return true;
-	}
-
-	// 中国游戏中心 CCM 格式
-	if (parseType === "auto" && vschess.cca(chessData) === 1 || parseType === "ccm") {
 		return true;
 	}
 
@@ -2228,11 +2403,11 @@ vschess.dataToNode_DhtmlXQ = function(chessData, onlyFen){
 	else {
 		if (DhtmlXQ_Start) {
 			var DhtmlXQ_ToFen = new Array(91).join("*").split(""), DhtmlXQ_ToFenFinal = [];
-			var DhtmlXQ_ToFenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp".split("");
+			var DhtmlXQ_ToFenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
 
 			for (var i = 0; i < 32; ++i) {
 				var move = DhtmlXQ_Start.substring(i * 2, i * 2 + 2).split("");
-				DhtmlXQ_ToFen[+move[0] + move[1] * 9] = DhtmlXQ_ToFenPiece[i];
+				DhtmlXQ_ToFen[+move[0] + move[1] * 9] = DhtmlXQ_ToFenPiece.charAt(i);
 			}
 
 			DhtmlXQ_ToFenFinal = vschess.arrayToFen(DhtmlXQ_ToFen);
@@ -2395,12 +2570,12 @@ vschess.dataToNode_ShiJia = function(chessData, onlyFen) {
 	var match = RegExp_Fen.exec(chessData), stepList = [];
 
 	if (match) {
-		var chessman  = "*PPPPPCCNNRRBBAAKpppppccnnrrbbaak".split("");
+		var chessman  = "*PPPPPCCNNRRBBAAKpppppccnnrrbbaak";
 		var situation = vschess.fenToSituation(vschess.blankFen);
 		situation[0]  = match[33].toUpperCase() === "B" ? 2 : 1;
 
 		for (var i = 1; i < 33; ++i) {
-			situation[match[i] - 1] = vschess.f2n[chessman[i]];
+			situation[match[i] - 1] = vschess.f2n[chessman.charAt(i)];
 		}
 
 		var fen = vschess.situationToFen(situation);
@@ -2419,23 +2594,6 @@ vschess.dataToNode_ShiJia = function(chessData, onlyFen) {
 	}
 
 	return vschess.stepListToNode(fen, stepList);
-};
-
-// 将中国游戏中心 CCM 格式转换为棋谱节点树
-vschess.dataToNode_CCM = function(chessData) {
-	chessData = chessData.substring(1);
-	var stepList = [];
-
-	while (chessData.length) {
-		var fromX = 8 - chessData.charCodeAt(2);
-		var   toX = 8 - chessData.charCodeAt(3);
-		var fromY = 9 - chessData.charCodeAt(4);
-		var   toY = 9 - chessData.charCodeAt(5);
-		chessData =     chessData.substring (7);
-		stepList.push(vschess.b2i[fromY * 9 + fromX] + vschess.b2i[toY * 9 + toX]);
-	}
-
-	return vschess.stepListToNode(vschess.defaultFen, stepList);
 };
 
 // 将着法列表转换为棋谱节点树
@@ -2905,6 +3063,11 @@ vschess.dateFormat = function(date){
 	return date;
 };
 
+// 替换不间断空格
+vschess.replaceNbsp = function(str){
+	return str.replace(new RegExp(vschess.fcc(160), "g"), " ");
+};
+
 // GBK 转 UTF-8 编码表
 vschess.GBK2UTF8Charset = (function(){
 	// 压缩编码表，负数表示无数据的间隔，例如-5表示连续5个值无数据
@@ -2983,7 +3146,12 @@ vschess.UTF8 = function(array){
 		}
 	}
 
-	try { return decodeURIComponent(result.join("")); } catch (e) { return ""; }
+	try {
+		return decodeURIComponent(result.join(""));
+	}
+	catch (e) {
+		return ""; 
+	}
 };
 
 // 检测是否为 UTF-8 编码
@@ -4757,7 +4925,7 @@ vschess.Node2WXF = function(move, fen){
 
 	// 相象仕士
 	if (piece === 3 || piece === 4) {
-		result = vschess.n2f[16 | piece] + fromCol;
+		result = vschess.n2f[piece | 16] + fromCol;
 	}
 	// 兵卒
 	else if (piece === 7) {
@@ -4791,14 +4959,14 @@ vschess.Node2WXF = function(move, fen){
 	// 车马帅将炮
 	else {
 		for (var i = from + 16; i < 204 && !result; i += 16) {
-			situation[i] === situation[from] && (result = vschess.n2f[16 | piece] + "+");
+			situation[i] === situation[from] && (result = vschess.n2f[piece | 16] + "+");
 		}
 
 		for (var i = from - 16; i >  50 && !result; i -= 16) {
-			situation[i] === situation[from] && (result = vschess.n2f[16 | piece] + "-");
+			situation[i] === situation[from] && (result = vschess.n2f[piece | 16] + "-");
 		}
 
-		result || (result = vschess.n2f[16 | piece] + fromCol);
+		result || (result = vschess.n2f[piece | 16] + fromCol);
 	}
 
 	// 马相象仕士
@@ -5839,6 +6007,84 @@ vschess.ECCOIndex2Name = function(index){
 	return vschess.eccoDir[k][i] ? vschess.eccoDir[k][i] : vschess.eccoDir.A[0];
 };
 
+// 象棋演播室 XQF 格式文件头读取
+vschess.XQF_Header = function(buffer){
+    var S = function(start, length){
+        return Array.from(buffer.slice(start, start + length));
+    };
+
+    var K = function(start, length){
+        var array = buffer.slice(start, start + length).reverse(), sum = 0;
+
+        for (var i = 0; i < array.length; ++i) {
+            sum += array[i] * Math.pow(256, i);
+        }
+
+        return sum;
+    };
+
+    return {
+        Version       : buffer[ 2], // 版本号
+        KeyMask       : buffer[ 3], // 加密掩码
+        KeyOr         : S(  8,  4), // Or密钥
+        KeySum        : buffer[12], // 加密的钥匙和
+        KeyXYp        : buffer[13], // 棋子布局位置钥匙
+        KeyXYf        : buffer[14], // 棋谱起点钥匙
+        KeyXYt        : buffer[15], // 棋谱终点钥匙
+        QiziXY        : S( 16, 32), // 32个棋子的原始位置
+        PlayStepNo    : K( 48,  2), // 棋谱文件的开始步数
+        WhoPlay       : buffer[50], // 该谁下
+        PlayResult    : buffer[51], // 最终结果
+        PlayNodes     : S( 52,  4), // 本棋谱一共记录了多少步
+        PTreePos      : S( 56,  4), // 对弈树在文件中的起始位置
+        Type          : buffer[64], // 对局类型(开,中,残等)
+        Title         : S( 81, buffer[ 80]), // 标题
+        MatchName     : S(209, buffer[208]), // 比赛名称
+        MatchTime     : S(273, buffer[272]), // 比赛时间
+        MatchAddr     : S(289, buffer[288]), // 比赛地点
+        RedPlayer     : S(305, buffer[304]), // 红方姓名
+        BlkPlayer     : S(321, buffer[320]), // 黑方姓名
+        TimeRule      : S(337, buffer[336]), // 用时规则
+        RedTime       : S(401, buffer[400]), // 红方用时
+        BlkTime       : S(417, buffer[416]), // 黑方用时
+        RMKWriter     : S(465, buffer[464]), // 棋谱评论员
+        Author        : S(481, buffer[480])  // 文件作者
+    };
+};
+
+// 象棋演播室 XQF 格式密钥计算
+vschess.XQF_Key = function(header) {
+    var key = {
+        F32: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        XYp: 0,
+        XYf: 0,
+        XYt: 0,
+        RMK: 0
+    };
+
+    if (header.Version < 16) {
+        return key;
+    }
+
+    key.XYp = (( header.KeyXYp *       header.KeyXYp  * 54 + 221) * header.KeyXYp) &   255;
+    key.XYf = (( header.KeyXYf *       header.KeyXYf  * 54 + 221) *    key.   XYp) &   255;
+    key.XYt = (( header.KeyXYt *       header.KeyXYt  * 54 + 221) *    key.   XYf) &   255;
+    key.RMK = (((header.KeySum * 256 + header.KeyXYp) %    32000) +           767) & 65535;
+
+    var FKey = [
+        header.KeySum & header.KeyMask | header.KeyOr[0],
+        header.KeyXYp & header.KeyMask | header.KeyOr[1],
+        header.KeyXYf & header.KeyMask | header.KeyOr[2],
+        header.KeyXYt & header.KeyMask | header.KeyOr[3]
+    ];
+
+    for (var i = 0; i < 32; ++i) {
+        key.F32[i] = FKey[i % 4] & "[(C) Copyright Mr. Dong Shiwei.]".charCodeAt(i);
+    }
+
+    return key;
+};
+
 // 检查指定局面号下指定位置是否为红方棋子
 vschess.load.prototype.isR = function(index, step){
 	step  = vschess.limit(step, 0, this.lastSituationIndex(), this.getCurrentStep());
@@ -6743,13 +6989,13 @@ vschess.load.prototype.createEditPlaceholder = function(){
 // 创建编辑局面区域棋子容器
 vschess.load.prototype.createEditPieceArea = function(){
 	var _this = this;
-	var editPieceNameList = "RNBAKCP*rnbakcp".split("");
+	var editPieceNameList = "RNBAKCP*rnbakcp";
 	this.editPieceArea = $('<div class="vschess-tab-body-edit-area"></div>');
 	this.editArea.append(this.editPieceArea);
 	this.editPieceList = {};
 
 	for (var i = 0; i < editPieceNameList.length; ++i) {
-		var k = editPieceNameList[i];
+		var k = editPieceNameList.charAt(i);
 
 		if (k === "*") {
 			this.editPieceArea.append('<div class="vschess-piece-disabled"></div>');
@@ -7024,6 +7270,7 @@ vschess.load.prototype.fillEditBoardByText = function(chessData){
 
 // 将 Fen 串导入局面编辑区
 vschess.load.prototype.fillEditBoardByFen = function(fen){
+	(this.getTurn() >> 1) && (fen = vschess.roundFen(fen));
 	this.editSituation = vschess.fenToSituation(fen);
 	this.fillEditBoard();
 	return this;
@@ -7148,6 +7395,7 @@ vschess.load.prototype.createEditOtherButton = function(){
 		if (typeof FileReader === "function") {
 			if (this.files.length) {
 				var file = this.files[0];
+				var ext = file.name.split(".").pop().toLowerCase();
 				var reader = new FileReader();
 				reader.readAsArrayBuffer(file);
 				reader.onload = function(){
@@ -7158,13 +7406,23 @@ vschess.load.prototype.createEditOtherButton = function(){
 					var RegExp    = vschess.RegExp();
 					var fileData  = new Uint8Array(this.result);
 					var chessData = vschess.join(fileData);
-					fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vschess.iconv2UTF8(fileData));
+
+					if (~vschess.binaryExt.indexOf(ext)) {
+						var chessNode = vschess.binaryToNode(fileData);
+						var chessInfo = vschess.binaryToInfo(fileData);
+					}
+					else {
+						!RegExp.ShiJia.test(chessData) && (chessData = vschess.iconv2UTF8(fileData));
+						var chessNode = vschess.dataToNode(chessData);
+						var chessInfo = vschess.dataToInfo(chessData);
+					}
+
 					_this.setBoardByStep(0);
-					_this.setNode(vschess.dataToNode(chessData));
+					_this.setNode(chessNode);
 					_this.rebuildSituation();
 					_this.refreshMoveSelectListNode();
 					_this.setBoardByStep(0);
-					_this.chessInfo = vschess.dataToInfo(chessData);
+					_this.chessInfo = chessInfo;
 					_this.insertInfoByCurrent();
 					_this.refreshInfoEditor();
 					_this.rebuildExportAll();
@@ -7238,6 +7496,7 @@ vschess.load.prototype.bindDrag = function(){
 
 		if (e.dataTransfer && e.dataTransfer.files.length) {
 			var file = e.dataTransfer.files[0];
+			var ext = file.name.split(".").pop().toLowerCase();
 			var reader = new FileReader();
 			reader.readAsArrayBuffer(file);
 			reader.onload = function(){
@@ -7248,13 +7507,23 @@ vschess.load.prototype.bindDrag = function(){
 				var RegExp    = vschess.RegExp();
 				var fileData  = new Uint8Array(this.result);
 				var chessData = vschess.join(fileData);
-				fileData[0] !== 1 && !RegExp.ShiJia.test(chessData) && (chessData = vschess.iconv2UTF8(fileData));
+
+				if (~vschess.binaryExt.indexOf(ext)) {
+					var chessNode = vschess.binaryToNode(fileData);
+					var chessInfo = vschess.binaryToInfo(fileData);
+				}
+				else {
+					!RegExp.ShiJia.test(chessData) && (chessData = vschess.iconv2UTF8(fileData));
+					var chessNode = vschess.dataToNode(chessData);
+					var chessInfo = vschess.dataToInfo(chessData);
+				}
+
 				_this.setBoardByStep(0);
-				_this.setNode(vschess.dataToNode(chessData));
+				_this.setNode(chessNode);
 				_this.rebuildSituation();
 				_this.refreshMoveSelectListNode();
 				_this.setBoardByStep(0);
-				_this.chessInfo = vschess.dataToInfo(chessData);
+				_this.chessInfo = chessInfo;
 				_this.insertInfoByCurrent();
 				_this.refreshInfoEditor();
 				_this.rebuildExportAll();

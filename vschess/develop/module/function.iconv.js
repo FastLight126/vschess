@@ -76,7 +76,12 @@ vs.UTF8 = function(array){
 		}
 	}
 
-	try { return decodeURIComponent(result.join("")); } catch (e) { return ""; }
+	try {
+		return decodeURIComponent(result.join(""));
+	}
+	catch (e) {
+		return ""; 
+	}
 };
 
 // 检测是否为 UTF-8 编码
