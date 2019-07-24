@@ -15,7 +15,7 @@
  * https://github.com/ded/qwery/
  *
  * 最后修改日期：北京时间 2019年7月24日
- * Wed, 24 Jul 2019 04:43:51 +0800
+ * Wed, 24 Jul 2019 15:29:08 +0800
  */
 
 (function(){
@@ -1176,7 +1176,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 24 Jul 2019 04:43:51 +0800",
+	timestamp: "Wed, 24 Jul 2019 15:29:08 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1919,19 +1919,12 @@ vschess.binaryToNode_XQF = function(buffer) {
 
     for (var pos = 0; pos < decode.length;) {
         // 着法计算
-        if (XQF_Header.Version >= 16) {
-            var f = decode[pos    ] - 24 - XQF_Key.XYf & 255;
-            var t = decode[pos + 1] - 32 - XQF_Key.XYt & 255;
-        }
-        else {
-            var f = decode[pos    ] - 24;
-            var t = decode[pos + 1] - 32;
-        }
-
-        var Xf = Math.floor(f / 10);
-        var Yf = 9 - f % 10;
-        var Xt = Math.floor(t / 10);
-        var Yt = 9 - t % 10;
+        var Pf = decode[pos    ] - 24 - XQF_Key.XYf & 255;
+        var Pt = decode[pos + 1] - 32 - XQF_Key.XYt & 255;
+        var Xf = Math.floor(Pf / 10);
+        var Xt = Math.floor(Pt / 10);
+        var Yf = 9 - Pf % 10;
+        var Yt = 9 - Pt % 10;
 
         // 注释提取
         if (XQF_Header.Version > 10) {
@@ -1954,14 +1947,19 @@ vschess.binaryToNode_XQF = function(buffer) {
         // 生成节点树
         if (pos) {
             var move = vschess.b2i[Yf * 9 + Xf] + vschess.b2i[Yt * 9 + Xt];
-            parent.next.push({ move: move, comment: comment, next: [], defaultIndex: 0 });
+            var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
+            parent.next.push(step);
 
-            var k1 = XQF_Header.Version > 10 ? 128 : 240;
-            var k2 = XQF_Header.Version > 10 ?  64 :  15;
+            var hasNext   = decode[pos + 2] & (XQF_Header.Version > 10 ? 128 : 240);
+            var hasChange = decode[pos + 2] & (XQF_Header.Version > 10 ?  64 :  15);
 
-            (decode[pos + 2] & k1) || (parent = changeNode.pop());
-            (decode[pos + 2] & k2) && changeNode.push(parent);
-            (decode[pos + 2] & k1) && (parent = parent.next[parent.next.length - 1]);
+            if (hasNext) {
+                hasChange && changeNode.push(parent);
+                parent = step;
+            }
+            else {
+                hasChange || (parent = changeNode.pop());
+            }
         }
         else {
             node.comment = comment;
