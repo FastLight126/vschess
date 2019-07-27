@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年7月24日
- * Wed, 24 Jul 2019 15:29:08 +0800
+ * 最后修改日期：北京时间 2019年7月28日
+ * Sun, 28 Jul 2019 01:57:30 +0800
  */
 
 (function(){
@@ -1176,7 +1176,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 24 Jul 2019 15:29:08 +0800",
+	timestamp: "Sun, 28 Jul 2019 01:57:30 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1710,25 +1710,25 @@ vschess.defaultOptions = {
 	// 默认推荐起始局面列表
 	recommendList: [
 		{ name: "\u5e38\u7528\u5f00\u5c40", fenList: [
-			{ name: "\u7a7a\u767d\u68cb\u76d8", "fen": "9/9/9/9/9/9/9/9/9/9 w - - 0 1" },
-			{ name: "\u53ea\u6709\u5e05\u5c06", "fen": "5k3/9/9/9/9/9/9/9/9/3K5 w - - 0 1" },
-			{ name: "\u6807\u51c6\u5f00\u5c40", "fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
-			{ name: "\u7ea2\u8ba9\u5de6\u9a6c", "fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/R1BAKABNR w - - 0 1" },
-			{ name: "\u9ed1\u8ba9\u5de6\u9a6c", "fen": "rnbakab1r/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
-			{ name: "\u7ea2\u8ba9\u53f3\u9a6c", "fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKAB1R w - - 0 1" },
-			{ name: "\u9ed1\u8ba9\u53f3\u9a6c", "fen": "r1bakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
-			{ name: "\u7ea2\u8ba9\u53cc\u9a6c", "fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/R1BAKAB1R w - - 0 1" },
-			{ name: "\u9ed1\u8ba9\u53cc\u9a6c", "fen": "r1bakab1r/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
-			{ name: "\u7ea2\u8ba9\u53cc\u4ed5", "fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNB1K1BNR w - - 0 1" },
-			{ name: "\u9ed1\u8ba9\u53cc\u58eb", "fen": "rnb1k1bnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
-			{ name: "\u7ea2\u8ba9\u53cc\u76f8", "fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RN1AKA1NR w - - 0 1" },
-			{ name: "\u9ed1\u8ba9\u53cc\u8c61", "fen": "rn1aka1nr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
-			{ name: "\u7ea2\u8ba9\u4ed5\u76f8", "fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RN2K2NR w - - 0 1" },
-			{ name: "\u9ed1\u8ba9\u58eb\u8c61", "fen": "rn2k2nr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
-			{ name: "\u7ea2\u8ba9\u4e94\u5175", "fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/9/1C5C1/9/RNBAKABNR w - - 0 1" },
-			{ name: "\u9ed1\u8ba9\u4e94\u5352", "fen": "rnbakabnr/9/1c5c1/9/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
-			{ name: "\u7ea2\u8ba9\u4e5d\u5b50", "fen": "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/9/1C5C1/9/RN2K2NR w - - 0 1" },
-			{ name: "\u9ed1\u8ba9\u4e5d\u5b50", "fen": "rn2k2nr/9/1c5c1/9/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" }
+			{ name: "\u7a7a\u767d\u68cb\u76d8", fen: "9/9/9/9/9/9/9/9/9/9 w - - 0 1" },
+			{ name: "\u53ea\u6709\u5e05\u5c06", fen: "5k3/9/9/9/9/9/9/9/9/3K5 w - - 0 1" },
+			{ name: "\u6807\u51c6\u5f00\u5c40", fen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
+			{ name: "\u7ea2\u8ba9\u5de6\u9a6c", fen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/R1BAKABNR w - - 0 1" },
+			{ name: "\u9ed1\u8ba9\u5de6\u9a6c", fen: "rnbakab1r/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
+			{ name: "\u7ea2\u8ba9\u53f3\u9a6c", fen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKAB1R w - - 0 1" },
+			{ name: "\u9ed1\u8ba9\u53f3\u9a6c", fen: "r1bakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
+			{ name: "\u7ea2\u8ba9\u53cc\u9a6c", fen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/R1BAKAB1R w - - 0 1" },
+			{ name: "\u9ed1\u8ba9\u53cc\u9a6c", fen: "r1bakab1r/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
+			{ name: "\u7ea2\u8ba9\u53cc\u4ed5", fen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNB1K1BNR w - - 0 1" },
+			{ name: "\u9ed1\u8ba9\u53cc\u58eb", fen: "rnb1k1bnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
+			{ name: "\u7ea2\u8ba9\u53cc\u76f8", fen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RN1AKA1NR w - - 0 1" },
+			{ name: "\u9ed1\u8ba9\u53cc\u8c61", fen: "rn1aka1nr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
+			{ name: "\u7ea2\u8ba9\u4ed5\u76f8", fen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RN2K2NR w - - 0 1" },
+			{ name: "\u9ed1\u8ba9\u58eb\u8c61", fen: "rn2k2nr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
+			{ name: "\u7ea2\u8ba9\u4e94\u5175", fen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/9/1C5C1/9/RNBAKABNR w - - 0 1" },
+			{ name: "\u9ed1\u8ba9\u4e94\u5352", fen: "rnbakabnr/9/1c5c1/9/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" },
+			{ name: "\u7ea2\u8ba9\u4e5d\u5b50", fen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/9/1C5C1/9/RN2K2NR w - - 0 1" },
+			{ name: "\u9ed1\u8ba9\u4e5d\u5b50", fen: "rn2k2nr/9/1c5c1/9/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" }
 		]}
 	]
 };
@@ -1817,13 +1817,6 @@ vschess.binaryToInfo_XQF = function(buffer){
         default: r.result = "*"; break;
     }
 
-    switch (header.Type) {
-        case  1: r.result = "\u5f00\u5c40"; break;
-        case  2: r.result = "\u4e2d\u5c40"; break;
-        case  3: r.result = "\u6b8b\u5c40"; break;
-        default: r.result = "\u5168\u5c40"; break;
-    }
-
     return r;
 };
 
@@ -1863,35 +1856,38 @@ vschess.binaryToNode_CCM = function(buffer) {
 // 将象棋演播室 XQF 格式转换为棋谱节点树
 vschess.binaryToNode_XQF = function(buffer) {
     // 计算开局 Fen 串
-    var fenArray = new Array(91).join("*").split("");
-    var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
-
     var XQF_Header = vschess.XQF_Header(buffer    );
     var XQF_Key    = vschess.XQF_Key   (XQF_Header);
+    var fen = vschess.defaultFen;
 
-    for (var i = 0; i < 32; ++i) {
-        if (XQF_Header.Version >= 16) {
-            var pieceKey = XQF_Key .XYp + i + 1 & 31;
-            var piecePos = XQF_Header.QiziXY[i] - XQF_Key.XYp & 255;
-        }
-        else {
-            var pieceKey = i;
-            var piecePos = XQF_Header.QiziXY[i];
+    if (XQF_Header.Type > 1) {
+        var fenArray = new Array(91).join("*").split("");
+        var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
+
+        for (var i = 0; i < 32; ++i) {
+            if (XQF_Header.Version > 11) {
+                var pieceKey = XQF_Key.XYp + i + 1 & 31;
+                var piecePos = XQF_Header.QiziXY[i] - XQF_Key.XYp & 255;
+            }
+            else {
+                var pieceKey = i;
+                var piecePos = XQF_Header.QiziXY[i];
+            }
+
+            if (piecePos < 90) {
+                var X = Math.floor(piecePos / 10);
+                var Y = 9 - piecePos % 10;
+                fenArray[Y * 9 + X] = fenPiece.charAt(pieceKey);
+            }
         }
 
-        if (piecePos < 90) {
-            var X = Math.floor(piecePos / 10);
-            var Y = 9 - piecePos % 10;
-            fenArray[Y * 9 + X] = fenPiece.charAt(pieceKey);
-        }
+        fen  = vschess.arrayToFen(fenArray);
+        fen +=  XQF_Header.WhoPlay === 1 ? " b - - 0 " : " w - - 0 ";
+        fen += (XQF_Header.PlayStepNo >> 1) || 1;
     }
 
-    var fen = vschess.arrayToFen(fenArray);
-    fen +=  XQF_Header.WhoPlay === 1 ? " b - - 0 " : " w - - 0 ";
-    fen += (XQF_Header.PlayStepNo >> 1) || 1;
-
     // 解密数据
-    if (XQF_Header.Version >= 16) {
+    if (XQF_Header.Version > 15) {
         var decode = [];
 
         for (var i = 1024; i < buffer.length; ++i) {
@@ -6053,7 +6049,7 @@ vschess.XQF_Header = function(buffer){
         PlayResult    : buffer[51], // 最终结果
         PlayNodes     : S( 52,  4), // 本棋谱一共记录了多少步
         PTreePos      : S( 56,  4), // 对弈树在文件中的起始位置
-        Type          : buffer[64], // 对局类型(开,中,残等)
+        Type          : buffer[64], // 对局类型(全,开,中,残等)
         Title         : S( 81, buffer[ 80]), // 标题
         MatchName     : S(209, buffer[208]), // 比赛名称
         MatchTime     : S(273, buffer[272]), // 比赛时间
@@ -6082,10 +6078,10 @@ vschess.XQF_Key = function(header) {
         return key;
     }
 
-    key.XYp = (( header.KeyXYp *       header.KeyXYp  * 54 + 221) * header.KeyXYp) &   255;
-    key.XYf = (( header.KeyXYf *       header.KeyXYf  * 54 + 221) *    key.   XYp) &   255;
-    key.XYt = (( header.KeyXYt *       header.KeyXYt  * 54 + 221) *    key.   XYf) &   255;
-    key.RMK = (((header.KeySum * 256 + header.KeyXYp) %    32000) +           767) & 65535;
+    key.XYp = ( header.KeyXYp *       header.KeyXYp  * 54 + 221) * header.KeyXYp &   255;
+    key.XYf = ( header.KeyXYf *       header.KeyXYf  * 54 + 221) *    key.   XYp &   255;
+    key.XYt = ( header.KeyXYt *       header.KeyXYt  * 54 + 221) *    key.   XYf &   255;
+    key.RMK = ((header.KeySum * 256 + header.KeyXYp) %    32000) +           767 & 65535;
 
     var FKey = [
         header.KeySum & header.KeyMask | header.KeyOr[0],

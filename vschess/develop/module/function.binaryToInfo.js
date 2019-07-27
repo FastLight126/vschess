@@ -34,12 +34,5 @@ vs.binaryToInfo_XQF = function(buffer){
         default: r.result = "*"; break;
     }
 
-    switch (header.Type) {
-        case  1: r.result = "开局"; break;
-        case  2: r.result = "中局"; break;
-        case  3: r.result = "残局"; break;
-        default: r.result = "全局"; break;
-    }
-
     return r;
 };

@@ -28,7 +28,7 @@ vs.XQF_Header = function(buffer){
         PlayResult    : buffer[51], // 最终结果
         PlayNodes     : S( 52,  4), // 本棋谱一共记录了多少步
         PTreePos      : S( 56,  4), // 对弈树在文件中的起始位置
-        Type          : buffer[64], // 对局类型(开,中,残等)
+        Type          : buffer[64], // 对局类型(全,开,中,残等)
         Title         : S( 81, buffer[ 80]), // 标题
         MatchName     : S(209, buffer[208]), // 比赛名称
         MatchTime     : S(273, buffer[272]), // 比赛时间
@@ -57,10 +57,10 @@ vs.XQF_Key = function(header) {
         return key;
     }
 
-    key.XYp = (( header.KeyXYp *       header.KeyXYp  * 54 + 221) * header.KeyXYp) &   255;
-    key.XYf = (( header.KeyXYf *       header.KeyXYf  * 54 + 221) *    key.   XYp) &   255;
-    key.XYt = (( header.KeyXYt *       header.KeyXYt  * 54 + 221) *    key.   XYf) &   255;
-    key.RMK = (((header.KeySum * 256 + header.KeyXYp) %    32000) +           767) & 65535;
+    key.XYp = ( header.KeyXYp *       header.KeyXYp  * 54 + 221) * header.KeyXYp &   255;
+    key.XYf = ( header.KeyXYf *       header.KeyXYf  * 54 + 221) *    key.   XYp &   255;
+    key.XYt = ( header.KeyXYt *       header.KeyXYt  * 54 + 221) *    key.   XYf &   255;
+    key.RMK = ((header.KeySum * 256 + header.KeyXYp) %    32000) +           767 & 65535;
 
     var FKey = [
         header.KeySum & header.KeyMask | header.KeyOr[0],
