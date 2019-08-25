@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年7月28日
- * Sun, 28 Jul 2019 01:57:30 +0800
+ * 最后修改日期：北京时间 2019年8月25日
+ * Sun, 25 Aug 2019 16:22:16 +0800
  */
 
 (function(){
@@ -450,6 +450,8 @@ var $ = function(selector) {
 };
 
 $.init = function(selector) {
+    this.length = 0;
+
     if (!selector) {
         return this;
     }
@@ -507,19 +509,19 @@ $.expand.not = function(selector){
 };
 
 $.expand.eq = function(index){
-    return $(this[index]);
+    return this.length ? $(this[index]) : $();
 };
 
 $.expand.first = function(){
-    return $(this[0]);
+    return this.length ? $(this[0]) : $();
 };
 
 $.expand.last = function(){
-    return $(this[this.length - 1]);
+    return this.length ? $(this[this.length - 1]) : $();
 };
 
 $.expand.clone = function(){
-    return $(this[0].cloneNode(true));
+    return this.length ? $(this[0].cloneNode(true)) : $();
 };
 
 $.expand.after = function(selector){
@@ -1176,7 +1178,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 28 Jul 2019 01:57:30 +0800",
+	timestamp: "Sun, 25 Aug 2019 16:22:16 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1855,9 +1857,10 @@ vschess.binaryToNode_CCM = function(buffer) {
 
 // 将象棋演播室 XQF 格式转换为棋谱节点树
 vschess.binaryToNode_XQF = function(buffer) {
-    // 计算开局 Fen 串
     var XQF_Header = vschess.XQF_Header(buffer    );
     var XQF_Key    = vschess.XQF_Key   (XQF_Header);
+
+    // 计算开局 Fen 串
     var fen = vschess.defaultFen;
 
     if (XQF_Header.Type > 1) {
@@ -5056,6 +5059,21 @@ vschess.nodeList2moveList = function(moveList, fen, format, options, mirror){
 	return result;
 };
 
+// 节点树抽取当前节点 ICCS 列表
+vschess.nodeToNodeList = function(node){
+	var currentNode = node;
+	var fen = currentNode.fen;
+	var result = [fen];
+
+	while (currentNode.next.length) {
+		var defaultIndex = currentNode.defaultIndex || 0;
+		currentNode = currentNode.next[defaultIndex];
+		result.push(currentNode.move);
+	}
+
+	return result;
+};
+
 // WXF 着法字符串转换为 ECCO 开局编号及类型
 vschess.WXF2ECCO = function(wxfList){
 	wxfList = wxfList ? wxfList.slice(0) : [vschess.defaultFen];
@@ -6078,10 +6096,10 @@ vschess.XQF_Key = function(header) {
         return key;
     }
 
-    key.XYp = ( header.KeyXYp *       header.KeyXYp  * 54 + 221) * header.KeyXYp &   255;
-    key.XYf = ( header.KeyXYf *       header.KeyXYf  * 54 + 221) *    key.   XYp &   255;
-    key.XYt = ( header.KeyXYt *       header.KeyXYt  * 54 + 221) *    key.   XYf &   255;
-    key.RMK = ((header.KeySum * 256 + header.KeyXYp) %    32000) +           767 & 65535;
+    key.XYp = (header.KeyXYp *       header.KeyXYp  *    54 + 221) * header.KeyXYp &   255;
+    key.XYf = (header.KeyXYf *       header.KeyXYf  *    54 + 221) *    key.   XYp &   255;
+    key.XYt = (header.KeyXYt *       header.KeyXYt  *    54 + 221) *    key.   XYf &   255;
+    key.RMK = (header.KeySum * 256 + header.KeyXYp) % 32000 + 767                  & 65535;
 
     var FKey = [
         header.KeySum & header.KeyMask | header.KeyOr[0],

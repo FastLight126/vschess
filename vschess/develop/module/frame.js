@@ -5,6 +5,8 @@ var $ = function(selector) {
 };
 
 $.init = function(selector) {
+    this.length = 0;
+
     if (!selector) {
         return this;
     }
@@ -62,19 +64,19 @@ $.expand.not = function(selector){
 };
 
 $.expand.eq = function(index){
-    return $(this[index]);
+    return this.length ? $(this[index]) : $();
 };
 
 $.expand.first = function(){
-    return $(this[0]);
+    return this.length ? $(this[0]) : $();
 };
 
 $.expand.last = function(){
-    return $(this[this.length - 1]);
+    return this.length ? $(this[this.length - 1]) : $();
 };
 
 $.expand.clone = function(){
-    return $(this[0].cloneNode(true));
+    return this.length ? $(this[0].cloneNode(true)) : $();
 };
 
 $.expand.after = function(selector){

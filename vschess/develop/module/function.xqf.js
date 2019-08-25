@@ -57,10 +57,10 @@ vs.XQF_Key = function(header) {
         return key;
     }
 
-    key.XYp = ( header.KeyXYp *       header.KeyXYp  * 54 + 221) * header.KeyXYp &   255;
-    key.XYf = ( header.KeyXYf *       header.KeyXYf  * 54 + 221) *    key.   XYp &   255;
-    key.XYt = ( header.KeyXYt *       header.KeyXYt  * 54 + 221) *    key.   XYf &   255;
-    key.RMK = ((header.KeySum * 256 + header.KeyXYp) %    32000) +           767 & 65535;
+    key.XYp = (header.KeyXYp *       header.KeyXYp  *    54 + 221) * header.KeyXYp &   255;
+    key.XYf = (header.KeyXYf *       header.KeyXYf  *    54 + 221) *    key.   XYp &   255;
+    key.XYt = (header.KeyXYt *       header.KeyXYt  *    54 + 221) *    key.   XYf &   255;
+    key.RMK = (header.KeySum * 256 + header.KeyXYp) % 32000 + 767                  & 65535;
 
     var FKey = [
         header.KeySum & header.KeyMask | header.KeyOr[0],

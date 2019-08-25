@@ -33,9 +33,10 @@ vs.binaryToNode_CCM = function(buffer) {
 
 // 将象棋演播室 XQF 格式转换为棋谱节点树
 vs.binaryToNode_XQF = function(buffer) {
-    // 计算开局 Fen 串
     var XQF_Header = vs.XQF_Header(buffer    );
     var XQF_Key    = vs.XQF_Key   (XQF_Header);
+
+    // 计算开局 Fen 串
     var fen = vs.defaultFen;
 
     if (XQF_Header.Type > 1) {
