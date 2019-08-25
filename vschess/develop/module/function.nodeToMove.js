@@ -178,3 +178,18 @@ vs.nodeList2moveList = function(moveList, fen, format, options, mirror){
 
 	return result;
 };
+
+// 节点树抽取当前节点 ICCS 列表
+vs.nodeToNodeList = function(node){
+	var currentNode = node;
+	var fen = currentNode.fen;
+	var result = [fen];
+
+	while (currentNode.next.length) {
+		var defaultIndex = currentNode.defaultIndex || 0;
+		currentNode = currentNode.next[defaultIndex];
+		result.push(currentNode.move);
+	}
+
+	return result;
+};
