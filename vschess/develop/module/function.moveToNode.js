@@ -10,7 +10,11 @@ vs.Chinese2Node = function(move, fen){
 	var cStr = "车車俥马馬傌相象仕士帅帥将將炮包砲兵卒前进進后後退平中一二三四五六七八九壹贰叁肆伍陆柒捌玖１２３４５６７８９123456789";
 	var eStr = "RRRNNNBBAAKKKKCCCPP+++---..123456789123456789123456789123456789";
 	var moveSplit = move.split("");
-	$.each(moveSplit, function(i){ moveSplit[i] = eStr.charAt(cStr.indexOf(moveSplit[i])); });
+
+	for (var i = 0; i < 4; ++i) {
+		moveSplit[i] = eStr.charAt(cStr.indexOf(moveSplit[i]));
+	}
+
 	return vs.WXF2Node(moveSplit.join(""), fen);
 };
 

@@ -8,24 +8,18 @@ $version = '2.5.0';
 $developList = scandir('develop/module');
 unset($developList[0], $developList[1]);
 
-$module[] = 'qwery.js';
-$module[] = 'frame.js';
 $module[] = 'main.js';
-$module[] = 'main.dom.js';
 $module[] = 'config.js';
-$module[] = 'config.dom.js';
+
+$exclude = ['function.load.js', 'function.IE6.js', 'function.init.js'];
 
 foreach ($developList as $filename) {
-	if (strpos($filename, 'function.') !== false) {
+	if (strpos($filename, 'function.') !== false && !in_array($filename, $exclude, true)) {
 		$module[] = $filename;
-	}
-	else if (strpos($filename, 'module.') !== false) {
-		$prototype[] = $filename;
 	}
 }
 
-$module = array_merge($module, $prototype);
-$module[] = 'final.js';
+$module[] = 'final.node.js';
 
 foreach ($module as $filename) {
 	$filemtime = filemtime("develop/module/{$filename}");
@@ -37,7 +31,7 @@ foreach ($module as $filename) {
 
 $jsBegin = '
 /*
- * 微思象棋播放器 V'. $version. '
+ * 微思象棋函数库 V'. $version. '
  * https://www.xiaxiangqi.com/
  *
  * Copyright @ 2009-'. date('Y'). ' Margin.Top 版权所有
@@ -49,14 +43,9 @@ $jsBegin = '
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 选择器引擎选用 Qwery
- * https://github.com/ded/qwery/
- *
  * 最后修改日期：北京时间 '. date('Y年n月j日', $edittime). '
  * '. date('r', $edittime). '
- */
-
-(function(){';
+ */';
 
 foreach ($module as $filename) {
 	$code = file_get_contents("develop/module/{$filename}");
@@ -65,8 +54,8 @@ foreach ($module as $filename) {
 	$code = str_replace('#YEAR#', date('Y'), $code);
 	$code = str_replace('http://', 'http:##', $code);
 	$code = str_replace('https://', 'https:##', $code);
+	$code = str_replace('$.trim', 'vs.trim', $code);
 	$code = str_replace('vs.', 'vschess.', $code);
-	$code = str_replace('fn.', 'vschess.load.prototype.', $code);
 	$jsMain .= "/*** {$filename} ***/\n". trim($code). "\n\n";
 }
 
@@ -87,12 +76,8 @@ foreach ($jsMainLines as $line) {
 $jsMainCovert = implode("\n", $jsMainCovert);
 $jsMainCovert = str_replace('http:##', 'http://', $jsMainCovert);
 $jsMainCovert = str_replace('https:##', 'https://', $jsMainCovert);
-$javascript = trim($jsBegin. "\n\n". trim($jsMainCovert). "\n\n". '})();');
-$packer = new JavaScriptPacker($javascript, 'Normal', true, false); // None, Numeric, Normal, High ASCII
-$packed = "/* Weisi Chess Player V{$version} https://www.xiaxiangqi.com/ Copyright. */\n". trim($packer->pack());
-file_put_contents('vschess.js', preg_replace('/\\/\\*\\*\\*(.*)\\*\\*\\*\\/\\n/', '', $javascript));
-file_put_contents('vschess.min.js', $packed);
-$_GET['pack'] ? print($packed) : print($javascript);
+$javascript = trim($jsBegin. "\n\n". trim($jsMainCovert). "\n");
+file_put_contents('vschess.function.js', preg_replace('/\\/\\*\\*\\*(.*)\\*\\*\\*\\/\\n/', '', $javascript));
 
 function mb_str_split($str) {
 	$index = 0;

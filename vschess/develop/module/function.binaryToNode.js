@@ -37,33 +37,29 @@ vs.binaryToNode_XQF = function(buffer) {
     var XQF_Key    = vs.XQF_Key   (XQF_Header);
 
     // 计算开局 Fen 串
-    var fen = vs.defaultFen;
+    var fenArray = new Array(91).join("*").split("");
+    var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
 
-    if (XQF_Header.Type > 1) {
-        var fenArray = new Array(91).join("*").split("");
-        var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
-
-        for (var i = 0; i < 32; ++i) {
-            if (XQF_Header.Version > 11) {
-                var pieceKey = XQF_Key.XYp + i + 1 & 31;
-                var piecePos = XQF_Header.QiziXY[i] - XQF_Key.XYp & 255;
-            }
-            else {
-                var pieceKey = i;
-                var piecePos = XQF_Header.QiziXY[i];
-            }
-
-            if (piecePos < 90) {
-                var X = Math.floor(piecePos / 10);
-                var Y = 9 - piecePos % 10;
-                fenArray[Y * 9 + X] = fenPiece.charAt(pieceKey);
-            }
+    for (var i = 0; i < 32; ++i) {
+        if (XQF_Header.Version > 11) {
+            var pieceKey = XQF_Key.XYp + i + 1 & 31;
+            var piecePos = XQF_Header.QiziXY[i] - XQF_Key.XYp & 255;
+        }
+        else {
+            var pieceKey = i;
+            var piecePos = XQF_Header.QiziXY[i];
         }
 
-        fen  = vs.arrayToFen(fenArray);
-        fen +=  XQF_Header.WhoPlay === 1 ? " b - - 0 " : " w - - 0 ";
-        fen += (XQF_Header.PlayStepNo >> 1) || 1;
+        if (piecePos < 90) {
+            var X = Math.floor(piecePos / 10);
+            var Y = 9 - piecePos % 10;
+            fenArray[Y * 9 + X] = fenPiece.charAt(pieceKey);
+        }
     }
+
+    fen  = vs.arrayToFen(fenArray);
+    fen +=  XQF_Header.WhoPlay === 1 ? " b - - 0 " : " w - - 0 ";
+    fen += (XQF_Header.PlayStepNo >> 1) || 1;
 
     // 解密数据
     if (XQF_Header.Version > 15) {
