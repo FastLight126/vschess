@@ -24,7 +24,14 @@ $.ajax({
 	success: function(chessData){
 		try { console.time("棋盘加载时间"); } catch (e) {}
 
-		chess = new vschess.load(".vschess", { chessData: chessData, defaultTab: "comment", style: "mobile", layout: "mobile", loadFinish: function(){
+		chess = new vschess.load(".vschess", { chessData: chessData, defaultTab: "board", style: "mobile", layout: "mobile", tagName: {
+            comment: "注<br />解",
+            info: "信<br />息",
+            share: "分<br />享",
+            export: "导<br />出",
+            edit: "导<br />入",
+            config: "选<br />项"
+        }, loadFinish: function(){
 			try { console.timeEnd("棋盘加载时间"); } catch (e) {}
 		} });
 	}
