@@ -1,11 +1,11 @@
 // 将军检查器
 vs.checkThreat = function(situation){
-	if (typeof situation === "string") {
+    if (typeof situation === "string") {
 		var RegExp = vs.RegExp();
 		RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
 	}
 
-	situation = situation.slice(0);
+    situation = situation.slice(0);
 	var kingIndex = 0;
 	var player = situation[0];
 	var enermy = 3 - player;

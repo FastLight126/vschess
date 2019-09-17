@@ -129,7 +129,17 @@ $.extend(vs.defaultOptions, {
 			{ name: "红让九子", fen: "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/9/1C5C1/9/RN2K2NR w - - 0 1" },
 			{ name: "黑让九子", fen: "rn2k2nr/9/1c5c1/9/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1" }
 		]}
-	]
+    ],
+
+    // 标签名称
+    tagName: {
+        comment: "棋谱注解",
+        info: "棋局信息",
+        share: "棋谱分享",
+        export: "棋谱导出",
+        edit: "棋谱导入",
+        config: "棋盘选项"
+    }
 });
 
 // 默认帮助信息

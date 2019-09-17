@@ -1,3 +1,4 @@
+.vs/
 cloud/
 other/
 dhtmlxq2.txt
@@ -6,6 +7,7 @@ discuz代码2.html
 mouse.html
 test.html
 test-2.html
+mobile-test.html
 websocket.html
 已发现BUG列表.txt
 kill.html

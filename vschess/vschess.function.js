@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2019年8月29日
- * Thu, 29 Aug 2019 16:03:08 +0800
+ * 最后修改日期：北京时间 2019年9月18日
+ * Wed, 18 Sep 2019 01:33:42 +0800
  */
 
 // 主程序
@@ -21,7 +21,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Thu, 29 Aug 2019 16:03:08 +0800",
+	timestamp: "Wed, 18 Sep 2019 01:33:42 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -314,25 +314,6 @@ var vschess = {
 			ecco		: "ECCO"
 		}
 	},
-
-	// 可自动识别的棋谱信息项目列表
-	autoInfo: "ecco open variation result".split(" "),
-
-	// 可导出棋谱格式列表
-	exportFormatList: {
-		PGN_Chinese : "\u4e2d\u6587 PGN \u683c\u5f0f",
-		PGN_WXF : "WXF PGN \u683c\u5f0f",
-		PGN_ICCS : "ICCS PGN \u683c\u5f0f",
-		PengFei: "\u9e4f\u98de PFC \u683c\u5f0f",
-		DhtmlXQ: "\u4e1c\u840d DhtmlXQ UBB \u683c\u5f0f",
-		DHJHtmlXQ: "\u5e7f\u4e1c\u8c61\u68cb\u7f51 DHJHtmlXQ \u683c\u5f0f",
-		Text : "\u6587\u672c TXT \u683c\u5f0f",
-		QQ : "\uff31\uff31 CHE \u683c\u5f0f",
-		TextBoard: "\u6587\u5b57\u68cb\u76d8"
-	},
-
-	// 必须为起始局面才可以导出的棋谱格式列表
-	exportFormatListIfNeedStart: "QQ".split(" "),
 
 	// ECCO 编号目录
 	eccoDir: {
@@ -1802,12 +1783,12 @@ vschess.join = function(array){
 
 // 将军检查器
 vschess.checkThreat = function(situation){
-	if (typeof situation === "string") {
+    if (typeof situation === "string") {
 		var RegExp = vschess.RegExp();
 		RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
 	}
 
-	situation = situation.slice(0);
+    situation = situation.slice(0);
 	var kingIndex = 0;
 	var player = situation[0];
 	var enermy = 3 - player;

@@ -82,7 +82,8 @@ fn.createBoard = function(){
 	this.createControlBar();
 	this.createMessageBox();
 	this.createFormatBar();
-	this.createTab();
+    this.createMobileTag();
+    this.createTab();
 	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
 	this.chessId  = vs.chessList.length;
 
@@ -95,7 +96,7 @@ fn.createBoard = function(){
 fn.initData = function(){
 	this.refreshColumnIndex();
 	this.setSaved(true);
-	this.showTab(this.options.defaultTab);
+    this.showTab(this.options.defaultTab);
 	this.initCallback();
 	this.initArguments();
 	this.initStart();

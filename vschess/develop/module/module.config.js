@@ -1,7 +1,7 @@
 // 创建棋盘选项区域
 fn.createConfig = function(){
 	var _this = this;
-	this.configTitle = $('<div class="vschess-tab-title vschess-tab-title-config">棋盘选项</div>');
+    this.configTitle = $('<div class="vschess-tab-title vschess-tab-title-config">' + this.options.tagName.config + '</div>');
 	this.configArea  = $('<div class="vschess-tab-body vschess-tab-body-config"></div>');
 	this.tabArea.children(".vschess-tab-title-config, .vschess-tab-body-config").remove();
 	this.tabArea.append(this.configTitle);

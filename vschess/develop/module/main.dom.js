@@ -21,7 +21,7 @@ $.extend(vschess, {
 	localDownload: !!window.Blob && !!window.URL && "download" in document.createElement("a"),
 
 	// 标签列表
-	tabList: "comment info share export edit config".split(" "),
+	tabList: "board move comment info share export edit config".split(" "),
 
 	// 钩子列表
 	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece afterStartFen afterAnimate".split(" "),
@@ -90,5 +90,25 @@ $.extend(vschess, {
 
 		// 棋盘方向，0(0x00) 不翻转，1(0x01) 左右翻转，2(0x10) 上下，3(0x11) 对角旋转（左右+上下）
 		turn: { none: 0, mirror: 1, reverse: 2, round: 3 }
-	}
+	},
+
+	// 可自动识别的棋谱信息项目列表
+	autoInfo: "ecco open variation result".split(" "),
+
+    // 可导出棋谱格式列表
+    exportFormatList: {
+        PGN_Chinese: "中文 PGN 格式",
+        PGN_WXF: "WXF PGN 格式",
+        PGN_ICCS: "ICCS PGN 格式",
+        PengFei: "鹏飞 PFC 格式",
+        DhtmlXQ: "东萍 DhtmlXQ UBB 格式",
+        DHJHtmlXQ: "广东象棋网 DHJHtmlXQ 格式",
+        ChessDB: "云库指令格式",
+        Text: "文本 TXT 格式",
+        QQ: "ＱＱ CHE 格式",
+        TextBoard: "文字棋盘"
+    },
+
+	// 必须为起始局面才可以导出的棋谱格式列表
+	exportFormatListIfNeedStart: "QQ".split(" ")
 });

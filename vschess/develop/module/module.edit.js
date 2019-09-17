@@ -1,7 +1,7 @@
 // 创建编辑局面区域
 fn.createEdit = function(){
 	var _this = this;
-	this.editTitle = $('<div class="vschess-tab-title vschess-tab-title-edit">棋谱导入</div>');
+    this.editTitle = $('<div class="vschess-tab-title vschess-tab-title-edit">' + this.options.tagName.edit + '</div>');
 	this.editArea  = $('<div class="vschess-tab-body vschess-tab-body-edit"></div>');
 	this.tabArea.children(".vschess-tab-title-edit, .vschess-tab-body-edit").remove();
 	this.tabArea.append(this.editTitle);
@@ -88,6 +88,7 @@ fn.showEditModule = function(){
 		}
 	}
 
+    this.DOM.addClass("vschess-edit-mode");
 	return this;
 };
 
@@ -99,6 +100,7 @@ fn.hideEditModule = function(){
 		}
 	}
 
+    this.DOM.removeClass("vschess-edit-mode");
 	return this;
 };
 
@@ -724,8 +726,8 @@ fn.createEditOtherButton = function(){
 
 		_this.setNode({ fen: vs.defaultFen, comment: "", next: [], defaultIndex: 0 });
 		_this.rebuildSituation();
+        _this.setBoardByStep(0);
 		_this.refreshMoveSelectListNode();
-		_this.setBoardByStep(0);
 		_this.chessInfo = {};
 		_this.insertInfoByCurrent();
 		_this.refreshInfoEditor();

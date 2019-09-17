@@ -26,7 +26,8 @@ fn.setBoardByStep = function(step, indexUnChange){
 	this.refreshMoveSelectListNodeColor();
 	this.refreshChangeSelectListNode();
 	this.setCommentByStep();
-	this.getExportFormat() === "TextBoard" && this.setExportFormat("TextBoard");
+    this.getExportFormat() === "TextBoard" && this.setExportFormat("TextBoard");
+    this.getExportFormat() === "ChessDB"   && this.setExportFormat("ChessDB"  );
 	return this;
 };
 

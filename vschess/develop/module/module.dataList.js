@@ -90,7 +90,7 @@ fn.getUCCIList = function(step){
 // 取得 UCCI 局面列表
 fn.getUCCIFenList = function(step){
 	step = vs.limit(step, 0, this.eatStatus.length - 1, this.getCurrentStep());
-	var startIndex = 0, result = [];
+    var startIndex = 0;
 
 	for (var i = step; i >= 0 && !startIndex; --i) {
 		this.eatStatus[i] && (startIndex = i);

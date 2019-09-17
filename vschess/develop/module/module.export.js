@@ -1,7 +1,7 @@
 // 创建导出棋谱区域
 fn.createExport = function(){
 	var _this = this;
-	this.exportTitle    = $('<div class="vschess-tab-title vschess-tab-title-export">棋谱导出</div>');
+    this.exportTitle = $('<div class="vschess-tab-title vschess-tab-title-export">' + this.options.tagName.export + '</div>');
 	this.exportArea     = $('<form method="post" action="' + this.options.cloudApi.saveBook + '" class="vschess-tab-body vschess-tab-body-export"></form>');
 	this.exportTextarea = $('<textarea class="vschess-tab-body-export-textarea" readonly="readonly" name="data"></textarea>').appendTo(this.exportArea);
 	this.exportFormat   = $('<select class="vschess-tab-body-export-format"   name="format"></select>').appendTo(this.exportArea);
@@ -116,13 +116,22 @@ fn.setExportFormat = function(format, force){
 		this.exportDownload.   addClass("vschess-tab-body-export-current");
 		this.exportTextarea.val(vs.textBoard(this.getCurrentFen(), this.options));
 	}
+    else if (format === "ChessDB") {
+        var list = this.getUCCIList();
+        var fen = list.shift().split(" ").slice(0, 2).join(" ");
+
+        this.exportGenerate.removeClass("vschess-tab-body-export-current");
+        this.exportCopy.addClass("vschess-tab-body-export-current");
+        this.exportDownload.addClass("vschess-tab-body-export-current");
+        this.exportTextarea.val(list.length ? fen + " moves " + list.join(" ") : fen);
+    }
 	else if ((format === "PengFei" || format === "DhtmlXQ") && !force && this.getNodeLength() >= vs.bigBookCritical) {
 		// 大棋谱需要加参数才同步
 		this.exportCopy    .removeClass("vschess-tab-body-export-current");
 		this.exportDownload.removeClass("vschess-tab-body-export-current");
 		this.exportGenerate.   addClass("vschess-tab-body-export-current");
 		this.exportTextarea.val("请点击“生成”按钮生成棋谱。");
-	}
+    }
 	else {
 		this.exportGenerate.removeClass("vschess-tab-body-export-current");
 		this.exportCopy    .   addClass("vschess-tab-body-export-current");
@@ -138,7 +147,7 @@ fn.rebuildExportAll = function(all){
 	this.rebuildExportPGN();
 	this.rebuildExportText();
 	this.rebuildExportQQ();
-	this.rebuildExportDHJHtmlXQ();
+    this.rebuildExportDHJHtmlXQ();
 
 	// 大棋谱生成东萍 DhtmlXQ 格式和鹏飞 PFC 格式比较拖性能
 	(this.getNodeLength() < vs.bigBookCritical || all) && this.rebuildExportPengFei();

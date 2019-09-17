@@ -1,7 +1,7 @@
 // 创建棋谱注解区域
 fn.createComment = function(){
-	var _this = this;
-	this.commentTitle = $('<div class="vschess-tab-title vschess-tab-title-comment">棋谱注解</div>');
+    var _this = this;
+    this.commentTitle = $('<div class="vschess-tab-title vschess-tab-title-comment">' + this.options.tagName.comment + '</div>');
 	this.commentArea = $('<div class="vschess-tab-body vschess-tab-body-comment"></div>');
 	this.commentTextarea = $('<textarea class="vschess-tab-body-comment-textarea"></textarea>').appendTo(this.commentArea);
 	this.tabArea.children(".vschess-tab-title-comment, .vschess-tab-body-comment").remove();

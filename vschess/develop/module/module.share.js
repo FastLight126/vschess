@@ -1,7 +1,7 @@
 // 创建棋谱分享区域
 fn.createShare = function(){
 	var _this = this;
-	this.shareTitle    = $('<div class="vschess-tab-title vschess-tab-title-share">棋谱分享</div>');
+    this.shareTitle = $('<div class="vschess-tab-title vschess-tab-title-share">' + this.options.tagName.share + '</div>');
 	this.shareArea     = $('<div class="vschess-tab-body vschess-tab-body-share"></div>');
 	this.tabArea.children(".vschess-tab-title-share, .vschess-tab-body-share").remove();
 	this.tabArea.append(this.shareTitle);
