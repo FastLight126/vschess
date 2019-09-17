@@ -191,8 +191,8 @@
 .vschess-layout-mobile.vschess-edit-mode .vschess-title { padding-right:317px; }
 .vschess-layout-mobile.vschess-edit-mode .vschess-column-index-a { padding-right:382px; }
 .vschess-layout-mobile.vschess-edit-mode .vschess-tab-area { left:695px; z-index:40; }
-.vschess-layout-mobile.vschess-edit-mode .vschess-recommend-class { left:699px; }
-.vschess-layout-mobile.vschess-edit-mode .vschess-recommend-list  { left:699px; }
+.vschess-layout-mobile.vschess-edit-mode .vschess-recommend-class { left:699px; z-index:50; }
+.vschess-layout-mobile.vschess-edit-mode .vschess-recommend-list  { left:699px; z-index:50; }
 .vschess-layout-mobile.vschess-edit-mode .vschess-tab-body-edit-tips { width:1067px; font-size:24px; z-index:40; }
 .vschess-layout-mobile.vschess-edit-mode .vschess-tab-title { display:none; }
 .vschess-layout-mobile.vschess-edit-mode .vschess-mobile-close-tab { display:none; }
