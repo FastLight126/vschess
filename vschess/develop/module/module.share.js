@@ -2,7 +2,7 @@
 fn.createShare = function(){
 	var _this = this;
     this.shareTitle = $('<div class="vschess-tab-title vschess-tab-title-share">' + this.options.tagName.share + '</div>');
-	this.shareArea     = $('<div class="vschess-tab-body vschess-tab-body-share"></div>');
+	this.shareArea  = $('<div class="vschess-tab-body vschess-tab-body-share"></div>');
 	this.tabArea.children(".vschess-tab-title-share, .vschess-tab-body-share").remove();
 	this.tabArea.append(this.shareTitle);
 	this.tabArea.append(this.shareArea );

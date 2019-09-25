@@ -413,7 +413,7 @@ $.expand.css = function(config){
             key = key.replace(    /-ms-t/g,     "msT");
             key = key.replace(     /-o-t/g,      "oT");
 
-            ~"height width top right bottom left".indexOf(j) && !isNaN(+config[j]) && (value += "px");
+            ~"height width top right bottom left marginTop marginRight marginBottom marginLeft paddingTop paddingRight paddingBottom paddingLeft".split(" ").indexOf(j) && !isNaN(+config[j]) && (value += "px");
 
             this[i].style[key] = value;
         }

@@ -117,13 +117,21 @@ fn.setExportFormat = function(format, force){
 		this.exportTextarea.val(vs.textBoard(this.getCurrentFen(), this.options));
 	}
     else if (format === "ChessDB") {
+        this.exportGenerate.removeClass("vschess-tab-body-export-current");
+        this.exportCopy    .   addClass("vschess-tab-body-export-current");
+        this.exportDownload.   addClass("vschess-tab-body-export-current");
+
+        // 从开局开始
+        var list = this.getMoveList();
+        var fen = list.shift().split(" ").slice(0, 2).join(" ");
+        var longData = list.length ? fen + " moves " + list.join(" ") : fen;
+
+        // 从吃子开始
         var list = this.getUCCIList();
         var fen = list.shift().split(" ").slice(0, 2).join(" ");
+        var shortData = list.length ? fen + " moves " + list.join(" ") : fen;
 
-        this.exportGenerate.removeClass("vschess-tab-body-export-current");
-        this.exportCopy.addClass("vschess-tab-body-export-current");
-        this.exportDownload.addClass("vschess-tab-body-export-current");
-        this.exportTextarea.val(list.length ? fen + " moves " + list.join(" ") : fen);
+        this.exportTextarea.val("从开局开始：\n" + longData + "\n\n从吃子开始：\n" + shortData);
     }
 	else if ((format === "PengFei" || format === "DhtmlXQ") && !force && this.getNodeLength() >= vs.bigBookCritical) {
 		// 大棋谱需要加参数才同步

@@ -51,11 +51,11 @@ fn.createConfigSwitch = function(){
 		_this.setBoardByStep();
 	});
 
-	this.addConfigItem("banRepeatLongThreat", "禁止重复长打", "boolean", true, "", function(){
+	this.addConfigItem("banRepeatLongThreat", "禁止长打", "boolean", true, "", function(){
 		_this._.banRepeatLongThreat = _this.configValue["banRepeatLongThreat"];
 	});
 
-	this.addConfigItem("banRepeatLongKill", "禁止重复一将一杀" , "boolean", true, "", function(){
+	this.addConfigItem("banRepeatLongKill", "禁止一将一杀" , "boolean", true, "", function(){
 		_this._.banRepeatLongKill = _this.configValue["banRepeatLongKill"];
 		_this.repeatLongKillMoveList = _this._.banRepeatLongKill ? _this.getRepeatLongKillMove() : [];
 	});

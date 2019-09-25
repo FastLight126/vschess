@@ -74,18 +74,19 @@ fn.createBoard = function(){
 	this.initPieceRotateDeg();
 
 	// 其他组件
-	this.createLocalDownloadLink();
-	this.createChangeSelectList();
-	this.createMoveSelectList();
-	this.createCopyTextarea();
-	this.createColumnIndex();
-	this.createControlBar();
-	this.createMessageBox();
-	this.createFormatBar();
+    this.createLocalDownloadLink();
+    this.createChangeSelectList();
+    this.createMoveSelectList();
+    this.createCopyTextarea();
+    this.createColumnIndex();
+    this.createControlBar();
+    this.createMessageBox();
+    this.createGuessArrow();
+    this.createFormatBar();
     this.createMobileTag();
     this.createTab();
-	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
-	this.chessId  = vs.chessList.length;
+    this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
+    this.chessId  = vs.chessList.length;
 
 	window.addEventListener("resize", function(){ _this.resetDPR(); }, false);
 	vs.chessList.push(this);
@@ -186,6 +187,7 @@ fn.createColumnIndex = function(){
 	return this;
 };
 
+// 重置 DPR
 fn.resetDPR = function(){
 	vs.dpr = window.devicePixelRatio || 1;
 	$(this.DOM).attr("data-vschess-dpr", vs.dpr);

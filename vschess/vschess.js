@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年9月18日
- * Wed, 18 Sep 2019 02:03:39 +0800
+ * 最后修改日期：北京时间 2019年9月26日
+ * Thu, 26 Sep 2019 04:30:33 +0800
  */
 
 (function(){
@@ -858,7 +858,7 @@ $.expand.css = function(config){
             key = key.replace(    /-ms-t/g,     "msT");
             key = key.replace(     /-o-t/g,      "oT");
 
-            ~"height width top right bottom left".indexOf(j) && !isNaN(+config[j]) && (value += "px");
+            ~"height width top right bottom left marginTop marginRight marginBottom marginLeft paddingTop paddingRight paddingBottom paddingLeft".split(" ").indexOf(j) && !isNaN(+config[j]) && (value += "px");
 
             this[i].style[key] = value;
         }
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 18 Sep 2019 02:03:39 +0800",
+	timestamp: "Thu, 26 Sep 2019 04:30:33 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -4057,18 +4057,19 @@ vschess.load.prototype.createBoard = function(){
 	this.initPieceRotateDeg();
 
 	// 其他组件
-	this.createLocalDownloadLink();
-	this.createChangeSelectList();
-	this.createMoveSelectList();
-	this.createCopyTextarea();
-	this.createColumnIndex();
-	this.createControlBar();
-	this.createMessageBox();
-	this.createFormatBar();
+    this.createLocalDownloadLink();
+    this.createChangeSelectList();
+    this.createMoveSelectList();
+    this.createCopyTextarea();
+    this.createColumnIndex();
+    this.createControlBar();
+    this.createMessageBox();
+    this.createGuessArrow();
+    this.createFormatBar();
     this.createMobileTag();
     this.createTab();
-	this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
-	this.chessId  = vschess.chessList.length;
+    this.interval = { time: 0, tag: 0, run: setInterval(function(){ _this.intervalCallback(); }, 100) };
+    this.chessId  = vschess.chessList.length;
 
 	window.addEventListener("resize", function(){ _this.resetDPR(); }, false);
 	vschess.chessList.push(this);
@@ -4169,6 +4170,7 @@ vschess.load.prototype.createColumnIndex = function(){
 	return this;
 };
 
+// 重置 DPR
 vschess.load.prototype.resetDPR = function(){
 	vschess.dpr = window.devicePixelRatio || 1;
 	$(this.DOM).attr("data-vschess-dpr", vschess.dpr);
@@ -6326,11 +6328,11 @@ vschess.load.prototype.createConfigSwitch = function(){
 		_this.setBoardByStep();
 	});
 
-	this.addConfigItem("banRepeatLongThreat", "\u7981\u6b62\u91cd\u590d\u957f\u6253", "boolean", true, "", function(){
+	this.addConfigItem("banRepeatLongThreat", "\u7981\u6b62\u957f\u6253", "boolean", true, "", function(){
 		_this._.banRepeatLongThreat = _this.configValue["banRepeatLongThreat"];
 	});
 
-	this.addConfigItem("banRepeatLongKill", "\u7981\u6b62\u91cd\u590d\u4e00\u5c06\u4e00\u6740" , "boolean", true, "", function(){
+	this.addConfigItem("banRepeatLongKill", "\u7981\u6b62\u4e00\u5c06\u4e00\u6740" , "boolean", true, "", function(){
 		_this._.banRepeatLongKill = _this.configValue["banRepeatLongKill"];
 		_this.repeatLongKillMoveList = _this._.banRepeatLongKill ? _this.getRepeatLongKillMove() : [];
 	});
@@ -7744,13 +7746,21 @@ vschess.load.prototype.setExportFormat = function(format, force){
 		this.exportTextarea.val(vschess.textBoard(this.getCurrentFen(), this.options));
 	}
     else if (format === "ChessDB") {
+        this.exportGenerate.removeClass("vschess-tab-body-export-current");
+        this.exportCopy    .   addClass("vschess-tab-body-export-current");
+        this.exportDownload.   addClass("vschess-tab-body-export-current");
+
+        // 从开局开始
+        var list = this.getMoveList();
+        var fen = list.shift().split(" ").slice(0, 2).join(" ");
+        var longData = list.length ? fen + " moves " + list.join(" ") : fen;
+
+        // 从吃子开始
         var list = this.getUCCIList();
         var fen = list.shift().split(" ").slice(0, 2).join(" ");
+        var shortData = list.length ? fen + " moves " + list.join(" ") : fen;
 
-        this.exportGenerate.removeClass("vschess-tab-body-export-current");
-        this.exportCopy.addClass("vschess-tab-body-export-current");
-        this.exportDownload.addClass("vschess-tab-body-export-current");
-        this.exportTextarea.val(list.length ? fen + " moves " + list.join(" ") : fen);
+        this.exportTextarea.val("\u4ece\u5f00\u5c40\u5f00\u59cb\uff1a\n" + longData + "\n\n\u4ece\u5403\u5b50\u5f00\u59cb\uff1a\n" + shortData);
     }
 	else if ((format === "PengFei" || format === "DhtmlXQ") && !force && this.getNodeLength() >= vschess.bigBookCritical) {
 		// 大棋谱需要加参数才同步
@@ -7879,6 +7889,60 @@ vschess.load.prototype.hideExportFormatIfNeedStart = function(){
 	}
 
 	return this;
+};
+
+// 创建猜想展示箭头
+vschess.load.prototype.createGuessArrow = function(){
+    this.guessArrowRed   = $('<div class="vschess-guess-arrow vschess-guess-arrow-red"><span class="vschess-guess-arrow-head"></span><span class="vschess-guess-arrow-body"></span></div>');
+    this.guessArrowBlack = $('<div class="vschess-guess-arrow vschess-guess-arrow-black"><span class="vschess-guess-arrow-head"></span><span class="vschess-guess-arrow-body"></span></div>');
+    this.board.children(".vschess-guess-arrow").remove();
+    this.board.append(this.guessArrowRed).append(this.guessArrowBlack);
+    return this;
+};
+
+// 显示猜想展示箭头
+vschess.load.prototype.showGuessArrow = function(player, move){
+    if (!vschess.RegExp().Node.test(move)) {
+        return this;
+    }
+
+    var arrow     = player === "b" ? this.guessArrowBlack : this.guessArrowRed;
+    var from      = vschess.turn[this.getTurn()][vschess.i2b[move.substring(0, 2)]];
+    var   to      = vschess.turn[this.getTurn()][vschess.i2b[move.substring(2, 4)]];
+    var fromPiece = this.piece.eq(from);
+    var   toPiece = this.piece.eq(to  );
+    var  widthP   = fromPiece.width ();
+    var heightP   = fromPiece.height();
+    var fromX     = fromPiece.position().left +  widthP / 2;
+    var   toX     =   toPiece.position().left +  widthP / 2;
+    var fromY     = fromPiece.position().top  + heightP / 2;
+    var   toY     =   toPiece.position().top  + heightP / 2;
+    var centerX   = (fromX + toX) / 2;
+    var centerY   = (fromY + toY) / 2;
+    var X         = toX - fromX;
+    var Y         = toY - fromY;
+    var deg       = Math.atan2(Y, X) * 180 / Math.PI + 90;
+    var height    = Math.sqrt(X * X + Y * Y);
+
+    while (deg >= 360) { deg -= 360; }
+    while (deg <    0) { deg += 360; }
+
+    var degStyle = vschess.degToRotateCSS(deg);
+    arrow.attr({ style: degStyle }).css({ top: centerY, left: centerX, height: height, marginTop: -height / 2 }).addClass("vschess-guess-arrow-show");
+    return this;
+};
+
+// 隐藏猜想展示箭头
+vschess.load.prototype.hideGuessArrow = function(player){
+    if (player) {
+        var arrow = player === "b" ? this.guessArrowBlack : this.guessArrowRed;
+        arrow.removeClass("vschess-guess-arrow-show");
+    }
+    else {
+        this.hideGuessArrow("r").hideGuessArrow("b");
+    }
+
+    return this;
 };
 
 // 创建帮助区域
@@ -9044,7 +9108,7 @@ vschess.load.prototype.getCurrentSelect = function(){
 vschess.load.prototype.createShare = function(){
 	var _this = this;
     this.shareTitle = $('<div class="vschess-tab-title vschess-tab-title-share">' + this.options.tagName.share + '</div>');
-	this.shareArea     = $('<div class="vschess-tab-body vschess-tab-body-share"></div>');
+	this.shareArea  = $('<div class="vschess-tab-body vschess-tab-body-share"></div>');
 	this.tabArea.children(".vschess-tab-title-share, .vschess-tab-body-share").remove();
 	this.tabArea.append(this.shareTitle);
 	this.tabArea.append(this.shareArea );
