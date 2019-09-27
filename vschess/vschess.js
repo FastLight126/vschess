@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年9月26日
- * Thu, 26 Sep 2019 04:30:33 +0800
+ * 最后修改日期：北京时间 2019年9月28日
+ * Sat, 28 Sep 2019 03:51:54 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Thu, 26 Sep 2019 04:30:33 +0800",
+	timestamp: "Sat, 28 Sep 2019 03:51:54 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -7907,8 +7907,8 @@ vschess.load.prototype.showGuessArrow = function(player, move){
     }
 
     var arrow     = player === "b" ? this.guessArrowBlack : this.guessArrowRed;
-    var from      = vschess.turn[this.getTurn()][vschess.i2b[move.substring(0, 2)]];
-    var   to      = vschess.turn[this.getTurn()][vschess.i2b[move.substring(2, 4)]];
+    var from      = vschess.turn[this.getTurn() >> 1 ? 3 : 0][vschess.i2b[move.substring(0, 2)]];
+    var   to      = vschess.turn[this.getTurn() >> 1 ? 3 : 0][vschess.i2b[move.substring(2, 4)]];
     var fromPiece = this.piece.eq(from);
     var   toPiece = this.piece.eq(to  );
     var  widthP   = fromPiece.width ();

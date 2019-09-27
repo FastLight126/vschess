@@ -14,8 +14,8 @@ fn.showGuessArrow = function(player, move){
     }
 
     var arrow     = player === "b" ? this.guessArrowBlack : this.guessArrowRed;
-    var from      = vs.turn[this.getTurn()][vs.i2b[move.substring(0, 2)]];
-    var   to      = vs.turn[this.getTurn()][vs.i2b[move.substring(2, 4)]];
+    var from      = vs.turn[this.getTurn() >> 1 ? 3 : 0][vs.i2b[move.substring(0, 2)]];
+    var   to      = vs.turn[this.getTurn() >> 1 ? 3 : 0][vs.i2b[move.substring(2, 4)]];
     var fromPiece = this.piece.eq(from);
     var   toPiece = this.piece.eq(to  );
     var  widthP   = fromPiece.width ();
