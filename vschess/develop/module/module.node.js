@@ -7,6 +7,7 @@ fn.rebuildSituation = function(){
 	this.commentList = [this.node.comment || ""];
 	this.changeLengthList = [ ];
 	this.currentNodeList  = [0];
+	this.nodeList = [this.node];
 
 	var turnFen = vs.turnFen(this.node.fen);
 
@@ -20,6 +21,7 @@ fn.rebuildSituation = function(){
 		this.changeLengthList.push(currentNode.next.length );
 		this.currentNodeList .push(currentNode.defaultIndex);
 		currentNode = currentNode.next[currentNode.defaultIndex];
+		this.nodeList.push(currentNode);
 
 		var from = vs.i2s[currentNode.move.substring(0, 2)];
 		var to   = vs.i2s[currentNode.move.substring(2, 4)];

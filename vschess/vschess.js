@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2019年9月28日
- * Sat, 28 Sep 2019 03:51:54 +0800
+ * 最后修改日期：北京时间 2019年10月16日
+ * Wed, 16 Oct 2019 13:36:38 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Sat, 28 Sep 2019 03:51:54 +0800",
+	timestamp: "Wed, 16 Oct 2019 13:36:38 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -6777,6 +6777,12 @@ vschess.load.prototype.getRepeatLongKillMove = function(){
 	return vschess.repeatLongKillMove(this.getUCCIList());
 };
 
+// 根据局面号取得节点
+vschess.load.prototype.getNodeByStep = function(step){
+	step = vschess.limit(step, 0, this.eatStatus.length - 1, this.getCurrentStep());
+	return this.nodeList[step];
+};
+
 // 创建编辑局面区域
 vschess.load.prototype.createEdit = function(){
 	var _this = this;
@@ -8794,6 +8800,7 @@ vschess.load.prototype.rebuildSituation = function(){
 	this.commentList = [this.node.comment || ""];
 	this.changeLengthList = [ ];
 	this.currentNodeList  = [0];
+	this.nodeList = [this.node];
 
 	var turnFen = vschess.turnFen(this.node.fen);
 
@@ -8807,6 +8814,7 @@ vschess.load.prototype.rebuildSituation = function(){
 		this.changeLengthList.push(currentNode.next.length );
 		this.currentNodeList .push(currentNode.defaultIndex);
 		currentNode = currentNode.next[currentNode.defaultIndex];
+		this.nodeList.push(currentNode);
 
 		var from = vschess.i2s[currentNode.move.substring(0, 2)];
 		var to   = vschess.i2s[currentNode.move.substring(2, 4)];

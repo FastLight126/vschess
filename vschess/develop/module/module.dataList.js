@@ -108,3 +108,9 @@ fn.getRepeatLongThreatMove = function(){
 fn.getRepeatLongKillMove = function(){
 	return vs.repeatLongKillMove(this.getUCCIList());
 };
+
+// 根据局面号取得节点
+fn.getNodeByStep = function(step){
+	step = vs.limit(step, 0, this.eatStatus.length - 1, this.getCurrentStep());
+	return this.nodeList[step];
+};
