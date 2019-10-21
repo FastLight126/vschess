@@ -140,5 +140,21 @@ vs.binaryToNode_XQF = function(buffer) {
         pos += nextOffset;
     }
 
+    // 增强兼容性
+    if (node.next.length) {
+        var fenArray = vs.fenToArray(node.fen);
+        var fenSplit = node.fen.split(" ");
+        var position = vs.i2b[node.next[0].move.substring(0, 2)];
+
+        if (fenArray[position].toUpperCase() === fenArray[position]) {
+            fenSplit[1] = "w";
+        }
+        else {
+            fenSplit[1] = "b";
+        }
+
+        node.fen = fenSplit.join(" ");
+    }
+
     return node;
 };

@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2019年10月2日
- * Wed, 02 Oct 2019 15:00:22 +0800
+ * 最后修改日期：北京时间 2019年10月21日
+ * Mon, 21 Oct 2019 13:53:39 +0800
  */
 
 // 主程序
@@ -21,7 +21,7 @@ var vschess = {
 	version: "2.5.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 02 Oct 2019 15:00:22 +0800",
+	timestamp: "Mon, 21 Oct 2019 13:53:39 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -515,6 +515,22 @@ vschess.binaryToNode_XQF = function(buffer) {
 
         // 指针往前走
         pos += nextOffset;
+    }
+
+    // 增强兼容性
+    if (node.next.length) {
+        var fenArray = vschess.fenToArray(node.fen);
+        var fenSplit = node.fen.split(" ");
+        var position = vschess.i2b[node.next[0].move.substring(0, 2)];
+
+        if (fenArray[position].toUpperCase() === fenArray[position]) {
+            fenSplit[1] = "w";
+        }
+        else {
+            fenSplit[1] = "b";
+        }
+
+        node.fen = fenSplit.join(" ");
     }
 
     return node;
