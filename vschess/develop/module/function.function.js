@@ -32,12 +32,22 @@ vs.RegExp = function(){
 	};
 };
 
+// Fen 串是否为红方
+vs.fenIsR = function(fen){
+	return !vs.fenIsB(fen);
+};
+
+// Fen 串是否为黑方
+vs.fenIsB = function(fen){
+	return fen.split(" ")[1].toLowerCase() === "b";
+};
+
 // Fen 串改变走棋方
 vs.fenChangePlayer = function(fen){
 	var RegExp = vs.RegExp();
 	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
 	var fenSplit = fen.split(" ");
-	fenSplit[1]  = fenSplit[1] === "b" ? "w" : "b";
+	fenSplit[1]  = vs.fenIsB(fen) ? "w" : "b";
 	return fenSplit.join(" ");
 };
 
@@ -47,7 +57,7 @@ vs.fenToSituation = function(fen){
 	var situation = vs.situation.slice(0);
 	var currentPiece = 0;
 	var pieceEach = vs.fenToArray(fen);
-	situation[0] = fenSplit[1] === "b" ? 2 : 1;
+	situation[0] = vs.fenIsB(fen) ? 2 : 1;
 	situation[1] = vs.limit(fenSplit[5], 1, Infinity);
 
 	for (var i = 51; i < 204; ++i) {
@@ -208,7 +218,7 @@ vs.invertFen = function(fen){
 	var RegExp = vs.RegExp();
 	RegExp.FenShort.test(fen) || (fen = vs.defaultFen);
 	var fenSplit = fen.split(" ");
-	fenSplit[1]  = fenSplit[1] === "b" ? "w" : "b";
+	fenSplit[1]  = vs.fenIsB(fen) ? "w" : "b";
 	fenSplit.length <= 2 && (fenSplit.push("- - 0 1"));
 	var eachPiece = fenSplit[0].split("");
 
@@ -399,7 +409,7 @@ vs.textBoard = function(fen, options) {
 		return "----";
 	}
 
-	var isB = fen.split(" ")[1] === "b";
+	var isB = vs.fenIsB(fen);
 	var board = vs.fenToArray(fen);
 	var text = [isB ? "黑方 走棋方\n\n" : "黑方\n\n"];
 

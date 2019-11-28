@@ -1,0 +1,23 @@
+.vschess-style-default .vschess-board, .vschess-style-default .vschess-board-edit { width:360px; height:400px; padding:10px; background:url(board.jpg) no-repeat 0px 0px; }
+.vschess-style-default .vschess-piece, .vschess-style-default .vschess-piece-animate, .vschess-style-default .vschess-piece-disabled { width:40px; height:40px; }
+.vschess-style-default .vschess-piece-S { background:url(piece.png) no-repeat 0px -560px; }
+.vschess-style-default .vschess-piece-s { background:url(piece.png) no-repeat 0px -600px; }
+.vschess-style-default .vschess-piece span, .vschess-style-default .vschess-piece-animate span { width:40px; height:40px; background:url(piece.png) no-repeat 0px 40px; }
+.vschess-style-default .vschess-piece-R span { background-position:0px    0px; }
+.vschess-style-default .vschess-piece-N span { background-position:0px  -40px; }
+.vschess-style-default .vschess-piece-B span { background-position:0px  -80px; }
+.vschess-style-default .vschess-piece-A span { background-position:0px -120px; }
+.vschess-style-default .vschess-piece-K span { background-position:0px -160px; }
+.vschess-style-default .vschess-piece-C span { background-position:0px -200px; }
+.vschess-style-default .vschess-piece-P span { background-position:0px -240px; }
+.vschess-style-default .vschess-piece-r span { background-position:0px -280px; }
+.vschess-style-default .vschess-piece-n span { background-position:0px -320px; }
+.vschess-style-default .vschess-piece-b span { background-position:0px -360px; }
+.vschess-style-default .vschess-piece-a span { background-position:0px -400px; }
+.vschess-style-default .vschess-piece-k span { background-position:0px -440px; }
+.vschess-style-default .vschess-piece-c span { background-position:0px -480px; }
+.vschess-style-default .vschess-piece-p span { background-position:0px -520px; }
+.vschess-style-default[data-vschess-dpr="2"] .vschess-board, .vschess-style-default[data-vschess-dpr="2"] .vschess-board-edit { width:360px; height:400px; padding:10px; background-image:url(board-dpr-2.png), url(board-dpr-2.jpg); background-size:100%; }
+.vschess-style-default[data-vschess-dpr="2"] .vschess-piece-S { background-image:url(piece-dpr-2.png); background-size:100%; }
+.vschess-style-default[data-vschess-dpr="2"] .vschess-piece-s { background-image:url(piece-dpr-2.png); background-size:100%; }
+.vschess-style-default[data-vschess-dpr="2"] .vschess-piece span, .vschess-style-default[data-vschess-dpr="2"] .vschess-piece-animate span { width:40px; height:40px; background-image:url(piece-dpr-2.png); background-size:100%; }

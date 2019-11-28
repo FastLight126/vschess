@@ -1,6 +1,6 @@
 // WXF 着法字符串转换为 ECCO 开局编号及类型
 vs.WXF2ECCO = function(wxfList){
-	wxfList = wxfList ? wxfList.slice(0) : [vs.defaultFen];
+	wxfList = wxfList && wxfList.length ? wxfList.slice(0) : [vs.defaultFen];
 
 	if (wxfList[0].length > 4 && wxfList.shift().split(" ", 2).join(" ") !== vs.defaultFen.split(" ", 2).join(" ")) {
 		return { ecco: "A00", opening: "残局", variation: "" };
