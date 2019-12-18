@@ -53,6 +53,11 @@ vs.Node2WXF = function(move, fen){
 
 	var from	= vs.i2s[step.substring(0, 2)];
 	var to		= vs.i2s[step.substring(2, 4)];
+
+	if (situation[from] < 16) {
+		return { move: "None", movedFen: vs.defaultFen };
+	}
+
 	var fromCol	= 12 - from % 16;
 	var toCol	= 12 - to   % 16;
 	var piece   = situation[from] & 15;
@@ -173,6 +178,11 @@ vs.nodeList2moveList = function(moveList, fen, format, options, mirror){
 		move = mirror ? vs.turnMove(moveList[i]) : moveList[i];
 		stepData = converter(move, currentFen, options);
 		currentFen = stepData.movedFen;
+
+		if (stepData.move === "None" || stepData.move === "无效着法") {
+			break;
+		}
+
 		result.push(stepData.move);
 	}
 
