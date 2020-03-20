@@ -2,7 +2,7 @@
  * 微思象棋函数库 V2.6.0
  * https://www.xiaxiangqi.com/
  *
- * Copyright @ 2009-2019 Margin.Top 版权所有
+ * Copyright @ 2009-2020 Margin.Top 版权所有
  * https://margin.top/
  *
  * 本程序遵循 LGPL 协议
@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2019年12月18日
- * Wed, 18 Dec 2019 22:39:43 +0800
+ * 最后修改日期：北京时间 2020年2月17日
+ * Mon, 17 Feb 2020 23:47:34 +0800
  */
 
 // 主程序
@@ -21,7 +21,7 @@ var vschess = {
 	version: "2.6.0",
 
 	// 版本时间戳
-	timestamp: "Wed, 18 Dec 2019 22:39:43 +0800",
+	timestamp: "Mon, 17 Feb 2020 23:47:34 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -4427,8 +4427,8 @@ vschess.ZobristKey = function(fen){
         return result.join("");
     }
 
-	var fenArray = vschess.fenToArray(fen);
-	var zobristKey = vschess.fenIsB(fen) ? '0000000000000000' : 'a0ce2af90c452f58';
+	var fenArray   = vschess.fenToArray(fen);
+	var zobristKey = vschess.fenIsB    (fen) ? '0000000000000000' : 'a0ce2af90c452f58';
 
 	for (var i = 0; i < 90; ++i) {
 		if (fenArray[i] === '*') {
@@ -4448,7 +4448,7 @@ vschess.trim = function(str){
 
 // 程序转换为字符串信息
 vschess.toString = function(){
-	return "\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V" + vschess.version + " https://www.xiaxiangqi.com/vschess/ Copyright \u00a9 2009-2019 Margin.Top \u7248\u6743\u6240\u6709";
+	return "\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V" + vschess.version + " https://www.xiaxiangqi.com/vschess/ Copyright \u00a9 2009-2020 Margin.Top \u7248\u6743\u6240\u6709";
 };
 
 // 导出到 module

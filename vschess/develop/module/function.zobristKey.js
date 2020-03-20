@@ -42,8 +42,8 @@ vs.ZobristKey = function(fen){
         return result.join("");
     }
 
-	var fenArray = vs.fenToArray(fen);
-	var zobristKey = vs.fenIsB(fen) ? '0000000000000000' : 'a0ce2af90c452f58';
+	var fenArray   = vs.fenToArray(fen);
+	var zobristKey = vs.fenIsB    (fen) ? '0000000000000000' : 'a0ce2af90c452f58';
 
 	for (var i = 0; i < 90; ++i) {
 		if (fenArray[i] === '*') {

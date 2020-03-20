@@ -145,6 +145,7 @@ fn.showEditBoard = function(){
 	this.hideNodeEditModule();
 	this.showEditModule();
 	this.fillEditBoardByFen(this.getFenByStep(this.getCurrentStep()));
+	this.fillInRecommendList(this.recommendClass[0].selectedIndex);
 	this.editSelectedIndex = -99;
 	this.dragPiece = null;
 	return this;
