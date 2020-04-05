@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2020年2月17日
- * Mon, 17 Feb 2020 23:47:34 +0800
+ * 最后修改日期：北京时间 2020年4月5日
+ * Sun, 05 Apr 2020 17:49:03 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.0",
 
 	// 版本时间戳
-	timestamp: "Mon, 17 Feb 2020 23:47:34 +0800",
+	timestamp: "Sun, 05 Apr 2020 17:49:03 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1565,7 +1565,7 @@ $.extend(vschess, {
 	editNodeModuleList: ["editNodeEndButton", "editNodeCancelButton", "editNodeTextarea", "editNodeTextareaPlaceholder"],
 
 	// 分享代码组件列表
-	shareCodeModuleList: ["shareUBBTitle", "shareUBBTextBox"],
+	shareCodeModuleList: ["shareHTMLTitle", "shareHTMLTextBox", "shareUBBTitle", "shareUBBTextBox"],
 
 	// 状态参数语义化
 	code: {
@@ -9219,6 +9219,7 @@ vschess.load.prototype.createShare = function(){
 	this.createShareGenerateButton();
 	this.createGifGenerateButton();
 	this.createWeixinGenerateButton();
+	this.createShareHTML();
 	this.createShareUBB();
 	this.createShareImage();
 	return this;
@@ -9238,7 +9239,8 @@ vschess.load.prototype.createShareGenerateButton = function(){
 		_this.shareImageTitle.removeClass("vschess-tab-body-image-current");
 
 		if (_this.options.cloudApi && _this.options.cloudApi.saveBookForShare) {
-			_this.shareUBBTextInput.val("\u6b63\u5728\u751f\u6210\uff0c\u8bf7\u7a0d\u5019\u3002");
+			_this.shareHTMLTextInput.val("\u6b63\u5728\u751f\u6210\uff0c\u8bf7\u7a0d\u5019\u3002");
+			_this.shareUBBTextInput .val("\u6b63\u5728\u751f\u6210\uff0c\u8bf7\u7a0d\u5019\u3002");
 			_this.rebuildExportDhtmlXQ();
 
 			$.ajax({
@@ -9248,7 +9250,8 @@ vschess.load.prototype.createShareGenerateButton = function(){
 				dataType: "json",
 				success: function(response){
 					if (response.code === 0) {
-						_this.shareUBBTextInput.val("[" + _this.options.ubbTagName + "]" + response.data.id + "[/" + _this.options.ubbTagName + "]");
+						_this.shareUBBTextInput .val("[" + _this.options.ubbTagName + "]" + response.data.id + "[/" + _this.options.ubbTagName + "]");
+						_this.shareHTMLTextInput.val('<script src="https://www.xiaxiangqi.com/static/js/share.js?id=' + response.data.id + '"></script>');
 					}
 				},
 				error: function(){
@@ -9256,6 +9259,25 @@ vschess.load.prototype.createShareGenerateButton = function(){
 				}
 			});
 		}
+	});
+
+	return this;
+};
+
+// 创建 HTML 分享信息区域
+vschess.load.prototype.createShareHTML = function(){
+	var _this = this;
+	this.shareHTMLTitle = $('<div class="vschess-tab-body-share-title">HTML \u4ee3\u7801\uff1a</div>');
+	this.shareHTMLTitle.appendTo(this.shareArea);
+	this.shareHTMLTextBox = $('<div class="vschess-tab-body-share-text"></div>');
+	this.shareHTMLTextBox.appendTo(this.shareArea);
+	this.shareHTMLTextInput = $('<input class="vschess-tab-body-share-text-input" value="\u8bf7\u70b9\u51fb\u201c\u751f\u6210\u5206\u4eab\u4ee3\u7801\u201d\u6309\u94ae\u3002" readonly="readonly" />');
+	this.shareHTMLTextInput.appendTo(this.shareHTMLTextBox);
+	this.shareHTMLTextCopy = $('<button type="button" class="vschess-button vschess-tab-body-share-text-copy">\u590d \u5236</button>');
+	this.shareHTMLTextCopy.appendTo(this.shareHTMLTextBox);
+
+	this.shareHTMLTextCopy.bind(this.options.click, function(){
+		_this.copy(_this.shareHTMLTextInput.val(), function(){ _this.showMessage("HTML \u4ee3\u7801\u590d\u5236\u6210\u529f\uff0c\u60a8\u53ef\u4ee5\u76f4\u63a5\u7f51\u9875\u4e2d\u7c98\u8d34\u4f7f\u7528\uff01"); });
 	});
 
 	return this;

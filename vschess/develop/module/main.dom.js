@@ -81,7 +81,7 @@ $.extend(vschess, {
 	editNodeModuleList: ["editNodeEndButton", "editNodeCancelButton", "editNodeTextarea", "editNodeTextareaPlaceholder"],
 
 	// 分享代码组件列表
-	shareCodeModuleList: ["shareUBBTitle", "shareUBBTextBox"],
+	shareCodeModuleList: ["shareHTMLTitle", "shareHTMLTextBox", "shareUBBTitle", "shareUBBTextBox"],
 
 	// 状态参数语义化
 	code: {

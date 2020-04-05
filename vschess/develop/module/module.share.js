@@ -10,6 +10,7 @@ fn.createShare = function(){
 	this.createShareGenerateButton();
 	this.createGifGenerateButton();
 	this.createWeixinGenerateButton();
+	this.createShareHTML();
 	this.createShareUBB();
 	this.createShareImage();
 	return this;
@@ -29,7 +30,8 @@ fn.createShareGenerateButton = function(){
 		_this.shareImageTitle.removeClass("vschess-tab-body-image-current");
 
 		if (_this.options.cloudApi && _this.options.cloudApi.saveBookForShare) {
-			_this.shareUBBTextInput.val("正在生成，请稍候。");
+			_this.shareHTMLTextInput.val("正在生成，请稍候。");
+			_this.shareUBBTextInput .val("正在生成，请稍候。");
 			_this.rebuildExportDhtmlXQ();
 
 			$.ajax({
@@ -39,7 +41,8 @@ fn.createShareGenerateButton = function(){
 				dataType: "json",
 				success: function(response){
 					if (response.code === 0) {
-						_this.shareUBBTextInput.val("[" + _this.options.ubbTagName + "]" + response.data.id + "[/" + _this.options.ubbTagName + "]");
+						_this.shareUBBTextInput .val("[" + _this.options.ubbTagName + "]" + response.data.id + "[/" + _this.options.ubbTagName + "]");
+						_this.shareHTMLTextInput.val('<script src="https://www.xiaxiangqi.com/static/js/share.js?id=' + response.data.id + '"></script>');
 					}
 				},
 				error: function(){
@@ -47,6 +50,25 @@ fn.createShareGenerateButton = function(){
 				}
 			});
 		}
+	});
+
+	return this;
+};
+
+// 创建 HTML 分享信息区域
+fn.createShareHTML = function(){
+	var _this = this;
+	this.shareHTMLTitle = $('<div class="vschess-tab-body-share-title">HTML 代码：</div>');
+	this.shareHTMLTitle.appendTo(this.shareArea);
+	this.shareHTMLTextBox = $('<div class="vschess-tab-body-share-text"></div>');
+	this.shareHTMLTextBox.appendTo(this.shareArea);
+	this.shareHTMLTextInput = $('<input class="vschess-tab-body-share-text-input" value="请点击“生成分享代码”按钮。" readonly="readonly" />');
+	this.shareHTMLTextInput.appendTo(this.shareHTMLTextBox);
+	this.shareHTMLTextCopy = $('<button type="button" class="vschess-button vschess-tab-body-share-text-copy">复 制</button>');
+	this.shareHTMLTextCopy.appendTo(this.shareHTMLTextBox);
+
+	this.shareHTMLTextCopy.bind(this.options.click, function(){
+		_this.copy(_this.shareHTMLTextInput.val(), function(){ _this.showMessage("HTML 代码复制成功，您可以直接网页中粘贴使用！"); });
 	});
 
 	return this;
