@@ -15,7 +15,7 @@
  * https://github.com/ded/qwery/
  *
  * 最后修改日期：北京时间 2020年4月5日
- * Sun, 05 Apr 2020 18:55:58 +0800
+ * Sun, 05 Apr 2020 19:01:47 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 05 Apr 2020 18:55:58 +0800",
+	timestamp: "Sun, 05 Apr 2020 19:01:47 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -9252,7 +9252,7 @@ vschess.load.prototype.createShareGenerateButton = function(){
 				success: function(response){
 					if (response.code === 0) {
 						_this.shareUBBTextInput .val("[" + _this.options.ubbTagName + "]" + response.data.id + "[/" + _this.options.ubbTagName + "]");
-						_this.shareHTMLTextInput.val('<script src="' + _this.options.HTMLShareJS + '?id=' + response.data.id + '"></script>');
+						_this.shareHTMLTextInput.val('<script src="' + _this.options.cloudApi.HTMLShareJS + '?id=' + response.data.id + '"></script>');
 					}
 				},
 				error: function(){
