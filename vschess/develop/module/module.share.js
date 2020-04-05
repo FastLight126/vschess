@@ -42,7 +42,7 @@ fn.createShareGenerateButton = function(){
 				success: function(response){
 					if (response.code === 0) {
 						_this.shareUBBTextInput .val("[" + _this.options.ubbTagName + "]" + response.data.id + "[/" + _this.options.ubbTagName + "]");
-						_this.shareHTMLTextInput.val('<script src="https://www.xiaxiangqi.com/static/js/share.js?id=' + response.data.id + '"></script>');
+						_this.shareHTMLTextInput.val('<script src="' + _this.options.HTMLShareJS + '?id=' + response.data.id + '"></script>');
 					}
 				},
 				error: function(){

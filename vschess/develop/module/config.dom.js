@@ -103,7 +103,8 @@ $.extend(vs.defaultOptions, {
 		startFen: "https://www.xiaxiangqi.com/api/cloud/startfen",
 		saveBook: "https://www.xiaxiangqi.com/api/cloud/savebook",
 		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save",
-		saveBookForWeixin: "https://www.xiaxiangqi.com/api/cloud/book/weixincode"
+		saveBookForWeixin: "https://www.xiaxiangqi.com/api/cloud/book/weixincode",
+		HTMLShareJS: "https://www.xiaxiangqi.com/static/js/share.js"
 	},
 
 	// 默认推荐起始局面列表
