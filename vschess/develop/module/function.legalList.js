@@ -102,7 +102,6 @@ vs.hasLegalMove = function(situation){
 		RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
 	}
 
-	var legalList = [];
 	var player = situation[0];
 	var enermy = 3 - player;
 

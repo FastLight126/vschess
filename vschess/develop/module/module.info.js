@@ -1,7 +1,7 @@
 // 创建棋局信息区域
 fn.createInfo = function(){
 	var _this = this;
-    this.infoTitle = $('<div class="vschess-tab-title vschess-tab-title-info">' + this.options.tagName.info + '</div>');
+  this.infoTitle = $('<div class="vschess-tab-title vschess-tab-title-info">' + this.options.tagName.info + '</div>');
 	this.infoArea  = $('<div class="vschess-tab-body vschess-tab-body-info"></div>');
 	this.tabArea.children(".vschess-tab-title-info, .vschess-tab-body-info").remove();
 	this.tabArea.append(this.infoTitle);

@@ -34,6 +34,11 @@ vs.isDataHasBook = function(chessData, parseType){
 		return true;
 	}
 
+	// PlayOK 格式
+	if (parseType === "auto" && ~chessData.indexOf("START{") || parseType === "playok") {
+		return true;
+	}
+
 	// 发现着法，尝试识别
 	if (RegExp.Chinese.test(chessData)) {
 		return true;
@@ -93,6 +98,11 @@ vs.dataToNode = function(chessData, parseType){
 		return vs.dataToNode_PGN(chessData);
 	}
 
+	// PlayOK 格式
+	if (parseType === "auto" && ~chessData.indexOf("START{") || parseType === "playok") {
+		return vs.dataToNode_PlayOK(chessData);
+	}
+
 	// 中国游戏中心 CCM 格式
 	if (parseType === "auto" && vs.cca(chessData) === 1 || parseType === "ccm") {
 		return vs.dataToNode_CCM(chessData);
@@ -137,7 +147,15 @@ vs.dataToNode = function(chessData, parseType){
 
 // 将鹏飞象棋 PFC 格式转换为棋谱节点树
 vs.dataToNode_PFC = function(chessData){
-	chessData  = chessData.replace("<!--", "").replace("-->", "").replace(/<\?xml(.*)\?>/, "");
+	if (~chessData.indexOf("[pfchessrecord]")) {
+		var start = chessData.indexOf("<!--");
+		var end   = chessData.indexOf("-->");
+		chessData = chessData.substring(start + 4, end).replace(/<\?xml(.*)\?>/, "");
+	}
+	else {
+		chessData = chessData.replace("<!--", "").replace("-->", "").replace(/<\?xml(.*)\?>/, "");
+	}
+
 	chessData  = chessData.replace(/<n/ig, "<div").replace(/\/>/ig, "></div>").replace(/<\/n>/ig, "</div>");
 	var node   = $($.trim(chessData));
 	var result = { fen: node.attr("m"), comment: node.attr("c") || "", next: [], defaultIndex: 0 };
@@ -274,6 +292,13 @@ vs.dataToNode_PGN = function(chessData){
 	var result = { fen: stepList.shift(), comment: commentListByStep[0] || "", next: [], defaultIndex: 0 };
 	stepList.length && makeBranch(stepList, result, 0, 1);
 	return result;
+};
+
+// 将 PlayOK 格式转换为棋谱节点树
+vs.dataToNode_PlayOK = function(chessData){
+	var start = chessData.indexOf("{");
+	var end   = chessData.indexOf("}");
+	return vs.dataToNode_PGN('[Game "Chinese Chess"][Format "WXF"]' + chessData.substring(start + 1, end));
 };
 
 // 将东萍象棋 DhtmlXQ 格式转换为棋谱节点树

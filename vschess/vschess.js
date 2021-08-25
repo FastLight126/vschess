@@ -2,7 +2,7 @@
  * 微思象棋播放器 V2.6.0
  * https://www.xiaxiangqi.com/
  *
- * Copyright @ 2009-2020 Margin.Top 版权所有
+ * Copyright @ 2009-2021 Margin.Top 版权所有
  * https://margin.top/
  *
  * 本程序遵循 LGPL 协议
@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2020年4月5日
- * Sun, 05 Apr 2020 19:01:47 +0800
+ * 最后修改日期：北京时间 2020年10月20日
+ * Tue, 20 Oct 2020 02:48:37 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.0",
 
 	// 版本时间戳
-	timestamp: "Sun, 05 Apr 2020 19:01:47 +0800",
+	timestamp: "Tue, 20 Oct 2020 02:48:37 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -2027,6 +2027,11 @@ vschess.dataToInfo = function(chessData, parseType){
 		return vschess.dataToInfo_PGN(chessData);
 	}
 
+	// PlayOK 格式
+	if (parseType === "auto" && ~chessData.indexOf("START{") || parseType === "playok") {
+		return vschess.dataToInfo_PlayOK(chessData);
+	}
+
 	// 未能识别的数据，返回空
 	return {};
 };
@@ -2091,6 +2096,40 @@ vschess.dataToInfo_PGN = function(chessData){
 	}
 
 	return resultA;
+};
+
+// 从 PlayOK 格式中抽取棋局信息
+vschess.dataToInfo_PlayOK = function(chessData){
+	var result = {};
+	var lines = chessData.split("\n");
+
+	for (var i = 0; i < lines.length; ++i) {
+		var line = $.trim(lines[i]);
+
+		if (line.indexOf("RED") === 0) {
+			var RED = line.split(";");
+			result.red = $.trim(RED[0].replace("RED", ""));
+			result.redrating = RED[1];
+		}
+		else if (line.indexOf("BLACK") === 0) {
+			var BLACK = line.split(";");
+			result.black = $.trim(BLACK[0].replace("BLACK", ""));
+			result.blackrating = BLACK[1];
+		}
+		else if (line.indexOf("RESULT") === 0) {
+			result.result = $.trim(line.replace("RESULT", ""));
+		}
+		else if (line.indexOf("DATE") === 0) {
+			result.date = $.trim(line.replace("DATE", "")).split(" ")[0];
+		}
+		else if (line.indexOf("BLACK") === 0) {
+			var EVENT = line.split(";");
+			result.event = $.trim(EVENT[0].replace("EVENT", ""));
+			result.group = EVENT[1];
+		}
+	}
+
+	return result;
 };
 
 // 从东萍象棋 DhtmlXQ 格式中抽取棋局信息
@@ -2164,6 +2203,11 @@ vschess.isDataHasBook = function(chessData, parseType){
 		return true;
 	}
 
+	// PlayOK 格式
+	if (parseType === "auto" && ~chessData.indexOf("START{") || parseType === "playok") {
+		return true;
+	}
+
 	// 发现着法，尝试识别
 	if (RegExp.Chinese.test(chessData)) {
 		return true;
@@ -2223,6 +2267,11 @@ vschess.dataToNode = function(chessData, parseType){
 		return vschess.dataToNode_PGN(chessData);
 	}
 
+	// PlayOK 格式
+	if (parseType === "auto" && ~chessData.indexOf("START{") || parseType === "playok") {
+		return vschess.dataToNode_PlayOK(chessData);
+	}
+
 	// 中国游戏中心 CCM 格式
 	if (parseType === "auto" && vschess.cca(chessData) === 1 || parseType === "ccm") {
 		return vschess.dataToNode_CCM(chessData);
@@ -2267,7 +2316,15 @@ vschess.dataToNode = function(chessData, parseType){
 
 // 将鹏飞象棋 PFC 格式转换为棋谱节点树
 vschess.dataToNode_PFC = function(chessData){
-	chessData  = chessData.replace("<!--", "").replace("-->", "").replace(/<\?xml(.*)\?>/, "");
+	if (~chessData.indexOf("[pfchessrecord]")) {
+		var start = chessData.indexOf("<!--");
+		var end   = chessData.indexOf("-->");
+		chessData = chessData.substring(start + 4, end).replace(/<\?xml(.*)\?>/, "");
+	}
+	else {
+		chessData = chessData.replace("<!--", "").replace("-->", "").replace(/<\?xml(.*)\?>/, "");
+	}
+
 	chessData  = chessData.replace(/<n/ig, "<div").replace(/\/>/ig, "></div>").replace(/<\/n>/ig, "</div>");
 	var node   = $($.trim(chessData));
 	var result = { fen: node.attr("m"), comment: node.attr("c") || "", next: [], defaultIndex: 0 };
@@ -2404,6 +2461,13 @@ vschess.dataToNode_PGN = function(chessData){
 	var result = { fen: stepList.shift(), comment: commentListByStep[0] || "", next: [], defaultIndex: 0 };
 	stepList.length && makeBranch(stepList, result, 0, 1);
 	return result;
+};
+
+// 将 PlayOK 格式转换为棋谱节点树
+vschess.dataToNode_PlayOK = function(chessData){
+	var start = chessData.indexOf("{");
+	var end   = chessData.indexOf("}");
+	return vschess.dataToNode_PGN('[Game "Chinese Chess"][Format "WXF"]' + chessData.substring(start + 1, end));
 };
 
 // 将东萍象棋 DhtmlXQ 格式转换为棋谱节点树
@@ -3504,7 +3568,6 @@ vschess.hasLegalMove = function(situation){
 		RegExp.FenShort.test(situation) && (situation = vschess.fenToSituation(situation));
 	}
 
-	var legalList = [];
 	var player = situation[0];
 	var enermy = 3 - player;
 
@@ -8096,7 +8159,7 @@ vschess.load.prototype.hideHelpArea = function(){
 // 创建棋局信息区域
 vschess.load.prototype.createInfo = function(){
 	var _this = this;
-    this.infoTitle = $('<div class="vschess-tab-title vschess-tab-title-info">' + this.options.tagName.info + '</div>');
+  this.infoTitle = $('<div class="vschess-tab-title vschess-tab-title-info">' + this.options.tagName.info + '</div>');
 	this.infoArea  = $('<div class="vschess-tab-body vschess-tab-body-info"></div>');
 	this.tabArea.children(".vschess-tab-title-info, .vschess-tab-body-info").remove();
 	this.tabArea.append(this.infoTitle);
@@ -9682,7 +9745,7 @@ vschess.load.prototype.toString = function(){
 
 // 程序转换为字符串信息
 vschess.toString = function(){
-	return "\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V" + vschess.version + " https://www.xiaxiangqi.com/vschess/ Copyright \u00a9 2009-2020 Margin.Top \u7248\u6743\u6240\u6709";
+	return "\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V" + vschess.version + " https://www.xiaxiangqi.com/vschess/ Copyright \u00a9 2009-2021 Margin.Top \u7248\u6743\u6240\u6709";
 };
 
 // 将 vschess 提升为全局变量，这样外部脚本就可以调用了
