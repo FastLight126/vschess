@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2020年10月20日
- * Tue, 20 Oct 2020 02:48:37 +0800
+ * 最后修改日期：北京时间 2021年8月29日
+ * Sun, 29 Aug 2021 04:56:21 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.0",
 
 	// 版本时间戳
-	timestamp: "Tue, 20 Oct 2020 02:48:37 +0800",
+	timestamp: "Sun, 29 Aug 2021 04:56:21 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -3187,6 +3187,11 @@ vschess.replaceNbsp = function(str){
 	return str.replace(new RegExp(vschess.fcc(160), "g"), " ");
 };
 
+// 长 Fen 串变短 Fen 串
+vschess.shortFen = function(fen){
+	return fen.split(' ')[0] + ' ' + fen.split(' ')[1];
+};
+
 // GBK 转 UTF-8 编码表
 vschess.GBK2UTF8Charset = (function(){
 	// 压缩编码表，负数表示无数据的间隔，例如-5表示连续5个值无数据
@@ -3462,6 +3467,88 @@ vschess.init = function(options){
 	}
 
 	return this;
+};
+
+// 查找连杀着法
+vschess.findKill = function (fen, deep) {
+  // small = !!small;
+  deep = parseInt(deep);
+  deep = deep ? deep : 9999;
+  var fenList = [fen];
+  var fenMarkCache = {};
+  var count = 0;
+  var result = fenMark(true, deep);
+  console.log('count', count);
+  return result;
+
+  function fenMark(self, deep) {
+    // 超出限定层数
+    if (deep < 0) {
+      return -31999;
+    }
+
+    var fen = fenList[fenList.length - 1];
+
+    // 计算过的局面
+    if (fenMarkCache[fen] !== undefined) {
+      return fenMarkCache[fen];
+    }
+
+    ++count;
+    var moveList = vschess.legalMoveList(fen);
+
+    if (self) {
+      // 被杀
+      if (moveList.length === 0) {
+        return -31999;
+      }
+    }
+    else {
+      // 将杀
+      if (moveList.length === 0) {
+        return 31999;
+      }
+
+      // 长打
+      if (fenList.indexOf(fen) < fenList.length - 1) {
+        return -31999;
+      }
+
+      // 非将军
+      if (!vschess.checkThreat(fen)) {
+        return -31999;
+      }
+    }
+
+    var min =  31999;
+    var max = -31999;
+
+    for (var i = 0; i < moveList.length; ++i) {
+      var nextFen = vschess.shortFen(vschess.fenMovePiece(fen, moveList[i]));
+      fenList.push(nextFen);
+      var nextMark = fenMark(!self, deep - 1);
+      fenList.pop();
+      // nextMark && (fenMarkCache[nextFen] = nextMark);
+      // fenMarkCache[nextFen] = nextMark;
+      var pushMark = nextMark > 0 ? nextMark - 1 : nextMark + 1;
+      pushMark > max && (max = pushMark);
+      pushMark < min && (min = pushMark);
+
+      // 有就退出，不继续搜索了，不管是不是最短路径
+      // 这样更快，但是路径可能会很长
+      // if (!small) {
+      //   if (self && nextMark > 0) {
+      //     break;
+      //   }
+  
+      //   if (!self && nextMark < 0) {
+      //     break;
+      //   }
+      // }
+    }
+
+    return self ? max : min;
+  }
 };
 
 // 将军检查器

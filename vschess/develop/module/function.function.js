@@ -465,3 +465,8 @@ vs.dateFormat = function(date){
 vs.replaceNbsp = function(str){
 	return str.replace(new RegExp(vs.fcc(160), "g"), " ");
 };
+
+// 长 Fen 串变短 Fen 串
+vs.shortFen = function(fen){
+	return fen.split(' ')[0] + ' ' + fen.split(' ')[1];
+};
