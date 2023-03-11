@@ -18,10 +18,10 @@ vs.findKill = function (situation, maxDeep = Infinity) {
 
     checkedFen[checkTask.key] = 1;
     var legalList = vs.legalList(checkTask.situation);
-    var nextList = legalList
+    var nextList = legalList;
 
     if (checkTask.player) {
-      nextList = []
+      nextList = [];
 
       for (var i = 0; i < legalList.length; ++i) {
         var movedSituation = checkTask.situation.slice(0);
@@ -114,7 +114,7 @@ vs.findKill = function (situation, maxDeep = Infinity) {
         // }
         if (parent) {
           // break main;
-          console.log(parent.deep)
+          console.log(parent.deep);
         }
       }
     }

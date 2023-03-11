@@ -8,7 +8,7 @@ vs.ZobristTable = (function () {
             zobristTable.length += table[i];
         }
         else {
-            var nums = []
+            var nums = [];
 
             for (var j = 0; j < 16; ++j) {
                 nums.push(parseInt(table[i][j], 16));

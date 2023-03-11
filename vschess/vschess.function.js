@@ -11,8 +11,8 @@
  * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
  * https://www.xqbase.com/
  *
- * 最后修改日期：北京时间 2022年12月26日
- * Mon, 26 Dec 2022 00:51:30 +0800
+ * 最后修改日期：北京时间 2023年3月11日
+ * Sat, 11 Mar 2023 20:01:37 +0800
  */
 
 // 主程序
@@ -21,7 +21,7 @@ var vschess = {
 	version: "2.6.0",
 
 	// 版本时间戳
-	timestamp: "Mon, 26 Dec 2022 00:51:30 +0800",
+	timestamp: "Sat, 11 Mar 2023 20:01:37 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1896,10 +1896,10 @@ vschess.findKill = function (situation, maxDeep = Infinity) {
 
     checkedFen[checkTask.key] = 1;
     var legalList = vschess.legalList(checkTask.situation);
-    var nextList = legalList
+    var nextList = legalList;
 
     if (checkTask.player) {
-      nextList = []
+      nextList = [];
 
       for (var i = 0; i < legalList.length; ++i) {
         var movedSituation = checkTask.situation.slice(0);
@@ -1992,7 +1992,7 @@ vschess.findKill = function (situation, maxDeep = Infinity) {
         // }
         if (parent) {
           // break main;
-          console.log(parent.deep)
+          console.log(parent.deep);
         }
       }
     }
@@ -4604,7 +4604,7 @@ vschess.ZobristTable = (function () {
             zobristTable.length += table[i];
         }
         else {
-            var nums = []
+            var nums = [];
 
             for (var j = 0; j < 16; ++j) {
                 nums.push(parseInt(table[i][j], 16));
