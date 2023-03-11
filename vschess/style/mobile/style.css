@@ -17,3 +17,6 @@
 .vschess-style-mobile .vschess-piece-k span { background-position:0px -825px; }
 .vschess-style-mobile .vschess-piece-c span { background-position:0px -900px; }
 .vschess-style-mobile .vschess-piece-p span { background-position:0px -975px; }
+.vschess-style-mobile .vschess-piece-X span { background: none; }
+.vschess-style-mobile .vschess-piece-X span:before { display: block; content: ''; position: absolute; top: 50%; left: 50%; width: 50px; height: 4px; margin: -2px 0 0 -25px; background-color: #f00; transform: rotate( 45deg); -webkit-transform: rotate( 45deg); -moz-transform: rotate( 45deg); -ms-transform: rotate( 45deg); -o-transform: rotate( 45deg); }
+.vschess-style-mobile .vschess-piece-X span:after  { display: block; content: ''; position: absolute; top: 50%; left: 50%; width: 50px; height: 4px; margin: -2px 0 0 -25px; background-color: #f00; transform: rotate(-45deg); -webkit-transform: rotate(-45deg); -moz-transform: rotate(-45deg); -ms-transform: rotate(-45deg); -o-transform: rotate(-45deg); }

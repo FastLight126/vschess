@@ -263,7 +263,7 @@ fn.createEditPlaceholder = function(){
 // 创建编辑局面区域棋子容器
 fn.createEditPieceArea = function(){
 	var _this = this;
-	var editPieceNameList = "RNBAKCP*rnbakcp";
+	var editPieceNameList = "RNBAKCP rnbakcp*";
 	this.editPieceArea = $('<div class="vschess-tab-body-edit-area"></div>');
 	this.editArea.append(this.editPieceArea);
 	this.editPieceList = {};
@@ -271,8 +271,12 @@ fn.createEditPieceArea = function(){
 	for (var i = 0; i < editPieceNameList.length; ++i) {
 		var k = editPieceNameList.charAt(i);
 
-		if (k === "*") {
+		if (k === " ") {
 			this.editPieceArea.append('<div class="vschess-piece-disabled"></div>');
+		}
+		else if (k === "*") {
+			this.editPieceList[k] = $('<div class="vschess-piece vschess-piece-X" draggable="true"><span></span></div>');
+			this.editPieceList[k].appendTo(this.editPieceArea);
 		}
 		else {
 			this.editPieceList[k] = $('<div class="vschess-piece vschess-piece-' + k + '" draggable="true"><span></span></div>');

@@ -1,81 +1,142 @@
 // 查找连杀着法
-vs.findKill = function (fen, deep) {
-  // small = !!small;
-  deep = parseInt(deep);
-  deep = deep ? deep : 9999;
-  var fenList = [fen];
-  var fenMarkCache = {};
-  var count = 0;
-  var result = fenMark(true, deep);
-  console.log('count', count);
-  return result;
+vs.findKill = function (situation, maxDeep = Infinity) {
+  if (typeof situation === "string") {
+    var RegExp = vs.RegExp();
+    RegExp.FenShort.test(situation) && (situation = vs.fenToSituation(situation));
+  }
 
-  function fenMark(self, deep) {
-    // 超出限定层数
-    if (deep < 0) {
-      return -31999;
+  var checkedFen = {};
+  var root = { situation: situation, parent: null, key: vs.ZobristKey(vs.situationToFen(situation)), next: [], player: 1, score: 0, deep: 1 };
+  var checkQueue = [root];
+
+  main: while (checkQueue.length) {
+    var checkTask = checkQueue.shift();
+
+    if (checkedFen[checkTask.key]) {
+      continue;
     }
 
-    var fen = fenList[fenList.length - 1];
+    checkedFen[checkTask.key] = 1;
+    var legalList = vs.legalList(checkTask.situation);
+    var nextList = legalList
 
-    // 计算过的局面
-    if (fenMarkCache[fen] !== undefined) {
-      return fenMarkCache[fen];
+    if (checkTask.player) {
+      nextList = []
+
+      for (var i = 0; i < legalList.length; ++i) {
+        var movedSituation = checkTask.situation.slice(0);
+        movedSituation[legalList[i][1]] = movedSituation[legalList[i][0]];
+        movedSituation[legalList[i][0]] = 1;
+        movedSituation[0] = 3 - movedSituation[0];
+        (vs.checkThreat(movedSituation) || !vs.hasLegalMove(movedSituation)) && nextList.push(legalList[i]);
+      }
     }
 
-    ++count;
-    var moveList = vs.legalMoveList(fen);
+    if (nextList.length) {
+      for (var i = 0; i < nextList.length; ++i) {
+        var movedSituation = checkTask.situation.slice(0);
+        movedSituation[nextList[i][1]] = movedSituation[nextList[i][0]];
+        movedSituation[nextList[i][0]] = 1;
+        movedSituation[0] = 3 - movedSituation[0];
+        var movedFen = vs.situationToFen(movedSituation);
+        var movedZobristKey = vs.ZobristKey(movedFen);
 
-    if (self) {
-      // 被杀
-      if (moveList.length === 0) {
-        return -31999;
+        if ((!checkTask.player || !checkedFen[movedZobristKey]) && checkTask.deep < maxDeep) {
+          var next = { situation: movedSituation, parent: checkTask, key: movedZobristKey, next: [], player: 1 - checkTask.player, score: 0, deep: checkTask.deep + 1 };
+          checkTask.next.push(next);
+          checkQueue.push(next);
+        }
       }
     }
     else {
-      // 将杀
-      if (moveList.length === 0) {
-        return 31999;
-      }
+      checkTask.score = checkTask.player ? -31999 : 31999;
+      var parent = checkTask.parent;
 
-      // 长打
-      if (fenList.indexOf(fen) < fenList.length - 1) {
-        return -31999;
-      }
+      while (parent) {
+        if (parent.player) {
+          var maxScore = -Infinity;
+          var hasZero = false;
+          var hasScore = false;
 
-      // 非将军
-      if (!vs.checkThreat(fen)) {
-        return -31999;
+          for (var i = 0; i < parent.next.length; ++i) {
+            var score = parent.next[i].score;
+
+            if (score > 0) {
+              maxScore = score;
+              hasScore = true;
+              break;
+            }
+            else if (score < 0) {
+              if (score > maxScore) {
+                maxScore = score;
+              }
+            }
+            else {
+              hasZero = true;
+            }
+          }
+
+          if (hasScore || !hasZero) {
+            parent.score = maxScore + (maxScore > 0 ? -1 : 1);
+            parent = parent.parent;
+          }
+          else {
+            parent = null;
+          }
+        }
+        else {
+          var minScore = Infinity;
+          var hasZero = false;
+
+          for (var i = 0; i < parent.next.length; ++i) {
+            var score = parent.next[i].score;
+
+            if (score === 0) {
+              hasZero = true;
+              break;
+            }
+
+            if (score < minScore) {
+              minScore = score;
+            }
+          }
+
+          if (hasZero) {
+            parent = null;
+          } else {
+            parent.score = minScore + (minScore > 0 ? -1 : 1);
+            parent = parent.parent;
+          }
+        }
+
+        // if (parent && !parent.parent) {
+        //   break main;
+        // }
+        if (parent) {
+          // break main;
+          console.log(parent.deep)
+        }
       }
     }
+  }
 
-    var min =  31999;
-    var max = -31999;
+  var maxIndex = -1;
 
-    for (var i = 0; i < moveList.length; ++i) {
-      var nextFen = vs.shortFen(vs.fenMovePiece(fen, moveList[i]));
-      fenList.push(nextFen);
-      var nextMark = fenMark(!self, deep - 1);
-      fenList.pop();
-      // nextMark && (fenMarkCache[nextFen] = nextMark);
-      // fenMarkCache[nextFen] = nextMark;
-      var pushMark = nextMark > 0 ? nextMark - 1 : nextMark + 1;
-      pushMark > max && (max = pushMark);
-      pushMark < min && (min = pushMark);
+  for (var i = 0; i < root.next.length; ++i) {
+    var currentScore = maxIndex === -1 ? -Infinity : root.next[maxIndex].score;
 
-      // 有就退出，不继续搜索了，不管是不是最短路径
-      // 这样更快，但是路径可能会很长
-      // if (!small) {
-      //   if (self && nextMark > 0) {
-      //     break;
-      //   }
-  
-      //   if (!self && nextMark < 0) {
-      //     break;
-      //   }
-      // }
+    if (root.next[i].score > 0 && root.next[i].score > currentScore) {
+      maxIndex = i;
+      break;
     }
+  }
 
-    return self ? max : min;
+  if (maxIndex === -1) {
+    return null;
+  }
+  else {
+    var fenA = vs.situationToFen(root.situation);
+    var fenB = vs.situationToFen(root.next[maxIndex].situation);
+    return { move: vs.compareFen(fenA, fenB, 'node'), score: root.next[maxIndex].score };
   }
 };
