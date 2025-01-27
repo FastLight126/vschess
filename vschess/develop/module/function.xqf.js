@@ -53,7 +53,7 @@ vs.XQF_Key = function(header) {
         RMK: 0
     };
 
-    if (header.Version < 16) {
+    if (header.Version <= 10) {
         return key;
     }
 

@@ -1,0 +1,441 @@
+﻿<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta name="viewport" content="width=750px,target-densitydpi=device-dpi,user-scalable=no;" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            font-family: "微软雅黑", "宋体", Tahoma, "Arial Unicode MS";
+            font-size: 10pt;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        img {
+            border-top-style: none;
+            border-right-style: none;
+            border-bottom-style: none;
+            border-left-style: none;
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        .wrap {
+            width: 760px;
+            position: relative;
+            margin-left: 20px;
+        }
+
+        .vschess {
+            margin: 0 auto;
+        }
+
+        .chart {
+            width: 100%;
+            height: 300px;
+            display: none;
+        }
+
+        .auto-move {
+            margin: 20px;
+            text-align: center;
+        }
+
+        .kjk {
+            margin: 20px;
+            text-align: center;
+        }
+
+        .auto-move input {
+            position: relative;
+            top: 3px;
+        }
+
+        .stop {
+            position: relative;
+            top: 3px;
+        }
+
+        .small {
+            position: relative;
+            top: 3px;
+        }
+
+        .small-next {
+            position: relative;
+            top: 3px;
+        }
+
+        .pv {
+            margin-top: 20px;
+            line-height: 20px;
+        }
+    </style>
+    <!--<script type="text/javascript" src="jquery/jquery.js"></script>-->
+    <script type="text/javascript" src="jquery/zepto.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <title>中国象棋</title>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="vschess"></div>
+        <div class="chart" id="chart"></div>
+        <div class="auto-move">
+            <span style="color:red;">AI执红</span> <input type="checkbox" id="red" />
+            AI执黑 <input type="checkbox" id="black" />
+            计算时间 <input type="number" id="time" value="10000" />
+            <button class="stop">立即出招</button>
+            <button class="small">当前局面开启小窗口</button>
+            <button class="small-next">小窗口下一步</button>
+        </div>
+        <div class="kjk">
+            当前Key：<span class="key" id="key1"></span>
+            镜像Key：<span class="key" id="key2"></span>
+            <select id="table">
+                <option value="kjk_huanshen_a">幻神A</option>
+                <option value="kjk_huanshen_b">幻神B</option>
+                <option value="kjk_duzui_a">独醉A</option>
+                <option value="kjk_duzui_b">独醉B</option>
+                <option value="kjk_duzui_big_a">独醉大A</option>
+                <option value="kjk_duzui_big_b">独醉大B</option>
+                <option value="kjk_jingxiang_a">静香A</option>
+                <option value="kjk_jingxiang_b">静香B</option>
+                <option value="kjk_daxian_a">大仙A</option>
+                <option value="kjk_daxian_b">大仙B</option>
+                <option value="kjk_yitian_a">倚天A</option>
+                <option value="kjk_yitian_b">倚天B</option>
+                <option value="kjk_duanhun_a">断魂A</option>
+                <option value="kjk_duanhun_b">断魂B</option>
+            </select>
+            <button class="view-kjk" id="view-kjk">查看开局库</button>
+        </div>
+        <div id="pv"></div>
+    </div>
+    <div>
+        <div></div>
+        <div></div>
+        <div>
+            <div></div>
+            <div>
+                <div>
+                    <div>
+                        <!-- <script type="text/javascript" src="vschess/vschess.js"></script> -->
+                        <script type="text/javascript" src="http://cchess.online/vschess3/vschess/vschess.js"></script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div></div>
+    </div>
+    <script type="text/javascript">
+        /*
+        var scoreChart = echarts.init(document.getElementById("chart"));
+        var scoreList = [0];
+        
+        var chartOption = {
+            xAxis: { type: "category" },
+            yAxis: { type: "value" },
+            series: [{ data: scoreList, type: "line", smooth: true }]
+        };
+        
+        scoreChart.setOption(chartOption);
+        */
+        var clientID = vschess.guid();
+
+        try { console.time("棋盘加载时间"); } catch (e) { }
+
+        var chess = new vschess.load(".vschess", {
+            loadFinish: function () {
+                try { console.timeEnd("棋盘加载时间"); } catch (e) { }
+                console.log(vschess.ZobristKey(chess.getCurrentFen()));
+
+                /*
+                console.time("A");
+        
+                for (var i = 0; i < 10000; ++i) {
+                    vschess.ZobristKey("rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1");
+                }
+        
+                console.timeEnd("A");
+                */
+
+                //var smallButton = $('<button type="button" class="vschess-button vschess-tab-body-comment-small-button">打开小窗口</button>');
+                //chess.commentArea.append(smallButton);
+            },
+            afterAnimate: function () {
+                if (AutoRed && this.getCurrentPlayer() === 1 || AutoBlack && this.getCurrentPlayer() === 2) {
+                    console.time("time");
+                    wait();
+                }
+            }
+        });
+
+        /*
+         * $.ajax({
+            url: "dhtmlxq.txt",
+            success: function(chessData){
+                try { console.time("棋盘加载时间"); } catch (e) {}
+        
+                chess = new vschess.load(".vschess", {
+                    chessData: chessData,
+                    loadFinish: function(){
+                        try { console.timeEnd("棋盘加载时间"); } catch (e) {}
+                    },
+                    afterAnimate: function () {
+                        if (AutoRed && this.getCurrentPlayer() === 1 || AutoBlack && this.getCurrentPlayer() === 2) {
+                            wait();
+                        }
+                    }
+                });
+            }
+        });
+        */
+
+        var AutoRed = false;
+        var AutoBlack = false;
+        var running = false;
+
+        $("#red").bind("click", function () {
+            AutoRed = this.checked;
+
+            if (!running && AutoRed && chess.getCurrentPlayer() === 1) {
+                running = true;
+                wait();
+            }
+        });
+
+        $("#black").bind("click", function () {
+            AutoBlack = this.checked;
+
+            if (!running && AutoBlack && chess.getCurrentPlayer() === 2) {
+                running = true;
+                wait();
+            }
+        });
+
+        var prevPV = "";
+        var currentHash = "";
+        var waitStop = false;
+
+        $(".stop").bind("click", function () {
+            if (!currentHash || waitStop) {
+                return false;
+            }
+
+            waitStop = true;
+
+            $.ajax({
+                url: "https://www.xiaxiangqi.com/api/cloud/stop",
+                data: { hash: currentHash },
+                type: "post",
+                success: function (response) {
+                    waitStop = false;
+                }
+            });
+        });
+
+        function wait() {
+            var move = chess.getUCCIList();
+            var fen = move.shift();
+            var ban = chess.getRepeatLongThreatMove();
+            var time = vschess.limit($("#time").val(), 1000, 30000, 10000);
+
+            $.ajax({
+                url: "https://debug.xiaxiangqi.com/api/cloud/bestmove",
+                data: { fen: fen, move: move.join(" "), ban: ban.join(" "), time: time, debug: 1, vip: 1, client: clientID, use_kjk: 1 },
+                type: "post",
+                success: function (response) {
+                    var pvList = [];
+                    var pvData = response.data.pv.split(" ");
+
+                    for (var i = 0; i < pvData.length; ++i) {
+                        pvData[i] && pvList.push(pvData[i]);
+                    }
+
+                    if (pvList.length) {
+                        var fen = chess.getCurrentFen();
+                        var listA = vschess.nodeList2moveList(pvList, fen);
+
+                        pvList.shift();
+                        var listB = vschess.nodeList2moveList(pvList, fen);
+
+                        var list = listB.length > listA.length ? listB : listA;
+
+                        list.shift();
+
+                        if (response.data.pv !== prevPV) {
+                            prevPV = response.data.pv;
+                            var $score = $('<div class="pv"></div>').text("score: " + response.data.score + " depth: " + response.data.depth + " seldepth: " + response.data.seldepth);
+                            var $pv = $('<div class="pv"></div>').text(list.join(" "));
+                            $("#pv").prepend($pv);
+                            $("#pv").prepend($score);
+                        }
+                    }
+
+                    if (response.code === 0) {
+                        console.timeEnd("time");
+
+                        /*
+                        var currentScore = response.data.score;
+                        chess.getCurrentPlayer() === 2 && (currentScore = -currentScore);
+                        scoreList.push(response.data.from === "start" ? 0 : currentScore);
+                        scoreChart.setOption(chartOption);
+                        */
+
+                        prevPV = "";
+                        currentHash = "";
+                        $("#pv").empty();
+                        chess.hideGuessArrow();
+
+                        chess.movePieceByNode(response.data.best, 200, function () {
+                            chess.editCommentByStep("from: " + response.data.from + "\nscore: " + response.data.score + "\ndepth: " + response.data.depth + "\nseldepth: " + response.data.seldepth);
+                        });
+
+                        running = false;
+                    }
+                    else if (response.code === 1001 || response.code === 1002) {
+                        currentHash = response.data.hash;
+
+                        if (chess.getCurrentPlayer() === 1) {
+                            chess.showGuessArrow("r", response.data.guess_1);
+                            chess.showGuessArrow("b", response.data.guess_2);
+                        }
+                        else {
+                            chess.showGuessArrow("b", response.data.guess_1);
+                            chess.showGuessArrow("r", response.data.guess_2);
+                        }
+
+                        //setTimeout(function(){ wait(); }, 100);
+                        wait();
+                    }
+                },
+                fail: function () {
+                    wait();
+                }
+            });
+        }
+
+        var small;
+
+        $(".small").on("click", function () {
+            var x = (window.screenX || window.screenLeft || 0) + (screen.width - 780) / 2;
+            var y = (window.screenY || window.screenTop || 0) + (screen.height - 545) / 2;
+            small = window.open("", "small", "width=780,height=545,top=" + y + ",left=" + x + ",status=no,menubar=no,toolbar=no");
+            small.document.open();
+            small.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">');
+            small.document.write('<html xmlns="http://www.w3.org/1999/xhtml"><head><meta charset="utf-8" /><title>编辑标签</title>');
+            small.document.write('<style>');
+            small.document.write('* { margin:0; padding:0; }');
+            small.document.write('.vschess { margin:10px auto 0; }');
+            small.document.write('</style>');
+            small.document.write('</head><body><div class="vschess"></div></body>');
+            small.document.write('<script type="text/javascript" src="jquery/zepto.js"></' + 'script>');
+            small.document.write('<script type="text/javascript" src="vschess/vschess.js.php"></' + 'script>');
+            small.document.write('<script>');
+            small.document.write('var chess = new vschess.load(".vschess", { chessData: "' + chess.getCurrentFen() + '" });');
+            small.document.write('</' + 'script>');
+            small.document.write('</html>');
+            small.document.close();
+        });
+
+        $(".small-next").on("click", function () {
+            small.chess.animateToNext();
+        });
+
+        // 备用
+        /*
+        function popup(url, winName, xOffset, yOffset) {
+            var x = (window.screenX || window.screenLeft || 0) + (xOffset || 0);
+            var y = (window.screenY || window.screenTop || 0) + (yOffset || 0);
+            return window.open(url, winName, 'top=' +y+ ',left=' +x))
+        }
+        */
+        $("#view-kjk").on("click", function () {
+            var fen = chess.getCurrentFen();
+            $("#key1").text(vschess.ZobristKey(fen));
+            $("#key2").text(vschess.ZobristKey(vschess.turnFen(fen)));
+
+            $.ajax({
+                url: "https://www.xiaxiangqi.com/api/kjk/get",
+                type: "post",
+                data: { fen: fen, table: $("#table").val(), username: "admin", password: "111111" },
+                dataType: "json",
+                success: function (response) {
+                    for (var i = 0; i < response.data.length; ++i) {
+                        chess.addNodeByMoveName(response.data[i].move);
+                    }
+
+                    chess.rebuildSituation().refreshMoveListNode().refreshMoveSelectListNode().animateToNext();
+                }
+            });
+        });
+
+        var GLOBAL_INFO_KEY = "tQKR,i.>&,(<4]vNy2P(HN~-sat9CneE";
+
+        function encryption(data) {
+            if (!data) {
+                return "";
+            }
+
+            var ascii = [];
+            var k = 0;
+
+            for (var i = 0; i < data.length; ++i) {
+                ascii.push(data.charCodeAt(i) ^ GLOBAL_INFO_KEY.charCodeAt(k++));
+                k >= GLOBAL_INFO_KEY.length && (k = 0);
+            }
+
+            var buffer = Buffer.from(ascii);
+            return buffer.toString("base64");
+        }
+
+        function decryption(data) {
+            if (!data) {
+                return "";
+            }
+
+            var buffer = Buffer.from(data, "base64");
+            var ascii = [];
+            var k = 0;
+
+            for (var i = 0; i < buffer.length; ++i) {
+                ascii.push(String.fromCharCode(buffer[i] ^ GLOBAL_INFO_KEY.charCodeAt(k++)));
+                k >= GLOBAL_INFO_KEY.length && (k = 0);
+            }
+
+            return ascii.join("");
+        }
+
+        var time = 0;
+        var maxt = 0;
+
+        function cjk() {
+            //console.time("cjk");
+            time = new Date().getTime();
+
+            $.ajax({
+                url: "http://finish.xiaxiangqi.com/query",
+                data: "data=D3MoPUgMDAQWAApaUTNUdFsHOxsUYUdxXFgoFnoySnwofnIOA1F%2BYgkVdBMNAVl9MgdwX2hjXgBTUVQIYRM%3D",
+                type: "post",
+                success: function (response) {
+                    //console.timeEnd("cjk");
+                    var t = new Date().getTime() - time;
+                    maxt = t > maxt ? t : maxt;
+                    console.log(maxt);
+                    cjk();
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

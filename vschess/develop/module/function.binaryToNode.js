@@ -41,7 +41,7 @@ vs.binaryToNode_XQF = function(buffer) {
     var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
 
     for (var i = 0; i < 32; ++i) {
-        if (XQF_Header.Version > 11) {
+        if (XQF_Header.Version > 10) {
             var pieceKey = XQF_Key.XYp + i + 1 & 31;
             var piecePos = XQF_Header.QiziXY[i] - XQF_Key.XYp & 255;
         }
@@ -62,7 +62,7 @@ vs.binaryToNode_XQF = function(buffer) {
     fen += (XQF_Header.PlayStepNo >> 1) || 1;
 
     // 解密数据
-    if (XQF_Header.Version > 15) {
+    if (XQF_Header.Version > 10) {
         var decode = [];
 
         for (var i = 1024; i < buffer.length; ++i) {

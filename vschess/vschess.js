@@ -1,8 +1,8 @@
 /*
- * 微思象棋播放器 V2.6.1
+ * 微思象棋播放器 V2.6.2
  * https://www.xiaxiangqi.com/
  *
- * Copyright @ 2009-2023 Margin.Top 版权所有
+ * Copyright @ 2009-2025 Margin.Top 版权所有
  * https://margin.top/
  *
  * 本程序遵循 LGPL 协议
@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2023年3月11日
- * Sat, 11 Mar 2023 20:01:37 +0800
+ * 最后修改日期：北京时间 2025年1月27日
+ * Mon, 27 Jan 2025 23:18:43 +0800
  */
 
 (function(){
@@ -1175,10 +1175,10 @@ $.parseJSON = function(json){
 // 主程序
 var vschess = {
 	// 当前版本号
-	version: "2.6.1",
+	version: "2.6.2",
 
 	// 版本时间戳
-	timestamp: "Sat, 11 Mar 2023 20:01:37 +0800",
+	timestamp: "Mon, 27 Jan 2025 23:18:43 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1883,7 +1883,7 @@ vschess.binaryToNode_XQF = function(buffer) {
     var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
 
     for (var i = 0; i < 32; ++i) {
-        if (XQF_Header.Version > 11) {
+        if (XQF_Header.Version > 10) {
             var pieceKey = XQF_Key.XYp + i + 1 & 31;
             var piecePos = XQF_Header.QiziXY[i] - XQF_Key.XYp & 255;
         }
@@ -1904,7 +1904,7 @@ vschess.binaryToNode_XQF = function(buffer) {
     fen += (XQF_Header.PlayStepNo >> 1) || 1;
 
     // 解密数据
-    if (XQF_Header.Version > 15) {
+    if (XQF_Header.Version > 10) {
         var decode = [];
 
         for (var i = 1024; i < buffer.length; ++i) {
@@ -6360,7 +6360,7 @@ vschess.XQF_Key = function(header) {
         RMK: 0
     };
 
-    if (header.Version < 16) {
+    if (header.Version <= 10) {
         return key;
     }
 
@@ -9895,7 +9895,7 @@ vschess.load.prototype.toString = function(){
 
 // 程序转换为字符串信息
 vschess.toString = function(){
-	return "\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V" + vschess.version + " https://www.xiaxiangqi.com/vschess/ Copyright \u00a9 2009-2023 Margin.Top \u7248\u6743\u6240\u6709";
+	return "\u5fae\u601d\u8c61\u68cb\u64ad\u653e\u5668 V" + vschess.version + " https://www.xiaxiangqi.com/vschess/ Copyright \u00a9 2009-2025 Margin.Top \u7248\u6743\u6240\u6709";
 };
 
 // 将 vschess 提升为全局变量，这样外部脚本就可以调用了
