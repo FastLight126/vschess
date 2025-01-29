@@ -15,7 +15,7 @@
  * https://github.com/ded/qwery/
  *
  * 最后修改日期：北京时间 2025年1月29日
- * Wed, 29 Jan 2025 15:01:08 +0800
+ * Wed, 29 Jan 2025 15:06:45 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.3",
 
 	// 版本时间戳
-	timestamp: "Wed, 29 Jan 2025 15:01:08 +0800",
+	timestamp: "Wed, 29 Jan 2025 15:06:45 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -6457,8 +6457,6 @@ vschess.XQF_writeHeader = function(buffer, Version, KeyMask, KeyOr, KeySum, KeyX
             buffer[start + 1 + i] = GBKArray[i];
         }
     };
-
-    console.log(chessInfo);
 
     fillText( 80, chessInfo.title     || "", 128);
     fillText(208, chessInfo.event     || "",  64);

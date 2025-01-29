@@ -97,6 +97,8 @@
 .vschess-layout-mobile .vschess-tab-body-export-textarea { position:absolute; width:356px; height:762px; top:52px; left:  0px; font-size:24px; z-index:0; padding:0 8px; background-color:transparent; border:none; outline:none; resize:none; overflow-x:hidden; overflow-y:auto; line-height:40px; }
 .vschess-layout-mobile .vschess-tab-body-export-textarea-format-TextBoard { font-family:SimSun; font-size:18px; line-height:18px; text-align:center; }
 .vschess-layout-mobile .vschess-tab-body-export-current  { display:block; }
+.vschess-layout-mobile .vschess-tab-body-export-copy.vschess-tab-body-export-only-save { display:none; }
+.vschess-layout-mobile .vschess-tab-body-export-download.vschess-tab-body-export-only-save { width:148px; left:220px; letter-spacing:10px; text-indent:5px; }
 .vschess-layout-mobile .vschess-tab-body-config-list { position:absolute; width:356px; height:814px; top:0px; left:0px; padding:0 8px; overflow-y:auto; }
 .vschess-layout-mobile .vschess-tab-body-config-item { position:relative; width:356px; height: 40px; line-height:40px; font-size:24px; margin-top:8px; text-indent:4px; }
 .vschess-layout-mobile .vschess-tab-body-config-item:first-child { margin-top:4px; }
