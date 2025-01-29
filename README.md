@@ -17,8 +17,9 @@ vschess/layout 布局（皮肤）文件夹<br />
 vschess/sound 音效文件夹<br />
 vschess/style 棋子、棋盘文件夹<br />
 
-# 相关网站
-象棋巫师：https://www.xqbase.com 程序内部使用了由象棋巫师提供的 ECCO 开局分类编号算法，在此表示衷心感谢。
+# 鸣谢（排名不分先后）
+象棋巫师 https://www.xqbase.com 提供了 ECCO 开局分类编号算法。
+Vincentzyx https://github.com/Vincentzyx 提供了导出象棋演播室 XQF 格式的参考代码。
 
 # 纯真IP库
 我正在使用免费的纯真社区版IP库。纯真(CZ88.NET)自2005年起一直为广大社区用户提供社区版IP地址库，只要获得纯真的授权就能免费使用，并不断获取后续更新的版本。

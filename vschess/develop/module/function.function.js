@@ -9,6 +9,11 @@ vs.limit = function(num, min, max, defaultValue){
 	return +num;
 };
 
+// 获得一个指定范围的随机数
+vs.rand = function(min, max){
+    return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
 // 正则表达式，使用时都是新的，避免出现 lastIndex 冲突
 vs.RegExp = function(){
 	return {

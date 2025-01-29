@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Shanghai');
 header('Content-type: application/x-javascript; charset=utf-8');
 include 'develop/class.JavaScriptPacker.php';
 
-$version = '2.6.2';
+$version = '2.6.3';
 $developList = scandir('develop/module');
 unset($developList[0], $developList[1]);
 
@@ -40,8 +40,8 @@ $jsBegin = '
  * 本程序遵循 LGPL 协议
  * https://www.gnu.org/licenses/lgpl.html
  *
- * ECCO 开局分类编号系统算法由象棋百科全书友情提供，在此表示衷心感谢。
- * https://www.xqbase.com/
+ * 鸣谢列表敬请移步 GitHub 项目主页，排名不分先后
+ * https://github.com/FastLight126/vschess
  *
  * 最后修改日期：北京时间 '. date('Y年n月j日', $edittime). '
  * '. date('r', $edittime). '

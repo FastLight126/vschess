@@ -86,6 +86,9 @@ fn.createExportList = function(){
 			else if (exportFormat === "PengFei") {
 				_this.localDownload(fileName + ".pfc", UTF8Text, { type: "application/octet-stream" });
 			}
+			else if (exportFormat === "XQF") {
+				_this.localDownload(fileName + ".xqf", vs.nodeToBinary_XQF(_this.node, _this.chessInfo, _this.getTurnForMove()), { type: "application/octet-stream" });
+			}
 			else {
 				_this.localDownload(fileName + ".txt", UTF8Text, { type: "text/plain" });
 			}
@@ -110,16 +113,18 @@ fn.setExportFormat = function(format, force){
 	this.exportTextarea.removeClass().addClass("vschess-tab-body-export-textarea vschess-tab-body-export-textarea-format-" + format);
 	this.exportFilename.val(this.chessInfo.title || "中国象棋");
 
+	this.exportGenerate.removeClass("vschess-tab-body-export-current");
+	this.exportCopy    .removeClass("vschess-tab-body-export-current vschess-tab-body-export-only-save");
+	this.exportDownload.removeClass("vschess-tab-body-export-current vschess-tab-body-export-only-save");
+
 	if (format === "TextBoard") {
-		this.exportGenerate.removeClass("vschess-tab-body-export-current");
-		this.exportCopy    .   addClass("vschess-tab-body-export-current");
-		this.exportDownload.   addClass("vschess-tab-body-export-current");
+		this.exportCopy    .addClass("vschess-tab-body-export-current");
+		this.exportDownload.addClass("vschess-tab-body-export-current");
 		this.exportTextarea.val(vs.textBoard(this.getCurrentFen(), this.options));
 	}
     else if (format === "ChessDB") {
-        this.exportGenerate.removeClass("vschess-tab-body-export-current");
-        this.exportCopy    .   addClass("vschess-tab-body-export-current");
-        this.exportDownload.   addClass("vschess-tab-body-export-current");
+        this.exportCopy    .addClass("vschess-tab-body-export-current");
+        this.exportDownload.addClass("vschess-tab-body-export-current");
 
         // 从开局开始
         var list = this.getMoveList();
@@ -133,17 +138,20 @@ fn.setExportFormat = function(format, force){
 
         this.exportTextarea.val("从开局开始：\n" + longData + "\n\n从吃子开始：\n" + shortData);
     }
-	else if ((format === "PengFei" || format === "DhtmlXQ") && !force && this.getNodeLength() >= vs.bigBookCritical) {
+	else if (~["PengFei", "DhtmlXQ"].indexOf(format) && !force && this.getNodeLength() >= vs.bigBookCritical) {
 		// 大棋谱需要加参数才同步
-		this.exportCopy    .removeClass("vschess-tab-body-export-current");
-		this.exportDownload.removeClass("vschess-tab-body-export-current");
-		this.exportGenerate.   addClass("vschess-tab-body-export-current");
+		this.exportGenerate.addClass("vschess-tab-body-export-current");
 		this.exportTextarea.val("请点击“生成”按钮生成棋谱。");
     }
+	else if (format === "XQF") {
+		// XQF 格式是二进制棋谱，隐藏复制按钮
+		this.exportCopy    .addClass("vschess-tab-body-export-current vschess-tab-body-export-only-save");
+		this.exportDownload.addClass("vschess-tab-body-export-current vschess-tab-body-export-only-save");
+		this.exportTextarea.val("请点击上面的“保存”按钮保存棋谱。");
+	}
 	else {
-		this.exportGenerate.removeClass("vschess-tab-body-export-current");
-		this.exportCopy    .   addClass("vschess-tab-body-export-current");
-		this.exportDownload.   addClass("vschess-tab-body-export-current");
+		this.exportCopy    .addClass("vschess-tab-body-export-current");
+		this.exportDownload.addClass("vschess-tab-body-export-current");
 		this.exportTextarea.val(this.exportData[this.getExportFormat() + (this.getTurnForMove() ? "M" : "")]);
 	}
 
