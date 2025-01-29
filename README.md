@@ -18,7 +18,7 @@ vschess/sound 音效文件夹<br />
 vschess/style 棋子、棋盘文件夹<br />
 
 # 鸣谢（排名不分先后）
-象棋巫师 https://www.xqbase.com 提供了 ECCO 开局分类编号算法。
+象棋巫师 https://www.xqbase.com 提供了 ECCO 开局分类编号算法。<br />
 Vincentzyx https://github.com/Vincentzyx 提供了导出象棋演播室 XQF 格式的参考代码。
 
 # 纯真IP库
