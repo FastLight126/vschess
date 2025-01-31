@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2025年1月29日
- * Wed, 29 Jan 2025 15:06:45 +0800
+ * 最后修改日期：北京时间 2025年1月31日
+ * Fri, 31 Jan 2025 19:54:25 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.3",
 
 	// 版本时间戳
-	timestamp: "Wed, 29 Jan 2025 15:06:45 +0800",
+	timestamp: "Fri, 31 Jan 2025 19:54:25 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -6524,7 +6524,7 @@ vschess.XQF_processNode = function(node, haveNextSibling, moves, key, mirror){
     if (hasComment) {
         // 处理注释
         var commentBytes = vschess.iconv2GBK(node.comment);
-        var commentLen = commentBytes.length + key.RMK
+        var commentLen = commentBytes.length + key.RMK;
 
         // 添加注释长度
         moveData.push(commentLen       & 255);

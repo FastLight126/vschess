@@ -211,7 +211,7 @@ vs.XQF_processNode = function(node, haveNextSibling, moves, key, mirror){
     if (hasComment) {
         // 处理注释
         var commentBytes = vs.iconv2GBK(node.comment);
-        var commentLen = commentBytes.length + key.RMK
+        var commentLen = commentBytes.length + key.RMK;
 
         // 添加注释长度
         moveData.push(commentLen       & 255);
