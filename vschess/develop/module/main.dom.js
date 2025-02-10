@@ -27,7 +27,7 @@ $.extend(vschess, {
 	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece afterStartFen afterAnimate".split(" "),
 
 	// 二进制棋谱扩展名列表
-	binaryExt: "ccm xqf".split(" "),
+	binaryExt: "ccm xqf cbr".split(" "),
 
 	// 全局样式是否已加载完成的标记
 	globalLoaded: false,

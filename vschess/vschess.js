@@ -1,5 +1,5 @@
 /*
- * 微思象棋播放器 V2.6.3
+ * 微思象棋播放器 V2.6.4
  * https://www.xiaxiangqi.com/
  *
  * Copyright @ 2009-2025 Margin.Top 版权所有
@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2025年1月31日
- * Fri, 31 Jan 2025 19:54:25 +0800
+ * 最后修改日期：北京时间 2025年2月11日
+ * Tue, 11 Feb 2025 03:03:19 +0800
  */
 
 (function(){
@@ -1175,10 +1175,10 @@ $.parseJSON = function(json){
 // 主程序
 var vschess = {
 	// 当前版本号
-	version: "2.6.3",
+	version: "2.6.4",
 
 	// 版本时间戳
-	timestamp: "Fri, 31 Jan 2025 19:54:25 +0800",
+	timestamp: "Tue, 11 Feb 2025 03:03:19 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1511,7 +1511,7 @@ $.extend(vschess, {
 	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece afterStartFen afterAnimate".split(" "),
 
 	// 二进制棋谱扩展名列表
-	binaryExt: "ccm xqf".split(" "),
+	binaryExt: "ccm xqf cbr".split(" "),
 
 	// 全局样式是否已加载完成的标记
 	globalLoaded: false,
@@ -1807,38 +1807,17 @@ vschess.binaryToInfo = function(buffer, parseType){
     parseType = parseType || "auto";
 
     // 象棋演播室 XQF 格式
-	if (parseType === "auto" && buffer[0] === 88 && buffer[1] === 81 || parseType === "xqf") {
+	if (parseType === "auto" && vschess.subhex(buffer, 0, 2) === '5851' || parseType === "xqf") {
 		return vschess.binaryToInfo_XQF(buffer);
+	}
+
+    // 象棋桥 CBR 格式
+	if (parseType === "auto" && vschess.subhex(buffer, 0, 16) === '4343427269646765205265636f726400' || parseType === "cbr") {
+		return vschess.binaryToInfo_CBR(buffer);
 	}
 
     // 未能识别的数据，返回空
 	return {};
-};
-
-// 从象棋演播室 XQF 格式中抽取棋局信息
-vschess.binaryToInfo_XQF = function(buffer){
-    var header = vschess.XQF_Header(buffer), r = {};
-
-    header.Title    .length && (r.title     = vschess.GBK2UTF8(header.Title    ));
-    header.MatchName.length && (r.event     = vschess.GBK2UTF8(header.MatchName));
-    header.MatchTime.length && (r.date      = vschess.GBK2UTF8(header.MatchTime));
-    header.MatchAddr.length && (r.place     = vschess.GBK2UTF8(header.MatchAddr));
-    header.RedPlayer.length && (r.redname   = vschess.GBK2UTF8(header.RedPlayer));
-    header.BlkPlayer.length && (r.blackname = vschess.GBK2UTF8(header.BlkPlayer));
-    header.RedTime  .length && (r.redtime   = vschess.GBK2UTF8(header.RedTime  ));
-    header.BlkTime  .length && (r.blacktime = vschess.GBK2UTF8(header.BlkTime  ));
-    header.RMKWriter.length && (r.remark    = vschess.GBK2UTF8(header.RMKWriter));
-    header.Author   .length && (r.author    = vschess.GBK2UTF8(header.Author   ));
-    header.TimeRule .length && (r.timerule  = vschess.GBK2UTF8(header.TimeRule ));
-
-    switch (header.PlayResult) {
-        case  1: r.result = "1-0"; break;
-        case  2: r.result = "0-1"; break;
-        case  3: r.result = "1/2-1/2"; break;
-        default: r.result = "*"; break;
-    }
-
-    return r;
 };
 
 // 将二进制原始数据转换为棋谱节点树，这里的变招都是节点，变招的切换即为默认节点的切换
@@ -1846,12 +1825,17 @@ vschess.binaryToNode = function(buffer, parseType){
     parseType = parseType || "auto";
 
     // 象棋演播室 XQF 格式
-	if (parseType === "auto" && buffer[0] === 88 && buffer[1] === 81 || parseType === "xqf") {
+	if (parseType === "auto" && vschess.subhex(buffer, 0, 2) === '5851' || parseType === "xqf") {
 		return vschess.binaryToNode_XQF(buffer);
 	}
 
+    // 象棋桥 CBR 格式
+	if (parseType === "auto" && vschess.subhex(buffer, 0, 16) === '4343427269646765205265636f726400' || parseType === "cbr") {
+		return vschess.binaryToNode_CBR(buffer);
+	}
+
     // 中国游戏中心 CCM 格式
-	if (parseType === "auto" && buffer[0] === 1 || parseType === "ccm") {
+	if (parseType === "auto" && vschess.subhex(buffer, 0, 1) === '01' || parseType === "ccm") {
 		return vschess.binaryToNode_CCM(buffer);
 	}
 
@@ -1874,131 +1858,103 @@ vschess.binaryToNode_CCM = function(buffer) {
 	return vschess.stepListToNode(vschess.defaultFen, stepList);
 };
 
-// 将象棋演播室 XQF 格式转换为棋谱节点树
-vschess.binaryToNode_XQF = function(buffer) {
-    var XQF_Header = vschess.XQF_Header(buffer    );
-    var XQF_Key    = vschess.XQF_Key   (XQF_Header);
-
-    // 计算开局 Fen 串
-    var fenArray = new Array(91).join("*").split("");
-    var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
-
-    for (var i = 0; i < 32; ++i) {
-        if (XQF_Header.Version > 10) {
-            var pieceKey = XQF_Key.XYp + i + 1 & 31;
-            var piecePos = XQF_Header.QiziXY[i] - XQF_Key.XYp & 255;
-        }
-        else {
-            var pieceKey = i;
-            var piecePos = XQF_Header.QiziXY[i];
-        }
-
-        if (piecePos < 90) {
-            var X = Math.floor(piecePos / 10);
-            var Y = 9 - piecePos % 10;
-            fenArray[Y * 9 + X] = fenPiece.charAt(pieceKey);
-        }
+// 从象棋桥 CBR 格式中抽取棋局信息
+vschess.binaryToInfo_CBR = function(buffer){
+    // 不识别的版本
+    if (buffer[19] === 0 || buffer[19] > 2) {
+        return {};
     }
 
-    fen  = vschess.arrayToFen(fenArray);
-    fen +=  XQF_Header.WhoPlay === 1 ? " b - - 0 " : " w - - 0 ";
-    fen += (XQF_Header.PlayStepNo >> 1) || 1;
+    // 读取字符串
+    var readStr = function(start, length){
+        var str = [];
 
-    // 解密数据
-    if (XQF_Header.Version > 10) {
-        var decode = [];
+        for (var i = 0; i < length; i += 2) {
+            if (buffer[start + i] === 0 && buffer[start + i + 1] === 0) {
+                break;
+            }
 
-        for (var i = 1024; i < buffer.length; ++i) {
-            decode.push(buffer[i] - XQF_Key.F32[i % 32] & 255);
-        }
-    }
-    else {
-        var decode = Array.from(buffer.slice(1024));
-    }
-
-    // 求和函数
-    var K = function(start, length){
-        var array = decode.slice(start, start + length), sum = 0;
-
-        for (var i = 0; i < array.length; ++i) {
-            sum += array[i] * Math.pow(256, i);
+            str.push(vschess.fcc(buffer[start + i + 1] << 8 | buffer[start + i]));
         }
 
-        return sum;
+        return str.join('');
     };
 
+    // V1 版本
+    if (buffer[19] === 1) {
+
+    }
+    // V2 版本
+    else {
+        return {
+            // 各个软件的字段都不一样
+            // 下面注释掉的是象棋桥专属字段，标准 PGN 格式不含这些字段
+            // 如需启用这些字段，需要扩展 vschess.info.name 字段列表，并且处理好信息修改界面
+            // scriptfile : readStr(  52, 128),
+            // path       : readStr( 308, 256),
+            // from       : readStr( 564,  64),
+            // eventclass : readStr( 628,  64),
+            // timerule   : readStr(1012,  64),
+            // remarkmail : readStr(1716,  64),
+            // authormail : readStr(1844,  64),
+            // createtime : readStr(1908,  40),
+            // modifytime : readStr(1972,  40),
+            // type       : buffer[2040],
+            // property   : readStr(2044,  32),
+            // finishtype : readStr(2080,  32),
+            title      : readStr( 180, 128),
+            event      : readStr( 692,  64),
+            round      : readStr( 756,  64),
+            group      : readStr( 820,  32),
+            table      : readStr( 852,  32),
+            date       : readStr( 884,  64),
+            place      : readStr( 948,  64),
+            red        : readStr(1076,  64),
+            redteam    : readStr(1140,  64),
+            redtime    : readStr(1204,  64),
+            redrating  : readStr(1268,  32),
+            black      : readStr(1300,  64),
+            blackteam  : readStr(1364,  64),
+            blacktime  : readStr(1428,  64),
+            blackrating: readStr(1492,  32),
+            judge      : readStr(1524,  64),
+            record     : readStr(1588,  64),
+            remark     : readStr(1652,  64),
+            author     : readStr(1780,  64),
+            result     : ["*", "1-0", "0-1", "1/2-1/2"][buffer[2076] > 3 ? 0 : buffer[2076]]
+        };
+    }
+};
+
+// 将象棋桥 CBR 格式转换为棋谱节点树
+vschess.binaryToNode_CBR = function(buffer) {
+    // 不识别的版本
+    if (buffer[19] === 0 || buffer[19] > 2) {
+        return { fen: vschess.defaultFen, comment: '', next: [], defaultIndex: 0 };
+    }
+
+    var board = [];
+
+    // 默认 V2 版本
+    var fenStartPos = 2120;
+    var playerPos = 2112;
+    var roundPos = 2116;
+
+    // V1 版本
+    if (buffer[19] === 1) {
+        fenStartPos = 1880;
+        playerPos = 1872;
+        roundPos = 1876;
+    }
+
+    for (var i = 0; i < 90; ++i) {
+        board.push(vschess.n2f[buffer[i + fenStartPos]]);
+    }
+
+    var fen = vschess.arrayToFen(board) + " " + (buffer[playerPos] === 2 ? "b" : "w") + " - - 0 " + (buffer[roundPos + 1] << 8 | buffer[roundPos]);
+
     // 生成节点树
-    var node = { fen: fen, comment: comment, next: [], defaultIndex: 0 };
-    var parent = node, changeNode = [];
-
-    for (var pos = 0; pos < decode.length;) {
-        // 着法计算
-        var Pf = decode[pos    ] - 24 - XQF_Key.XYf & 255;
-        var Pt = decode[pos + 1] - 32 - XQF_Key.XYt & 255;
-        var Xf = Math.floor(Pf / 10);
-        var Xt = Math.floor(Pt / 10);
-        var Yf = 9 - Pf % 10;
-        var Yt = 9 - Pt % 10;
-
-        // 注释提取
-        if (XQF_Header.Version > 10) {
-            if (decode[pos + 2] & 32) {
-                var commentLen = K(pos + 4, 4) - XQF_Key.RMK;
-                var comment = vschess.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
-                var nextOffset = commentLen + 8;
-            }
-            else {
-                var comment = "";
-                var nextOffset = 4;
-            }
-        }
-        else {
-            var commentLen = K(pos + 4, 4);
-            var comment = vschess.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
-            var nextOffset = commentLen + 8;
-        }
-
-        // 生成节点树
-        if (pos) {
-            var move = vschess.b2i[Yf * 9 + Xf] + vschess.b2i[Yt * 9 + Xt];
-            var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
-            parent.next.push(step);
-
-            var hasNext   = decode[pos + 2] & (XQF_Header.Version > 10 ? 128 : 240);
-            var hasChange = decode[pos + 2] & (XQF_Header.Version > 10 ?  64 :  15);
-
-            if (hasNext) {
-                hasChange && changeNode.push(parent);
-                parent = step;
-            }
-            else {
-                hasChange || (parent = changeNode.pop());
-            }
-        }
-        else {
-            node.comment = comment;
-        }
-
-        // 指针往前走
-        pos += nextOffset;
-    }
-
-    // 增强兼容性
-    if (node.next.length) {
-        var fenArray = vschess.fenToArray(node.fen);
-        var fenSplit = node.fen.split(" ");
-        var position = vschess.i2b[node.next[0].move.substring(0, 2)];
-
-        if (fenArray[position].toUpperCase() === fenArray[position]) {
-            fenSplit[1] = "w";
-        }
-        else {
-            fenSplit[1] = "b";
-        }
-
-        node.fen = fenSplit.join(" ");
-    }
-
+    var node = { fen: fen, comment: '', next: [], defaultIndex: 0 };
     return node;
 };
 
@@ -3196,6 +3152,18 @@ vschess.replaceNbsp = function(str){
 // 长 Fen 串变短 Fen 串
 vschess.shortFen = function(fen){
 	return fen.split(' ')[0] + ' ' + fen.split(' ')[1];
+};
+
+// 从二进制原始数据中抽取指定字节 16 进制字符串
+vschess.subhex = function(hex, start, length){
+    var str = [];
+
+    for (var i = 0; i < length; ++i) {
+        hex[start + i] < 16 && str.push('0');
+        str.push(hex[start + i].toString(16).toLowerCase());
+    }
+
+    return str.join('');
 };
 
 // GBK 转 UTF-8 编码表
@@ -6387,6 +6355,160 @@ vschess.XQF_Key = function(header) {
     }
 
     return key;
+};
+
+// 从象棋演播室 XQF 格式中抽取棋局信息
+vschess.binaryToInfo_XQF = function(buffer){
+    var header = vschess.XQF_Header(buffer), r = {};
+
+    header.Title    .length && (r.title     = vschess.GBK2UTF8(header.Title    ));
+    header.MatchName.length && (r.event     = vschess.GBK2UTF8(header.MatchName));
+    header.MatchTime.length && (r.date      = vschess.GBK2UTF8(header.MatchTime));
+    header.MatchAddr.length && (r.place     = vschess.GBK2UTF8(header.MatchAddr));
+    header.RedPlayer.length && (r.redname   = vschess.GBK2UTF8(header.RedPlayer));
+    header.BlkPlayer.length && (r.blackname = vschess.GBK2UTF8(header.BlkPlayer));
+    header.RedTime  .length && (r.redtime   = vschess.GBK2UTF8(header.RedTime  ));
+    header.BlkTime  .length && (r.blacktime = vschess.GBK2UTF8(header.BlkTime  ));
+    header.RMKWriter.length && (r.remark    = vschess.GBK2UTF8(header.RMKWriter));
+    header.Author   .length && (r.author    = vschess.GBK2UTF8(header.Author   ));
+    header.TimeRule .length && (r.timerule  = vschess.GBK2UTF8(header.TimeRule ));
+
+    switch (header.PlayResult) {
+        case  1: r.result = "1-0"; break;
+        case  2: r.result = "0-1"; break;
+        case  3: r.result = "1/2-1/2"; break;
+        default: r.result = "*"; break;
+    }
+
+    return r;
+};
+
+// 将象棋演播室 XQF 格式转换为棋谱节点树
+vschess.binaryToNode_XQF = function(buffer) {
+    var XQF_Header = vschess.XQF_Header(buffer    );
+    var XQF_Key    = vschess.XQF_Key   (XQF_Header);
+
+    // 计算开局 Fen 串
+    var fenArray = new Array(91).join("*").split("");
+    var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp";
+
+    for (var i = 0; i < 32; ++i) {
+        if (XQF_Header.Version > 10) {
+            var pieceKey = XQF_Key.XYp + i + 1 & 31;
+            var piecePos = XQF_Header.QiziXY[i] - XQF_Key.XYp & 255;
+        }
+        else {
+            var pieceKey = i;
+            var piecePos = XQF_Header.QiziXY[i];
+        }
+
+        if (piecePos < 90) {
+            var X = Math.floor(piecePos / 10);
+            var Y = 9 - piecePos % 10;
+            fenArray[Y * 9 + X] = fenPiece.charAt(pieceKey);
+        }
+    }
+
+    fen  = vschess.arrayToFen(fenArray);
+    fen +=  XQF_Header.WhoPlay === 1 ? " b - - 0 " : " w - - 0 ";
+    fen += (XQF_Header.PlayStepNo >> 1) || 1;
+
+    // 解密数据
+    if (XQF_Header.Version > 10) {
+        var decode = [];
+
+        for (var i = 1024; i < buffer.length; ++i) {
+            decode.push(buffer[i] - XQF_Key.F32[i % 32] & 255);
+        }
+    }
+    else {
+        var decode = Array.from(buffer.slice(1024));
+    }
+
+    // 求和函数
+    var K = function(start, length){
+        var array = decode.slice(start, start + length), sum = 0;
+
+        for (var i = 0; i < array.length; ++i) {
+            sum += array[i] * Math.pow(256, i);
+        }
+
+        return sum;
+    };
+
+    // 生成节点树
+    var node = { fen: fen, comment: comment, next: [], defaultIndex: 0 };
+    var parent = node, changeNode = [];
+
+    for (var pos = 0; pos < decode.length;) {
+        // 着法计算
+        var Pf = decode[pos    ] - 24 - XQF_Key.XYf & 255;
+        var Pt = decode[pos + 1] - 32 - XQF_Key.XYt & 255;
+        var Xf = Math.floor(Pf / 10);
+        var Xt = Math.floor(Pt / 10);
+        var Yf = 9 - Pf % 10;
+        var Yt = 9 - Pt % 10;
+
+        // 注释提取
+        if (XQF_Header.Version > 10) {
+            if (decode[pos + 2] & 32) {
+                var commentLen = K(pos + 4, 4) - XQF_Key.RMK;
+                var comment = vschess.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
+                var nextOffset = commentLen + 8;
+            }
+            else {
+                var comment = "";
+                var nextOffset = 4;
+            }
+        }
+        else {
+            var commentLen = K(pos + 4, 4);
+            var comment = vschess.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
+            var nextOffset = commentLen + 8;
+        }
+
+        // 生成节点树
+        if (pos) {
+            var move = vschess.b2i[Yf * 9 + Xf] + vschess.b2i[Yt * 9 + Xt];
+            var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
+            parent.next.push(step);
+
+            var hasNext   = decode[pos + 2] & (XQF_Header.Version > 10 ? 128 : 240);
+            var hasChange = decode[pos + 2] & (XQF_Header.Version > 10 ?  64 :  15);
+
+            if (hasNext) {
+                hasChange && changeNode.push(parent);
+                parent = step;
+            }
+            else {
+                hasChange || (parent = changeNode.pop());
+            }
+        }
+        else {
+            node.comment = comment;
+        }
+
+        // 指针往前走
+        pos += nextOffset;
+    }
+
+    // 增强兼容性
+    if (node.next.length) {
+        var fenArray = vschess.fenToArray(node.fen);
+        var fenSplit = node.fen.split(" ");
+        var position = vschess.i2b[node.next[0].move.substring(0, 2)];
+
+        if (fenArray[position].toUpperCase() === fenArray[position]) {
+            fenSplit[1] = "w";
+        }
+        else {
+            fenSplit[1] = "b";
+        }
+
+        node.fen = fenSplit.join(" ");
+    }
+
+    return node;
 };
 
 // 象棋演播室 XQF 格式写入头部信息的函数

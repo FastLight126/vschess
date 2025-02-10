@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Shanghai');
 header('Content-type: application/x-javascript; charset=utf-8');
 include 'develop/class.JavaScriptPacker.php';
 
-$version = '2.6.3';
+$version = '2.6.4';
 $developList = scandir('develop/module');
 unset($developList[0], $developList[1]);
 
@@ -99,7 +99,7 @@ function mb_str_split($str) {
 	$length = strlen($str);
 
 	while ($index < $length) {
-		$arr[] = ord($str{$index}) > 127 ? $str{$index++}. $str{$index++}. $str{$index++} : $str{$index++};
+		$arr[] = ord($str[$index]) > 127 ? $str[$index++]. $str[$index++]. $str[$index++] : $str[$index++];
 	}
 
 	return $arr;

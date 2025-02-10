@@ -475,3 +475,15 @@ vs.replaceNbsp = function(str){
 vs.shortFen = function(fen){
 	return fen.split(' ')[0] + ' ' + fen.split(' ')[1];
 };
+
+// 从二进制原始数据中抽取指定字节 16 进制字符串
+vs.subhex = function(hex, start, length){
+    var str = [];
+
+    for (var i = 0; i < length; ++i) {
+        hex[start + i] < 16 && str.push('0');
+        str.push(hex[start + i].toString(16).toLowerCase());
+    }
+
+    return str.join('');
+};
