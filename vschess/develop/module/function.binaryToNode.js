@@ -3,17 +3,17 @@ vs.binaryToNode = function(buffer, parseType){
     parseType = parseType || "auto";
 
     // 象棋演播室 XQF 格式
-	if (parseType === "auto" && vs.subhex(buffer, 0, 2) === '5851' || parseType === "xqf") {
+	if (parseType === "auto" && vs.subhex(buffer, 0, 2) === "5851" || parseType === "xqf") {
 		return vs.binaryToNode_XQF(buffer);
 	}
 
     // 象棋桥 CBR 格式
-	if (parseType === "auto" && vs.subhex(buffer, 0, 16) === '4343427269646765205265636f726400' || parseType === "cbr") {
+	if (parseType === "auto" && vs.subhex(buffer, 0, 16) === "4343427269646765205265636f726400" || parseType === "cbr") {
 		return vs.binaryToNode_CBR(buffer);
 	}
 
     // 中国游戏中心 CCM 格式
-	if (parseType === "auto" && vs.subhex(buffer, 0, 1) === '01' || parseType === "ccm") {
+	if (parseType === "auto" && vs.subhex(buffer, 0, 1) === "01" || parseType === "ccm") {
 		return vs.binaryToNode_CCM(buffer);
 	}
 

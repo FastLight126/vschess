@@ -156,58 +156,52 @@ vs.binaryToNode_XQF = function(buffer) {
     };
 
     // 生成节点树
-    var node = { fen: fen, comment: comment, next: [], defaultIndex: 0 };
+    var node = { fen: fen, comment: "", next: [], defaultIndex: 0 };
     var parent = node, changeNode = [];
 
     for (var pos = 0; pos < decode.length;) {
-        // 着法计算
-        var Pf = decode[pos    ] - 24 - XQF_Key.XYf & 255;
-        var Pt = decode[pos + 1] - 32 - XQF_Key.XYt & 255;
-        var Xf = Math.floor(Pf / 10);
-        var Xt = Math.floor(Pt / 10);
-        var Yf = 9 - Pf % 10;
-        var Yt = 9 - Pt % 10;
+        var comment = "";
+        var commentLen = 0;
+        var nextOffset = 4;
 
         // 注释提取
         if (XQF_Header.Version > 10) {
             if (decode[pos + 2] & 32) {
-                var commentLen = K(pos + 4, 4) - XQF_Key.RMK;
-                var comment = vs.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
-                var nextOffset = commentLen + 8;
-            }
-            else {
-                var comment = "";
-                var nextOffset = 4;
+                commentLen = K(pos + 4, 4) - XQF_Key.RMK;
+                comment = vs.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
+                nextOffset = commentLen + 8;
             }
         }
         else {
-            var commentLen = K(pos + 4, 4);
-            var comment = vs.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
-            var nextOffset = commentLen + 8;
+            commentLen = K(pos + 4, 4);
+            comment = vs.GBK2UTF8(decode.slice(pos + 8, pos + 8 + commentLen));
+            nextOffset = commentLen + 8;
+        }
+
+        if (!pos) {
+            node.comment = comment;
+            pos += nextOffset;
+            continue;
         }
 
         // 生成节点树
-        if (pos) {
-            var move = vs.b2i[Yf * 9 + Xf] + vs.b2i[Yt * 9 + Xt];
-            var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
-            parent.next.push(step);
+        var Pf = decode[pos    ] - 24 - XQF_Key.XYf & 255;
+        var Pt = decode[pos + 1] - 32 - XQF_Key.XYt & 255;
+        var move = vs.fcc(Pf / 10 + 97) + Pf % 10 + vs.fcc(Pt / 10 + 97) + Pt % 10;
+        var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
+        parent.next.push(step);
 
-            var hasNext   = decode[pos + 2] & (XQF_Header.Version > 10 ? 128 : 240);
-            var hasChange = decode[pos + 2] & (XQF_Header.Version > 10 ?  64 :  15);
+        var hasNext   = decode[pos + 2] & (XQF_Header.Version > 10 ? 128 : 240);
+        var hasChange = decode[pos + 2] & (XQF_Header.Version > 10 ?  64 :  15);
 
-            if (hasNext) {
-                hasChange && changeNode.push(parent);
-                parent = step;
-            }
-            else {
-                hasChange || (parent = changeNode.pop());
-            }
+        if (hasNext) {
+            hasChange && changeNode.push(parent);
+            parent = step;
         }
         else {
-            node.comment = comment;
+            hasChange || (parent = changeNode.pop());
         }
 
-        // 指针往前走
         pos += nextOffset;
     }
 
