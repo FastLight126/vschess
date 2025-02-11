@@ -15,7 +15,13 @@ $module[] = 'main.dom.js';
 $module[] = 'config.js';
 $module[] = 'config.dom.js';
 
+$exclude[] = 'function.iconv.v1.js'; // 默认打包新版iconv，旧版留在目录中不打包
+
 foreach ($developList as $filename) {
+	if (in_array($filename, $exclude, true)) {
+		continue;
+	}
+
 	if (strpos($filename, 'function.') !== false) {
 		$module[] = $filename;
 	}

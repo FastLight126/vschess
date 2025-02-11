@@ -10,7 +10,7 @@ dhtmlxq.html ajax加载方式demo<br />
 dhtmlxq.txt ajax加载方式用到的棋谱文件<br />
 vschess/develop/module 所有模块文件都在这里<br />
 vschess/vschess.js.php 自动打包程序，可以将 module 下的所有模块自动打包生成最终的 js 文件<br />
-vschess/vschess.js 自动打包生成完整程序<br />
+vschess/vschess.js 自动打包生成的完整程序<br />
 vschess/vschess.min.js 自动打包生成的完整程序压缩版（因为集成了GBK转码UTF-8映射表，所以并没有压缩多少）<br />
 vschess/global.css 全局css<br />
 vschess/layout 布局（皮肤）文件夹<br />

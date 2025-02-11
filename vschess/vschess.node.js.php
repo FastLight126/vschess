@@ -11,10 +11,14 @@ unset($developList[0], $developList[1]);
 $module[] = 'main.js';
 $module[] = 'config.js';
 
-$exclude = ['function.load.js', 'function.IE6.js', 'function.init.js'];
+$exclude = ['function.load.js', 'function.IE6.js', 'function.init.js', 'function.iconv.v1.js'];
 
 foreach ($developList as $filename) {
-	if (strpos($filename, 'function.') !== false && !in_array($filename, $exclude, true)) {
+	if (in_array($filename, $exclude, true)) {
+		continue;
+	}
+
+	if (strpos($filename, 'function.') !== false) {
 		$module[] = $filename;
 	}
 }
