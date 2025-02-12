@@ -25,7 +25,8 @@ fn.showTab = function(tabName){
     this.mobileCloseTab.removeClass("vschess-mobile-close-tab-current");
     this.mobileShowMoveList.removeClass("vschess-mobile-show-move-list-current");
     this.moveSelectList.removeClass("vschess-move-select-list-current");
-    this.changeSelectTitle.removeClass("vschess-change-select-title-current");
+    this.changeSelectTitleStart.removeClass("vschess-change-select-title-start-current");
+    this.changeSelectTitleMoves.removeClass("vschess-change-select-title-moves-current");
     this.changeSelectList.removeClass("vschess-change-select-list-current");
     //this.formatBar.removeClass("vschess-format-bar-current");
 
@@ -35,8 +36,19 @@ fn.showTab = function(tabName){
     else if (tabName === "move") {
         this.mobileShowMoveList.addClass("vschess-mobile-show-move-list-current");
         this.moveSelectList.addClass("vschess-move-select-list-current");
-        this.changeSelectTitle.addClass("vschess-change-select-title-current");
         this.changeSelectList.addClass("vschess-change-select-list-current");
+        this.changeSelectTitleStart.addClass("vschess-change-select-title-start-current");
+        this.changeSelectTitleMoves.addClass("vschess-change-select-title-moves-current");
+
+        if (this.getCurrentStep() <= 0) {
+            this.changeSelectTitleStart.removeClass("vschess-change-select-title-current-moves").addClass("vschess-change-select-title-current-start");
+            this.changeSelectTitleMoves.removeClass("vschess-change-select-title-current-moves").addClass("vschess-change-select-title-current-start");
+        }
+        else {
+            this.changeSelectTitleStart.removeClass("vschess-change-select-title-current-start").addClass("vschess-change-select-title-current-moves");
+            this.changeSelectTitleMoves.removeClass("vschess-change-select-title-current-start").addClass("vschess-change-select-title-current-moves");
+        }
+
         //this.formatBar.addClass("vschess-format-bar-current");
     }
     else {

@@ -30,10 +30,19 @@ vs.RegExp = function(){
 
 		// 自动识别棋谱格式正则表达式
 		QQNew	: /(?:[0-9]+) 32 (?:[0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) 0 (?:[0-9]+) 0/g,
-		ShiJia	: /Moves(.*)Ends(.*)CommentsEnd/g,
 
 		// 特殊兵东萍表示法
-		Pawn	: /[\+\-2][1-9][\+\-\.][1-9]/
+		Pawn	: /[\+\-2][1-9][\+\-\.][1-9]/,
+
+		// 象棋世家格式可能涉及二进制，不使用正则表达式
+		ShiJia: {
+			test: function(str){
+				var moves       = str.indexOf("Moves"      );
+				var ends        = str.indexOf("Ends"       );
+				var commentsEnd = str.indexOf("CommentsEnd");
+				return ~moves && ~ends && ~commentsEnd && moves < ends && ends < commentsEnd;
+			},
+		}
 	};
 };
 
@@ -486,4 +495,15 @@ vs.subhex = function(hex, start, length){
     }
 
     return str.join("");
+};
+
+// 检查数据中是否存在非打印字符
+vs.checkNonPrintable = function(array){
+	for (var i = 0; i < array.length; ++i) {
+		if (array[i] < 32 || array[i] === 127) {
+			return true;
+		}
+	}
+
+	return false;
 };

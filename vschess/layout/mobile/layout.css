@@ -34,10 +34,11 @@
 .vschess-layout-mobile .vschess-move-select-node-normal { background-color:#c5a070; color:#fff; }
 .vschess-layout-mobile .vschess-move-select-node-threat { background-color:#f76161; color:#fff; }
 .vschess-layout-mobile .vschess-move-select-node-lose   { background-color:#d8d8d8; }
-.vschess-layout-mobile .vschess-change-select-title     { position:absolute; width:372px; height: 58px; font-size:24px; z-index:10; top:624px; left:323px; display:none; line-height:50px; background:url(title-bg.png) repeat-x 0px -60px; color:#887d6f; text-align:center; border-top:4px solid #fff; border-bottom:4px solid #fff; border-left:4px solid #fff; box-sizing:border-box; }
-.vschess-layout-mobile .vschess-change-select-list      { position:absolute; width:368px; height:240px; font-size:24px; z-index:10; top:682px; left:323px; display:none; padding-left:4px; background-color:#fff; overflow-x:hidden; overflow-y:scroll; }
-.vschess-layout-mobile .vschess-change-select-node      { position:relative; width:350px; height: 40px; font-size:24px; float:left; }
-.vschess-layout-mobile .vschess-change-select-node-text { position:relative; width: 64px; height: 40px; font-size:24px; float:left; display:block; line-height:40px; cursor:pointer; color:#000; text-align:center; overflow:hidden; }
+.vschess-layout-mobile .vschess-change-select-title-start { position:absolute; width:372px; height: 58px; font-size:24px; z-index:10; top:624px; left:323px; display:none; line-height:50px; background:url(title-bg.png) repeat-x 0px -60px; color:#887d6f; text-align:center; border-top:4px solid #fff; border-bottom:4px solid #fff; border-left:4px solid #fff; box-sizing:border-box; }
+.vschess-layout-mobile .vschess-change-select-title-moves { position:absolute; width:372px; height: 58px; font-size:24px; z-index:10; top:624px; left:323px; display:none; line-height:50px; background:url(title-bg.png) repeat-x 0px -60px; color:#887d6f; text-align:center; border-top:4px solid #fff; border-bottom:4px solid #fff; border-left:4px solid #fff; box-sizing:border-box; }
+.vschess-layout-mobile .vschess-change-select-list        { position:absolute; width:368px; height:240px; font-size:24px; z-index:10; top:682px; left:323px; display:none; padding-left:4px; background-color:#fff; overflow-x:hidden; overflow-y:scroll; }
+.vschess-layout-mobile .vschess-change-select-node        { position:relative; width:350px; height: 40px; font-size:24px; float:left; }
+.vschess-layout-mobile .vschess-change-select-node-text   { position:relative; width: 64px; height: 40px; font-size:24px; float:left; display:block; line-height:40px; cursor:pointer; color:#000; text-align:center; overflow:hidden; }
 .vschess-layout-mobile .vschess-change-select-node-move { text-align:left; text-indent:8px; width:136px; }
 .vschess-layout-mobile .vschess-change-select-node-current { background-color:#887d6f; }
 .vschess-layout-mobile .vschess-change-select-node-current .vschess-change-select-node-text { color:#fff; }
@@ -45,7 +46,10 @@
 .vschess-layout-mobile .vschess-change-select-node-last    .vschess-change-select-node-down { color:#ccc; cursor:default; }
 .vschess-layout-mobile .vschess-change-select-node-current-and-first .vschess-change-select-node-up   { color:#9b9286; }
 .vschess-layout-mobile .vschess-change-select-node-current-and-last  .vschess-change-select-node-down { color:#9b9286; }
-.vschess-layout-mobile .vschess-change-select-title.vschess-change-select-title-current { display:block; }
+.vschess-layout-mobile .vschess-change-select-title-start.vschess-change-select-title-start-current { display:block; }
+.vschess-layout-mobile .vschess-change-select-title-moves.vschess-change-select-title-moves-current { display:block; }
+.vschess-layout-mobile .vschess-change-select-title-start.vschess-change-select-title-current-moves { display:none; }
+.vschess-layout-mobile .vschess-change-select-title-moves.vschess-change-select-title-current-start { display:none; }
 .vschess-layout-mobile .vschess-change-select-list.vschess-change-select-list-current   { display:block; }
 .vschess-layout-mobile .vschess-change-select-tips { position:relative; width:350px; height:40px; line-height:40px; font-size:24px; text-indent:8px; color:#000; float:left; overflow:hidden; }
 .vschess-layout-mobile .vschess-change-select-tips a       { color:#000; font-size:24px; }

@@ -33,10 +33,11 @@
 .vschess-layout-default .vschess-move-select-node-normal { background-color:#c5a070; color:#fff; }
 .vschess-layout-default .vschess-move-select-node-threat { background-color:#f76161; color:#fff; }
 .vschess-layout-default .vschess-move-select-node-lose   { background-color:#d8d8d8; }
-.vschess-layout-default .vschess-change-select-title     { position:absolute; width:186px; height: 28px; font-size:12px; z-index:10; top:333px; left:384px; line-height:28px; background:url(title-bg.png) repeat-x 0px -30px; color:#887d6f; text-align:center; }
-.vschess-layout-default .vschess-change-select-list      { position:absolute; width:184px; height:132px; font-size:12px; z-index:10; top:363px; left:386px; overflow-x:hidden; overflow-y:scroll; }
-.vschess-layout-default .vschess-change-select-node      { position:relative; width:164px; height: 22px; font-size:12px; float:left; }
-.vschess-layout-default .vschess-change-select-node-text { position:relative; width: 32px; height: 22px; font-size:12px; float:left; display:block; line-height:22px; _line-height:24px; cursor:pointer; color:#000; text-align:center; overflow:hidden; }
+.vschess-layout-default .vschess-change-select-title-start { position:absolute; width:186px; height: 28px; font-size:12px; z-index:10; top:333px; left:384px; line-height:28px; background:url(title-bg.png) repeat-x 0px -30px; color:#887d6f; text-align:center; }
+.vschess-layout-default .vschess-change-select-title-moves { position:absolute; width:186px; height: 28px; font-size:12px; z-index:10; top:333px; left:384px; line-height:28px; background:url(title-bg.png) repeat-x 0px -30px; color:#887d6f; text-align:center; }
+.vschess-layout-default .vschess-change-select-list        { position:absolute; width:184px; height:132px; font-size:12px; z-index:10; top:363px; left:386px; overflow-x:hidden; overflow-y:scroll; }
+.vschess-layout-default .vschess-change-select-node        { position:relative; width:164px; height: 22px; font-size:12px; float:left; }
+.vschess-layout-default .vschess-change-select-node-text   { position:relative; width: 32px; height: 22px; font-size:12px; float:left; display:block; line-height:22px; _line-height:24px; cursor:pointer; color:#000; text-align:center; overflow:hidden; }
 .vschess-layout-default .vschess-change-select-node-move { text-align:left; text-indent:4px; width:68px; }
 .vschess-layout-default .vschess-change-select-node-current { background-color:#887d6f; }
 .vschess-layout-default .vschess-change-select-node-current .vschess-change-select-node-text { color:#fff; }
@@ -44,6 +45,8 @@
 .vschess-layout-default .vschess-change-select-node-last    .vschess-change-select-node-down { color:#ccc; cursor:default; }
 .vschess-layout-default .vschess-change-select-node-current-and-first .vschess-change-select-node-up   { color:#9b9286; }
 .vschess-layout-default .vschess-change-select-node-current-and-last  .vschess-change-select-node-down { color:#9b9286; }
+.vschess-layout-default .vschess-change-select-title-start.vschess-change-select-title-current-moves { display:none; }
+.vschess-layout-default .vschess-change-select-title-moves.vschess-change-select-title-current-start { display:none; }
 .vschess-layout-default .vschess-change-select-tips { position:relative; width:164px; height:22px; line-height:22px; _line-height:24px; font-size:12px; text-indent:4px; color:#000; float:left; overflow:hidden; }
 .vschess-layout-default .vschess-change-select-tips a       { color:#000; font-size:12px; }
 .vschess-layout-default .vschess-change-select-tips a:hover { color:#887d6f; }

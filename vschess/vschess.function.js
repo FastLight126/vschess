@@ -1,5 +1,5 @@
 /*
- * 微思象棋函数库 V2.6.4
+ * 微思象棋函数库 V2.6.5
  * https://www.xiaxiangqi.com/
  *
  * Copyright @ 2009-2025 Margin.Top 版权所有
@@ -12,16 +12,16 @@
  * https://github.com/FastLight126/vschess
  *
  * 最后修改日期：北京时间 2025年2月12日
- * Wed, 12 Feb 2025 15:25:47 +0800
+ * Wed, 12 Feb 2025 18:57:21 +0800
  */
 
 // 主程序
 var vschess = {
 	// 当前版本号
-	version: "2.6.4",
+	version: "2.6.5",
 
 	// 版本时间戳
-	timestamp: "Wed, 12 Feb 2025 15:25:47 +0800",
+	timestamp: "Wed, 12 Feb 2025 18:57:21 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -392,27 +392,27 @@ vschess.binaryToNode_CCM = function(buffer) {
 	return vschess.stepListToNode(vschess.defaultFen, stepList);
 };
 
+// 从象棋桥 CBR 格式中读取字符串
+vschess.readStr_CBR = function(buffer, start, length){
+    var str = [];
+
+    for (var i = 0; i < length; i += 2) {
+        if (buffer[start + i] === 0 && buffer[start + i + 1] === 0) {
+            break;
+        }
+
+        str.push(vschess.fcc(buffer[start + i + 1] << 8 | buffer[start + i]));
+    }
+
+    return str.join("");
+};
+
 // 从象棋桥 CBR 格式中抽取棋局信息
 vschess.binaryToInfo_CBR = function(buffer){
     // 不识别的版本
     if (buffer[19] === 0 || buffer[19] > 2) {
         return {};
     }
-
-    // 读取字符串
-    var readStr = function(start, length){
-        var str = [];
-
-        for (var i = 0; i < length; i += 2) {
-            if (buffer[start + i] === 0 && buffer[start + i + 1] === 0) {
-                break;
-            }
-
-            str.push(vschess.fcc(buffer[start + i + 1] << 8 | buffer[start + i]));
-        }
-
-        return str.join("");
-    };
 
     // 各个软件的字段都不一样
     // 下面注释掉的是象棋桥专属字段，标准 PGN 格式不含这些字段
@@ -421,71 +421,71 @@ vschess.binaryToInfo_CBR = function(buffer){
     // V1 版本
     if (buffer[19] === 1) {
         return {
-            // path       : readStr( 180, 256),
-            // from       : readStr( 436,  64),
-            // eventclass : readStr( 500,  64),
-            // timerule   : readStr( 884,  64),
-            // remarkmail : readStr(1460,  64),
-            // authormail : readStr(1588,  64),
-            // createtime : readStr(1652,  40),
-            // modifytime : readStr(1716,  40),
+            // path       : vschess.readStr_CBR(buffer,  180, 256),
+            // from       : vschess.readStr_CBR(buffer,  436,  64),
+            // eventclass : vschess.readStr_CBR(buffer,  500,  64),
+            // timerule   : vschess.readStr_CBR(buffer,  884,  64),
+            // remarkmail : vschess.readStr_CBR(buffer, 1460,  64),
+            // authormail : vschess.readStr_CBR(buffer, 1588,  64),
+            // createtime : vschess.readStr_CBR(buffer, 1652,  40),
+            // modifytime : vschess.readStr_CBR(buffer, 1716,  40),
             // type       : buffer[1784],
-            // property   : readStr(1788,  32),
-            // finishtype : readStr(1824,  32),
-            title      : readStr(  52, 128),
-            event      : readStr( 564,  64),
-            round      : readStr( 628,  64),
-            group      : readStr( 692,  32),
-            table      : readStr( 724,  32),
-            date       : readStr( 756,  64),
-            place      : readStr( 820,  64),
-            red        : readStr( 948,  64),
-            redteam    : readStr(1012,  64),
-            redtime    : readStr(1076,  64),
-            redrating  : readStr(1140,  32),
-            black      : readStr(1172,  64),
-            blackteam  : readStr(1236,  64),
-            blacktime  : readStr(1300,  64),
-            blackrating: readStr(1364,  32),
-            remark     : readStr(1396,  64),
-            author     : readStr(1524,  64),
+            // property   : vschess.readStr_CBR(buffer, 1788,  32),
+            // finishtype : vschess.readStr_CBR(buffer, 1824,  32),
+            title      : vschess.readStr_CBR(buffer,   52, 128),
+            event      : vschess.readStr_CBR(buffer,  564,  64),
+            round      : vschess.readStr_CBR(buffer,  628,  64),
+            group      : vschess.readStr_CBR(buffer,  692,  32),
+            table      : vschess.readStr_CBR(buffer,  724,  32),
+            date       : vschess.readStr_CBR(buffer,  756,  64),
+            place      : vschess.readStr_CBR(buffer,  820,  64),
+            red        : vschess.readStr_CBR(buffer,  948,  64),
+            redteam    : vschess.readStr_CBR(buffer, 1012,  64),
+            redtime    : vschess.readStr_CBR(buffer, 1076,  64),
+            redrating  : vschess.readStr_CBR(buffer, 1140,  32),
+            black      : vschess.readStr_CBR(buffer, 1172,  64),
+            blackteam  : vschess.readStr_CBR(buffer, 1236,  64),
+            blacktime  : vschess.readStr_CBR(buffer, 1300,  64),
+            blackrating: vschess.readStr_CBR(buffer, 1364,  32),
+            remark     : vschess.readStr_CBR(buffer, 1396,  64),
+            author     : vschess.readStr_CBR(buffer, 1524,  64),
             result     : ["*", "1-0", "0-1", "1/2-1/2"][buffer[1820] > 3 ? 0 : buffer[1820]]
         };
     }
     // V2 版本
     else {
         return {
-            // scriptfile : readStr(  52, 128),
-            // path       : readStr( 308, 256),
-            // from       : readStr( 564,  64),
-            // eventclass : readStr( 628,  64),
-            // timerule   : readStr(1012,  64),
-            // remarkmail : readStr(1716,  64),
-            // authormail : readStr(1844,  64),
-            // createtime : readStr(1908,  40),
-            // modifytime : readStr(1972,  40),
+            // scriptfile : vschess.readStr_CBR(buffer,   52, 128),
+            // path       : vschess.readStr_CBR(buffer,  308, 256),
+            // from       : vschess.readStr_CBR(buffer,  564,  64),
+            // eventclass : vschess.readStr_CBR(buffer,  628,  64),
+            // timerule   : vschess.readStr_CBR(buffer, 1012,  64),
+            // remarkmail : vschess.readStr_CBR(buffer, 1716,  64),
+            // authormail : vschess.readStr_CBR(buffer, 1844,  64),
+            // createtime : vschess.readStr_CBR(buffer, 1908,  40),
+            // modifytime : vschess.readStr_CBR(buffer, 1972,  40),
             // type       : buffer[2040],
-            // property   : readStr(2044,  32),
-            // finishtype : readStr(2080,  32),
-            title      : readStr( 180, 128),
-            event      : readStr( 692,  64),
-            round      : readStr( 756,  64),
-            group      : readStr( 820,  32),
-            table      : readStr( 852,  32),
-            date       : readStr( 884,  64),
-            place      : readStr( 948,  64),
-            red        : readStr(1076,  64),
-            redteam    : readStr(1140,  64),
-            redtime    : readStr(1204,  64),
-            redrating  : readStr(1268,  32),
-            black      : readStr(1300,  64),
-            blackteam  : readStr(1364,  64),
-            blacktime  : readStr(1428,  64),
-            blackrating: readStr(1492,  32),
-            judge      : readStr(1524,  64),
-            record     : readStr(1588,  64),
-            remark     : readStr(1652,  64),
-            author     : readStr(1780,  64),
+            // property   : vschess.readStr_CBR(buffer, 2044,  32),
+            // finishtype : vschess.readStr_CBR(buffer, 2080,  32),
+            title      : vschess.readStr_CBR(buffer,  180, 128),
+            event      : vschess.readStr_CBR(buffer,  692,  64),
+            round      : vschess.readStr_CBR(buffer,  756,  64),
+            group      : vschess.readStr_CBR(buffer,  820,  32),
+            table      : vschess.readStr_CBR(buffer,  852,  32),
+            date       : vschess.readStr_CBR(buffer,  884,  64),
+            place      : vschess.readStr_CBR(buffer,  948,  64),
+            red        : vschess.readStr_CBR(buffer, 1076,  64),
+            redteam    : vschess.readStr_CBR(buffer, 1140,  64),
+            redtime    : vschess.readStr_CBR(buffer, 1204,  64),
+            redrating  : vschess.readStr_CBR(buffer, 1268,  32),
+            black      : vschess.readStr_CBR(buffer, 1300,  64),
+            blackteam  : vschess.readStr_CBR(buffer, 1364,  64),
+            blacktime  : vschess.readStr_CBR(buffer, 1428,  64),
+            blackrating: vschess.readStr_CBR(buffer, 1492,  32),
+            judge      : vschess.readStr_CBR(buffer, 1524,  64),
+            record     : vschess.readStr_CBR(buffer, 1588,  64),
+            remark     : vschess.readStr_CBR(buffer, 1652,  64),
+            author     : vschess.readStr_CBR(buffer, 1780,  64),
             result     : ["*", "1-0", "0-1", "1/2-1/2"][buffer[2076] > 3 ? 0 : buffer[2076]]
         };
     }
@@ -554,7 +554,7 @@ vschess.binaryToNode_CBR = function(buffer){
             pos += nextOffset;
             continue;
         }
-        
+
         // 生成节点树
         var move = vschess.b2i[buffer[pos + 2]] + vschess.b2i[buffer[pos + 3]];
 
@@ -583,6 +583,37 @@ vschess.binaryToNode_CBR = function(buffer){
     }
 
     return node;
+};
+
+// 解析象棋桥棋库 CBL 格式
+vschess.binaryToBook_CBL = function(buffer){
+    if (vschess.subhex(buffer, 0, 16) !== '43434272696467654c69627261727900') {
+        return false;
+    }
+
+    var books = [];
+    var splitPos = [];
+
+    for (var i = 0; i < buffer.length; ++i) {
+        buffer[i] === 67 && vschess.subhex(buffer, i, 16) === "4343427269646765205265636f726400" && splitPos.push(i);
+    }
+
+    for (var i = 0; i < splitPos.length; ++i) {
+        var book = buffer.slice(splitPos[i], splitPos[i + 1] || buffer.length);
+        books.push({ info: vschess.binaryToInfo_CBR(book), node: vschess.binaryToNode_CBR(book) });
+    }
+
+    var info = {
+        name        : vschess.readStr_CBR(buffer,  64,    512),
+        from        : vschess.readStr_CBR(buffer, 576,    256),
+        creator     : vschess.readStr_CBR(buffer, 832,     64),
+        creatoremail: vschess.readStr_CBR(buffer, 896,     64),
+        createtime  : vschess.readStr_CBR(buffer, 960,     64),
+        modifytime  : vschess.readStr_CBR(buffer, 1024,    64),
+        remark      : vschess.readStr_CBR(buffer, 1088, 65536)
+    };
+
+    return { info: info, books: books };
 };
 
 // 从原始数据中抽取棋局信息
@@ -1335,10 +1366,19 @@ vschess.RegExp = function(){
 
 		// 自动识别棋谱格式正则表达式
 		QQNew	: /(?:[0-9]+) 32 (?:[0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) 0 (?:[0-9]+) 0/g,
-		ShiJia	: /Moves(.*)Ends(.*)CommentsEnd/g,
 
 		// 特殊兵东萍表示法
-		Pawn	: /[\+\-2][1-9][\+\-\.][1-9]/
+		Pawn	: /[\+\-2][1-9][\+\-\.][1-9]/,
+
+		// 象棋世家格式可能涉及二进制，不使用正则表达式
+		ShiJia: {
+			test: function(str){
+				var moves       = str.indexOf("Moves"      );
+				var ends        = str.indexOf("Ends"       );
+				var commentsEnd = str.indexOf("CommentsEnd");
+				return ~moves && ~ends && ~commentsEnd && moves < ends && ends < commentsEnd;
+			},
+		}
 	};
 };
 
@@ -1791,6 +1831,17 @@ vschess.subhex = function(hex, start, length){
     }
 
     return str.join("");
+};
+
+// 检查数据中是否存在非打印字符
+vschess.checkNonPrintable = function(array){
+	for (var i = 0; i < array.length; ++i) {
+		if (array[i] < 32 || array[i] === 127) {
+			return true;
+		}
+	}
+
+	return false;
 };
 
 // GBK 转 UTF-8 编码表

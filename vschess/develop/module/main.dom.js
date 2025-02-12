@@ -24,7 +24,7 @@ $.extend(vschess, {
 	tabList: "board move comment info share export edit config".split(" "),
 
 	// 钩子列表
-	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece afterStartFen afterAnimate".split(" "),
+	callbackList: "beforeClickAnimate afterClickAnimate loadFinish selectPiece unSelectPiece afterStartFen afterAnimate afterOpenBook".split(" "),
 
 	// 二进制棋谱扩展名列表
 	binaryExt: "ccm xqf cbr".split(" "),

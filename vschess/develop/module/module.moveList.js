@@ -78,9 +78,11 @@ fn.setMoveLeaveHide = function(){
 // 变招选择列表
 fn.createChangeSelectList = function(){
 	this.DOM.children(".vschess-change-select-title, .vschess-change-select-list").remove();
-	this.changeSelectTitle = $('<div class="vschess-change-select-title"></div>');
+	this.changeSelectTitleStart = $('<div class="vschess-change-select-title-start">提示信息</div>');
+	this.changeSelectTitleMoves = $('<div class="vschess-change-select-title-moves">变招列表</div>');
 	this.changeSelectList  = $('<ul class="vschess-change-select-list"></ul>');
-	this.DOM.append(this.changeSelectTitle);
+	this.DOM.append(this.changeSelectTitleStart);
+	this.DOM.append(this.changeSelectTitleMoves);
 	this.DOM.append(this.changeSelectList);
 	return this;
 };
@@ -88,7 +90,8 @@ fn.createChangeSelectList = function(){
 // 刷新变招选择列表内所有着法
 fn.refreshChangeSelectListNode = function(){
 	if (this.getCurrentStep() <= 0) {
-		this.changeSelectTitle.text("提示信息");
+		this.changeSelectTitleStart.removeClass("vschess-change-select-title-current-moves").addClass("vschess-change-select-title-current-start");
+		this.changeSelectTitleMoves.removeClass("vschess-change-select-title-current-moves").addClass("vschess-change-select-title-current-start");
 		this.changeSelectList.empty();
 
 		for (var i = 0; i < this.options.startTips.length; ++i) {
@@ -123,7 +126,8 @@ fn.refreshChangeSelectListNode = function(){
 		selectListNode.push('</li>');
 	}
 
-	this.changeSelectTitle.text("变招列表");
+	this.changeSelectTitleStart.removeClass("vschess-change-select-title-current-start").addClass("vschess-change-select-title-current-moves");
+	this.changeSelectTitleMoves.removeClass("vschess-change-select-title-current-start").addClass("vschess-change-select-title-current-moves");
 	this.changeSelectList.html(selectListNode.join(""));
 	this.changeSelectListChanges = this.changeSelectList.children();
 	this.changeSelectListChanges.first().addClass("vschess-change-select-node-first");

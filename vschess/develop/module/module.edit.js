@@ -530,7 +530,7 @@ fn.fillEditBoardByText = function(chessData){
 	if (~chessData.indexOf("[DhtmlXQ]")) {
 		fen = vs.dataToNode_DhtmlXQ(chessData, true);
 	}
-	else if (RegExp_Match = RegExp.ShiJia.exec(chessData)) {
+	else if (RegExp.ShiJia.test(chessData)) {
 		fen = vs.dataToNode_ShiJia(chessData, true);
 	}
 	else if (RegExp_Match = RegExp.FenLong.exec(chessData)) {
@@ -685,7 +685,8 @@ fn.createEditOtherButton = function(){
 					var fileData  = new Uint8Array(this.result);
 					var chessData = vs.join(fileData);
 
-					if (~vs.binaryExt.indexOf(ext)) {
+					// 二进制棋谱，象棋世家格式中可能含有非打印字符
+					if (~vs.binaryExt.indexOf(ext) || vs.checkNonPrintable(fileData) && !RegExp.ShiJia.test(chessData)) {
 						var chessNode = vs.binaryToNode(fileData);
 						var chessInfo = vs.binaryToInfo(fileData);
 					}
@@ -695,21 +696,8 @@ fn.createEditOtherButton = function(){
 						var chessInfo = vs.dataToInfo(chessData);
 					}
 
-					_this.setBoardByStep(0);
-					_this.setNode(chessNode);
-					_this.rebuildSituation();
-					_this.refreshMoveSelectListNode();
-					_this.setBoardByStep(0);
-					_this.chessInfo = chessInfo;
-					_this.insertInfoByCurrent();
-					_this.refreshInfoEditor();
-					_this.rebuildExportAll();
-					_this.setExportFormat();
-					_this.editNodeTextarea.val("");
-					_this.hideNodeEditModule();
-					_this.hideEditModule();
-					_this.showEditStartButton();
-					_this.setSaved(true);
+					_this.loadData(chessNode, chessInfo);
+					typeof _this["callback_afterOpenBook"] === "function" && _this["callback_afterOpenBook"](file.name, fileData);
 				}
 			}
 		}
@@ -786,38 +774,45 @@ fn.bindDrag = function(){
 				var fileData  = new Uint8Array(this.result);
 				var chessData = vs.join(fileData);
 
-				if (~vs.binaryExt.indexOf(ext)) {
+				// 二进制棋谱，象棋世家格式中可能含有非打印字符
+				if (~vs.binaryExt.indexOf(ext) || vs.checkNonPrintable(fileData) && !RegExp.ShiJia.test(chessData)) {
 					var chessNode = vs.binaryToNode(fileData);
 					var chessInfo = vs.binaryToInfo(fileData);
 				}
 				else {
-					!RegExp.ShiJia.test(chessData) && (chessData = vs.iconv2UTF8(fileData));
+					RegExp.ShiJia.test(chessData) || (chessData = vs.iconv2UTF8(fileData));
 					var chessNode = vs.dataToNode(chessData);
 					var chessInfo = vs.dataToInfo(chessData);
 				}
 
-				_this.setBoardByStep(0);
-				_this.setNode(chessNode);
-				_this.rebuildSituation();
-				_this.refreshMoveSelectListNode();
-				_this.setBoardByStep(0);
-				_this.chessInfo = chessInfo;
-				_this.insertInfoByCurrent();
-				_this.refreshInfoEditor();
-				_this.rebuildExportAll();
-				_this.setExportFormat();
-				_this.editNodeTextarea.val("");
-				_this.hideNodeEditModule();
-				_this.hideEditModule();
-				_this.showEditStartButton();
-				_this.setSaved(true);
+				_this.loadData(chessNode, chessInfo);
 				_this.hideHelpArea();
 				_this.hideInfoEditor();
+				typeof _this["callback_afterOpenBook"] === "function" && _this["callback_afterOpenBook"](file.name, fileData);
 			}
 		}
 	});
 
 	return this;
+};
+
+// 加载棋谱数据
+fn.loadData = function(chessNode, chessInfo){
+	this.setBoardByStep(0);
+	this.setNode(chessNode);
+	this.rebuildSituation();
+	this.refreshMoveSelectListNode();
+	this.setBoardByStep(0);
+	this.chessInfo = chessInfo;
+	this.insertInfoByCurrent();
+	this.refreshInfoEditor();
+	this.rebuildExportAll();
+	this.setExportFormat();
+	this.editNodeTextarea.val("");
+	this.hideNodeEditModule();
+	this.hideEditModule();
+	this.showEditStartButton();
+	this.setSaved(true);
 };
 
 // 确认提示框
