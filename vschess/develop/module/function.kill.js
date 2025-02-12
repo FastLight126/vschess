@@ -137,6 +137,6 @@ vs.findKill = function (situation, maxDeep = Infinity) {
   else {
     var fenA = vs.situationToFen(root.situation);
     var fenB = vs.situationToFen(root.next[maxIndex].situation);
-    return { move: vs.compareFen(fenA, fenB, 'node'), score: root.next[maxIndex].score };
+    return { move: vs.compareFen(fenA, fenB, "node"), score: root.next[maxIndex].score };
   }
 };

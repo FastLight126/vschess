@@ -98,13 +98,14 @@ vs.binaryToInfo_CBR = function(buffer){
 };
 
 // 将象棋桥 CBR 格式转换为棋谱节点树
-vs.binaryToNode_CBR = function (buffer) {
+vs.binaryToNode_CBR = function(buffer){
     // 不识别的版本
     if (buffer[19] === 0 || buffer[19] > 2) {
-        return { fen: vs.defaultFen, comment: '', next: [], defaultIndex: 0 };
+        return { fen: vs.defaultFen, comment: "", next: [], defaultIndex: 0 };
     }
 
     var board = [];
+    var rootOperated = false;
 
     // 默认 V2 版本
     var fenpos = 2120;
@@ -130,7 +131,11 @@ vs.binaryToNode_CBR = function (buffer) {
     var node = { fen: fen, comment: "", next: [], defaultIndex: 0 };
     var parent = node, changeNode = [];
 
-    while (pos < buffer.length) {
+    while (true) {
+        if (pos >= buffer.length || buffer[pos + 2] === buffer[pos + 3] && rootOperated) {
+            break;
+        }
+
         var comment = [];
         var commentLen = 0;
         var nextOffset = 4;
@@ -151,6 +156,7 @@ vs.binaryToNode_CBR = function (buffer) {
         // 根节点注释
         if (buffer[pos + 2] === buffer[pos + 3]) {
             node.comment = comment.join("");
+            rootOperated = true;
             pos += nextOffset;
             continue;
         }

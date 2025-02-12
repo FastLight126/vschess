@@ -274,7 +274,7 @@ vs.XQF_writeHeader = function(buffer, Version, KeyMask, KeyOr, KeySum, KeyXYp, K
     }
 
     // 设置 WhoPlay
-    buffer[50] = node.fen.split(" ")[1] === 'b' ? 1 : 0;
+    buffer[50] = node.fen.split(" ")[1] === "b" ? 1 : 0;
 
     // 设置 GameResult
     switch (chessInfo.result) {

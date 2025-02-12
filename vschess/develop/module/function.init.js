@@ -44,20 +44,20 @@ vs.init = function(options){
 	if (!vs.inited) {
 		vs.AudioContext = window.AudioContext || window.webkitAudioContext;
 		vs.AudioContext = vs.AudioContext ? new vs.AudioContext() : false;
-		vs.addCSS(options, 'global', options.globalCSS);
+		vs.addCSS(options, "global", options.globalCSS);
 		vs.inited = true;
 	}
 
 	// 风格样式
 	if (!vs.styleInit[options.style]) {
-		vs.addCSS(options, 'style', vs.defaultPath + 'style/' + options.style + "/style.css");
+		vs.addCSS(options, "style", vs.defaultPath + "style/" + options.style + "/style.css");
 		vs.IE6Compatible_setPieceTransparent(options);
 		vs.styleInit[options.style] = true;
 	}
 
 	// 布局样式
 	if (!vs.layoutInit[options.layout]) {
-		vs.addCSS(options, 'layout', vs.defaultPath + 'layout/' + options.layout + "/layout.css");
+		vs.addCSS(options, "layout", vs.defaultPath + "layout/" + options.layout + "/layout.css");
 		vs.layoutInit[options.layout] = true;
 	}
 
@@ -66,7 +66,7 @@ vs.init = function(options){
 		$.each(vs.soundList, function(index, name){
 			var soundName = options.soundStyle + "-" + name;
 			var soundId   = "vschess-sound-" + soundName;
-			var soundSrc  = options.soundPath ? options.soundPath + name + ".mp3" : vs.defaultPath + 'sound/' + options.soundStyle + '/' + name + ".mp3";
+			var soundSrc  = options.soundPath ? options.soundPath + name + ".mp3" : vs.defaultPath + "sound/" + options.soundStyle + "/" + name + ".mp3";
 			vs.soundObject[soundName] = function(){};
 
 			// 支持 Web Audio 的浏览器使用 Web Audio API

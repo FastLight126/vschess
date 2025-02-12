@@ -8,7 +8,7 @@ fn.createCopyTextarea = function(){
 fn.copy = function(str, success){
 	typeof success !== "function" && (success = function(){});
 
-	if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported('copy')) {
+	if (document.execCommand && document.queryCommandSupported && document.queryCommandSupported("copy")) {
 		this.copyTextarea.val(str);
 		this.copyTextarea[0].select();
 		this.copyTextarea[0].setSelectionRange(0, str.length);
