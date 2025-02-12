@@ -132,7 +132,7 @@ vs.binaryToNode_CBR = function(buffer){
     var parent = node, changeNode = [];
 
     while (true) {
-        if (pos >= buffer.length || buffer[pos + 2] === buffer[pos + 3] && rootOperated) {
+        if (pos >= buffer.length || buffer[pos] > 7 || buffer[pos + 2] === buffer[pos + 3] && rootOperated) {
             break;
         }
 

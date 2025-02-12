@@ -15,7 +15,7 @@
  * https://github.com/ded/qwery/
  *
  * 最后修改日期：北京时间 2025年2月12日
- * Wed, 12 Feb 2025 20:16:40 +0800
+ * Wed, 12 Feb 2025 22:05:16 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.5",
 
 	// 版本时间戳
-	timestamp: "Wed, 12 Feb 2025 20:16:40 +0800",
+	timestamp: "Wed, 12 Feb 2025 22:05:16 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1992,7 +1992,7 @@ vschess.binaryToNode_CBR = function(buffer){
     var parent = node, changeNode = [];
 
     while (true) {
-        if (pos >= buffer.length || buffer[pos + 2] === buffer[pos + 3] && rootOperated) {
+        if (pos >= buffer.length || buffer[pos] > 7 || buffer[pos + 2] === buffer[pos + 3] && rootOperated) {
             break;
         }
 
@@ -10370,16 +10370,6 @@ vschess.load.prototype.showTab = function(tabName){
         this.changeSelectList.addClass("vschess-change-select-list-current");
         this.changeSelectTitleStart.addClass("vschess-change-select-title-start-current");
         this.changeSelectTitleMoves.addClass("vschess-change-select-title-moves-current");
-
-        if (this.getCurrentStep() <= 0) {
-            this.changeSelectTitleStart.removeClass("vschess-change-select-title-current-moves").addClass("vschess-change-select-title-current-start");
-            this.changeSelectTitleMoves.removeClass("vschess-change-select-title-current-moves").addClass("vschess-change-select-title-current-start");
-        }
-        else {
-            this.changeSelectTitleStart.removeClass("vschess-change-select-title-current-start").addClass("vschess-change-select-title-current-moves");
-            this.changeSelectTitleMoves.removeClass("vschess-change-select-title-current-start").addClass("vschess-change-select-title-current-moves");
-        }
-
         //this.formatBar.addClass("vschess-format-bar-current");
     }
     else {

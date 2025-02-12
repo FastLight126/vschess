@@ -12,7 +12,7 @@
  * https://github.com/FastLight126/vschess
  *
  * 最后修改日期：北京时间 2025年2月12日
- * Wed, 12 Feb 2025 18:57:21 +0800
+ * Wed, 12 Feb 2025 22:05:16 +0800
  */
 
 // 主程序
@@ -21,7 +21,7 @@ var vschess = {
 	version: "2.6.5",
 
 	// 版本时间戳
-	timestamp: "Wed, 12 Feb 2025 18:57:21 +0800",
+	timestamp: "Wed, 12 Feb 2025 22:05:16 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -526,7 +526,7 @@ vschess.binaryToNode_CBR = function(buffer){
     var parent = node, changeNode = [];
 
     while (true) {
-        if (pos >= buffer.length || buffer[pos + 2] === buffer[pos + 3] && rootOperated) {
+        if (pos >= buffer.length || buffer[pos] > 7 || buffer[pos + 2] === buffer[pos + 3] && rootOperated) {
             break;
         }
 
