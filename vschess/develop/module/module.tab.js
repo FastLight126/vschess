@@ -39,16 +39,6 @@ fn.showTab = function(tabName){
         this.changeSelectList.addClass("vschess-change-select-list-current");
         this.changeSelectTitleStart.addClass("vschess-change-select-title-start-current");
         this.changeSelectTitleMoves.addClass("vschess-change-select-title-moves-current");
-
-        if (this.getCurrentStep() <= 0) {
-            this.changeSelectTitleStart.removeClass("vschess-change-select-title-current-moves").addClass("vschess-change-select-title-current-start");
-            this.changeSelectTitleMoves.removeClass("vschess-change-select-title-current-moves").addClass("vschess-change-select-title-current-start");
-        }
-        else {
-            this.changeSelectTitleStart.removeClass("vschess-change-select-title-current-start").addClass("vschess-change-select-title-current-moves");
-            this.changeSelectTitleMoves.removeClass("vschess-change-select-title-current-start").addClass("vschess-change-select-title-current-moves");
-        }
-
         //this.formatBar.addClass("vschess-format-bar-current");
     }
     else {
