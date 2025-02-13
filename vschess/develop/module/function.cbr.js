@@ -174,20 +174,41 @@ vs.binaryToNode_CBR = function(buffer){
         var step = { move: move, comment: comment.join(""), next: [], defaultIndex: 0 };
         parent.next.push(step);
 
-        var isFinish  = buffer[pos] & 1;
+        var hasNext   = buffer[pos] % 2 === 0;
         var hasChange = buffer[pos] & 2;
 
-        if (isFinish) {
-            hasChange || (parent = changeNode.pop());
-        }
-        else {
+        if (hasNext) {
             hasChange && changeNode.push(parent);
             parent = step;
+        }
+        else if (!hasChange) {
+            // 部分棋谱存在冗余错误数据，直接退出
+            if (changeNode.length === 0) {
+                break;
+            }
+
+            parent = changeNode.pop();
         }
 
         pos += nextOffset;
     }
 
+    // 增强兼容性
+    if (node.next.length) {
+        var fenArray = vs.fenToArray(node.fen);
+        var fenSplit = node.fen.split(" ");
+        var position = vs.i2b[node.next[0].move.substring(0, 2)];
+
+        if (fenArray[position].toUpperCase() === fenArray[position]) {
+            fenSplit[1] = "w";
+        }
+        else {
+            fenSplit[1] = "b";
+        }
+
+        node.fen = fenSplit.join(" ");
+    }
+    
     return node;
 };
 

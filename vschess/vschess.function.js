@@ -11,8 +11,8 @@
  * 鸣谢列表敬请移步 GitHub 项目主页，排名不分先后
  * https://github.com/FastLight126/vschess
  *
- * 最后修改日期：北京时间 2025年2月12日
- * Wed, 12 Feb 2025 22:05:16 +0800
+ * 最后修改日期：北京时间 2025年2月13日
+ * Thu, 13 Feb 2025 14:34:32 +0800
  */
 
 // 主程序
@@ -21,7 +21,7 @@ var vschess = {
 	version: "2.6.5",
 
 	// 版本时间戳
-	timestamp: "Wed, 12 Feb 2025 22:05:16 +0800",
+	timestamp: "Thu, 13 Feb 2025 14:34:32 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -568,20 +568,41 @@ vschess.binaryToNode_CBR = function(buffer){
         var step = { move: move, comment: comment.join(""), next: [], defaultIndex: 0 };
         parent.next.push(step);
 
-        var isFinish  = buffer[pos] & 1;
+        var hasNext   = buffer[pos] % 2 === 0;
         var hasChange = buffer[pos] & 2;
 
-        if (isFinish) {
-            hasChange || (parent = changeNode.pop());
-        }
-        else {
+        if (hasNext) {
             hasChange && changeNode.push(parent);
             parent = step;
+        }
+        else if (!hasChange) {
+            // 部分棋谱存在冗余错误数据，直接退出
+            if (changeNode.length === 0) {
+                break;
+            }
+
+            parent = changeNode.pop();
         }
 
         pos += nextOffset;
     }
 
+    // 增强兼容性
+    if (node.next.length) {
+        var fenArray = vschess.fenToArray(node.fen);
+        var fenSplit = node.fen.split(" ");
+        var position = vschess.i2b[node.next[0].move.substring(0, 2)];
+
+        if (fenArray[position].toUpperCase() === fenArray[position]) {
+            fenSplit[1] = "w";
+        }
+        else {
+            fenSplit[1] = "b";
+        }
+
+        node.fen = fenSplit.join(" ");
+    }
+    
     return node;
 };
 
@@ -4843,8 +4864,13 @@ vschess.binaryToNode_XQF = function(buffer) {
             hasChange && changeNode.push(parent);
             parent = step;
         }
-        else {
-            hasChange || (parent = changeNode.pop());
+        else if (!hasChange) {
+            // 部分棋谱存在冗余错误数据，直接退出
+            if (changeNode.length === 0) {
+                break;
+            }
+
+            parent = changeNode.pop();
         }
 
         pos += nextOffset;

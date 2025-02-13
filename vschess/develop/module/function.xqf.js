@@ -198,8 +198,13 @@ vs.binaryToNode_XQF = function(buffer) {
             hasChange && changeNode.push(parent);
             parent = step;
         }
-        else {
-            hasChange || (parent = changeNode.pop());
+        else if (!hasChange) {
+            // 部分棋谱存在冗余错误数据，直接退出
+            if (changeNode.length === 0) {
+                break;
+            }
+
+            parent = changeNode.pop();
         }
 
         pos += nextOffset;
