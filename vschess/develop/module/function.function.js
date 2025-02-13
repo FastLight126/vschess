@@ -127,14 +127,17 @@ vs.turnMove = function(move){
 	return move.join("");
 };
 
-// 旋转节点 ICCS 着法
-vs.roundMove = function(move){
+// 颠倒节点 ICCS 着法
+vs.flipMove = function(move){
 	move = move.split("");
-	move[0] = vs.fcc(202 - vs.cca(move[0]));
-	move[2] = vs.fcc(202 - vs.cca(move[2]));
 	move[1] = 9 - move[1];
 	move[3] = 9 - move[3];
 	return move.join("");
+};
+
+// 旋转节点 ICCS 着法
+vs.roundMove = function(move){
+	return vs.flipMove(vs.turnMove(move));
 };
 
 // 翻转 WXF 着法，不可用于特殊兵
@@ -306,8 +309,8 @@ vs.fcc = function(code){
 };
 
 // String.charCodeAt 别名
-vs.cca = function(word){
-	return word.charCodeAt(0);
+vs.cca = function(word, index){
+	return word.charCodeAt(index || 0);
 };
 
 // 左右填充
@@ -463,7 +466,13 @@ vs.textBoard = function(fen, options) {
 
 // 字符串清除标签
 vs.stripTags = function(str){
-	return $('<div>' + str + '</div>').text();
+	var result = [];
+
+	for (var i = 0; i < str.length; ++i) {
+		str[i] === "<" ? i = str.indexOf(">", i) : result.push(str[i]);
+	}
+
+	return result.join("");
 };
 
 // 时间格式统一

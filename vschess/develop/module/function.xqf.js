@@ -156,7 +156,7 @@ vs.binaryToNode_XQF = function(buffer) {
     };
 
     // 生成节点树
-    var node = { fen: fen, comment: "", next: [], defaultIndex: 0 };
+    var node = { fen: fen, comment: null, next: [], defaultIndex: 0 };
     var parent = node, changeNode = [];
 
     for (var pos = 0; pos < decode.length;) {
@@ -178,6 +178,7 @@ vs.binaryToNode_XQF = function(buffer) {
             nextOffset = commentLen + 8;
         }
 
+        // 根节点注释
         if (!pos) {
             node.comment = comment;
             pos += nextOffset;
@@ -198,16 +199,12 @@ vs.binaryToNode_XQF = function(buffer) {
             hasChange && changeNode.push(parent);
             parent = step;
         }
-        else if (!hasChange) {
-            // 部分棋谱存在冗余错误数据，直接退出
-            if (changeNode.length === 0) {
-                break;
-            }
-
-            parent = changeNode.pop();
+        else {
+            hasChange || (parent = changeNode.pop());
         }
-
-        pos += nextOffset;
+            
+        // 部分棋谱存在冗余错误数据，直接退出
+        pos += parent ? nextOffset : Infinity;
     }
 
     // 增强兼容性
@@ -215,14 +212,7 @@ vs.binaryToNode_XQF = function(buffer) {
         var fenArray = vs.fenToArray(node.fen);
         var fenSplit = node.fen.split(" ");
         var position = vs.i2b[node.next[0].move.substring(0, 2)];
-
-        if (fenArray[position].toUpperCase() === fenArray[position]) {
-            fenSplit[1] = "w";
-        }
-        else {
-            fenSplit[1] = "b";
-        }
-
+        fenSplit[1] = vs.cca(fenArray[position]) < 97 ? "w" : "b";
         node.fen = fenSplit.join(" ");
     }
 
@@ -391,8 +381,7 @@ vs.XQF_processNode = function(node, haveNextSibling, moves, key, mirror){
     // 递归处理子节点
     if (node.next) {
         for (var i = 0; i < node.next.length; ++i) {
-            var haveNextSibling = i < node.next.length - 1;
-            vs.XQF_processNode(node.next[i], haveNextSibling, moves, key, mirror);
+            vs.XQF_processNode(node.next[i], i < node.next.length - 1, moves, key, mirror);
         }
     }
 };

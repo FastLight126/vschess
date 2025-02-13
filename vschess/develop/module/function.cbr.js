@@ -15,8 +15,10 @@ vs.readStr_CBR = function(buffer, start, length){
 
 // 从象棋桥 CBR 格式中抽取棋局信息
 vs.binaryToInfo_CBR = function(buffer){
+    var ver = buffer[19];
+
     // 不识别的版本
-    if (buffer[19] === 0 || buffer[19] > 2) {
+    if (ver === 0 || ver > 2) {
         return {};
     }
 
@@ -25,7 +27,7 @@ vs.binaryToInfo_CBR = function(buffer){
     // 如需启用这些字段，需要扩展 vs.info.name 字段列表，并且处理好信息修改界面
 
     // V1 版本
-    if (buffer[19] === 1) {
+    if (ver === 1) {
         return {
             // path       : vs.readStr_CBR(buffer,  180, 256),
             // from       : vs.readStr_CBR(buffer,  436,  64),
@@ -99,98 +101,75 @@ vs.binaryToInfo_CBR = function(buffer){
 
 // 将象棋桥 CBR 格式转换为棋谱节点树
 vs.binaryToNode_CBR = function(buffer){
+    var ver = buffer[19];
+
     // 不识别的版本
-    if (buffer[19] === 0 || buffer[19] > 2) {
+    if (ver < 1 || ver > 2) {
         return { fen: vs.defaultFen, comment: "", next: [], defaultIndex: 0 };
     }
 
+    var offset = ver === 1 ? 1856 : 2112;
     var board = [];
-    var rootOperated = false;
-
-    // 默认 V2 版本
-    var fenpos = 2120;
-    var playerPos = 2112;
-    var roundPos = 2116;
-    var pos = 2214;
-
-    // V1 版本
-    if (buffer[19] === 1) {
-        fenpos = 1864;
-        playerPos = 1856;
-        roundPos = 1860;
-        pos = 1958;
-    }
 
     for (var i = 0; i < 90; ++i) {
-        board.push(vs.n2f[buffer[i + fenpos]]);
+        board.push(vs.n2f[buffer[i + offset + 8]]);
     }
 
-    var fen = vs.arrayToFen(board) + " " + (buffer[playerPos] === 2 ? "b" : "w") + " - - 0 " + (buffer[roundPos + 1] << 8 | buffer[roundPos]);
+    var fen = vs.arrayToFen(board) + " " + (buffer[offset] === 2 ? "b" : "w") + " - - 0 " + (buffer[offset + 5] << 8 | buffer[offset + 4]);
 
     // 生成节点树
-    var node = { fen: fen, comment: "", next: [], defaultIndex: 0 };
+    var node = { fen: fen, comment: null, next: [], defaultIndex: 0 };
     var parent = node, changeNode = [];
 
-    while (true) {
-        if (pos >= buffer.length || buffer[pos] > 7 || buffer[pos + 2] === buffer[pos + 3] && rootOperated) {
+    for (var pos = offset + 102; pos < buffer.length;) {
+        var sig = buffer[pos    ] & 255;
+        var src = buffer[pos + 2] & 255;
+        var dst = buffer[pos + 3] & 255;
+
+        // 额外的结束条件
+        if (sig > 7 || src === dst && typeof node.comment === "string") {
             break;
         }
 
-        var comment = [];
+        var comment = "";
         var commentLen = 0;
         var nextOffset = 4;
 
         // 注释提取
-        if (buffer[pos] & 4) {
+        if (sig & 4) {
             for (var i = 0; i < 4; ++i) {
                 commentLen += buffer[pos + 4 + i] * Math.pow(256, i);
             }
 
-            for (var i = 0; i < commentLen; i += 2) {
-                comment.push(vs.fcc(buffer[pos + 9 + i] << 8 | buffer[pos + 8 + i]));
-            }
-
+            comment = vs.readStr_CBR(buffer, pos + 8, commentLen);
             nextOffset = commentLen + 8;
         }
 
         // 根节点注释
-        if (buffer[pos + 2] === buffer[pos + 3]) {
-            node.comment = comment.join("");
-            rootOperated = true;
+        if (src === dst) {
+            node.comment = comment;
             pos += nextOffset;
             continue;
         }
 
         // 生成节点树
-        var move = vs.b2i[buffer[pos + 2]] + vs.b2i[buffer[pos + 3]];
-
-        // V1 版本
-        if (buffer[19] === 1) {
-            var Pf = +buffer[pos + 2].toString(16);
-            var Pt = +buffer[pos + 3].toString(16);
-            move = vs.fcc(Pf / 10 + 97) + (9 - Pf % 10) + vs.fcc(Pt / 10 + 97) + (9 - Pt % 10);
-        }
-
-        var step = { move: move, comment: comment.join(""), next: [], defaultIndex: 0 };
+        move = ver === 1 ? vs.flipMove(vs.fcc(src / 16 + 97) + src % 16 + vs.fcc(dst / 16 + 97) + dst % 16) : vs.b2i[src] + vs.b2i[dst];
+        var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
         parent.next.push(step);
 
-        var hasNext   = buffer[pos] % 2 === 0;
-        var hasChange = buffer[pos] & 2;
+        var hasNext   = sig % 2 === 0;
+        var hasChange = sig & 2;
 
         if (hasNext) {
             hasChange && changeNode.push(parent);
             parent = step;
         }
-        else if (!hasChange) {
-            // 部分棋谱存在冗余错误数据，直接退出
-            if (changeNode.length === 0) {
-                break;
-            }
-
-            parent = changeNode.pop();
+        else {
+            hasChange || (parent = changeNode.pop());
         }
 
-        pos += nextOffset;
+        // 部分棋谱存在冗余错误数据，直接退出
+        pos += parent ? nextOffset : Infinity;
     }
 
     // 增强兼容性
@@ -198,14 +177,7 @@ vs.binaryToNode_CBR = function(buffer){
         var fenArray = vs.fenToArray(node.fen);
         var fenSplit = node.fen.split(" ");
         var position = vs.i2b[node.next[0].move.substring(0, 2)];
-
-        if (fenArray[position].toUpperCase() === fenArray[position]) {
-            fenSplit[1] = "w";
-        }
-        else {
-            fenSplit[1] = "b";
-        }
-
+        fenSplit[1] = vs.cca(fenArray[position]) < 97 ? "w" : "b";
         node.fen = fenSplit.join(" ");
     }
     

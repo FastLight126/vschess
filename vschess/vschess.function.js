@@ -12,7 +12,7 @@
  * https://github.com/FastLight126/vschess
  *
  * 最后修改日期：北京时间 2025年2月13日
- * Thu, 13 Feb 2025 14:34:32 +0800
+ * Thu, 13 Feb 2025 22:52:57 +0800
  */
 
 // 主程序
@@ -21,7 +21,7 @@ var vschess = {
 	version: "2.6.5",
 
 	// 版本时间戳
-	timestamp: "Thu, 13 Feb 2025 14:34:32 +0800",
+	timestamp: "Thu, 13 Feb 2025 22:52:57 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -409,8 +409,10 @@ vschess.readStr_CBR = function(buffer, start, length){
 
 // 从象棋桥 CBR 格式中抽取棋局信息
 vschess.binaryToInfo_CBR = function(buffer){
+    var ver = buffer[19];
+
     // 不识别的版本
-    if (buffer[19] === 0 || buffer[19] > 2) {
+    if (ver === 0 || ver > 2) {
         return {};
     }
 
@@ -419,7 +421,7 @@ vschess.binaryToInfo_CBR = function(buffer){
     // 如需启用这些字段，需要扩展 vschess.info.name 字段列表，并且处理好信息修改界面
 
     // V1 版本
-    if (buffer[19] === 1) {
+    if (ver === 1) {
         return {
             // path       : vschess.readStr_CBR(buffer,  180, 256),
             // from       : vschess.readStr_CBR(buffer,  436,  64),
@@ -493,98 +495,75 @@ vschess.binaryToInfo_CBR = function(buffer){
 
 // 将象棋桥 CBR 格式转换为棋谱节点树
 vschess.binaryToNode_CBR = function(buffer){
+    var ver = buffer[19];
+
     // 不识别的版本
-    if (buffer[19] === 0 || buffer[19] > 2) {
+    if (ver < 1 || ver > 2) {
         return { fen: vschess.defaultFen, comment: "", next: [], defaultIndex: 0 };
     }
 
+    var offset = ver === 1 ? 1856 : 2112;
     var board = [];
-    var rootOperated = false;
-
-    // 默认 V2 版本
-    var fenpos = 2120;
-    var playerPos = 2112;
-    var roundPos = 2116;
-    var pos = 2214;
-
-    // V1 版本
-    if (buffer[19] === 1) {
-        fenpos = 1864;
-        playerPos = 1856;
-        roundPos = 1860;
-        pos = 1958;
-    }
 
     for (var i = 0; i < 90; ++i) {
-        board.push(vschess.n2f[buffer[i + fenpos]]);
+        board.push(vschess.n2f[buffer[i + offset + 8]]);
     }
 
-    var fen = vschess.arrayToFen(board) + " " + (buffer[playerPos] === 2 ? "b" : "w") + " - - 0 " + (buffer[roundPos + 1] << 8 | buffer[roundPos]);
+    var fen = vschess.arrayToFen(board) + " " + (buffer[offset] === 2 ? "b" : "w") + " - - 0 " + (buffer[offset + 5] << 8 | buffer[offset + 4]);
 
     // 生成节点树
-    var node = { fen: fen, comment: "", next: [], defaultIndex: 0 };
+    var node = { fen: fen, comment: null, next: [], defaultIndex: 0 };
     var parent = node, changeNode = [];
 
-    while (true) {
-        if (pos >= buffer.length || buffer[pos] > 7 || buffer[pos + 2] === buffer[pos + 3] && rootOperated) {
+    for (var pos = offset + 102; pos < buffer.length;) {
+        var sig = buffer[pos    ] & 255;
+        var src = buffer[pos + 2] & 255;
+        var dst = buffer[pos + 3] & 255;
+
+        // 额外的结束条件
+        if (sig > 7 || src === dst && typeof node.comment === "string") {
             break;
         }
 
-        var comment = [];
+        var comment = "";
         var commentLen = 0;
         var nextOffset = 4;
 
         // 注释提取
-        if (buffer[pos] & 4) {
+        if (sig & 4) {
             for (var i = 0; i < 4; ++i) {
                 commentLen += buffer[pos + 4 + i] * Math.pow(256, i);
             }
 
-            for (var i = 0; i < commentLen; i += 2) {
-                comment.push(vschess.fcc(buffer[pos + 9 + i] << 8 | buffer[pos + 8 + i]));
-            }
-
+            comment = vschess.readStr_CBR(buffer, pos + 8, commentLen);
             nextOffset = commentLen + 8;
         }
 
         // 根节点注释
-        if (buffer[pos + 2] === buffer[pos + 3]) {
-            node.comment = comment.join("");
-            rootOperated = true;
+        if (src === dst) {
+            node.comment = comment;
             pos += nextOffset;
             continue;
         }
 
         // 生成节点树
-        var move = vschess.b2i[buffer[pos + 2]] + vschess.b2i[buffer[pos + 3]];
-
-        // V1 版本
-        if (buffer[19] === 1) {
-            var Pf = +buffer[pos + 2].toString(16);
-            var Pt = +buffer[pos + 3].toString(16);
-            move = vschess.fcc(Pf / 10 + 97) + (9 - Pf % 10) + vschess.fcc(Pt / 10 + 97) + (9 - Pt % 10);
-        }
-
-        var step = { move: move, comment: comment.join(""), next: [], defaultIndex: 0 };
+        move = ver === 1 ? vschess.flipMove(vschess.fcc(src / 16 + 97) + src % 16 + vschess.fcc(dst / 16 + 97) + dst % 16) : vschess.b2i[src] + vschess.b2i[dst];
+        var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
         parent.next.push(step);
 
-        var hasNext   = buffer[pos] % 2 === 0;
-        var hasChange = buffer[pos] & 2;
+        var hasNext   = sig % 2 === 0;
+        var hasChange = sig & 2;
 
         if (hasNext) {
             hasChange && changeNode.push(parent);
             parent = step;
         }
-        else if (!hasChange) {
-            // 部分棋谱存在冗余错误数据，直接退出
-            if (changeNode.length === 0) {
-                break;
-            }
-
-            parent = changeNode.pop();
+        else {
+            hasChange || (parent = changeNode.pop());
         }
 
-        pos += nextOffset;
+        // 部分棋谱存在冗余错误数据，直接退出
+        pos += parent ? nextOffset : Infinity;
     }
 
     // 增强兼容性
@@ -592,14 +571,7 @@ vschess.binaryToNode_CBR = function(buffer){
         var fenArray = vschess.fenToArray(node.fen);
         var fenSplit = node.fen.split(" ");
         var position = vschess.i2b[node.next[0].move.substring(0, 2)];
-
-        if (fenArray[position].toUpperCase() === fenArray[position]) {
-            fenSplit[1] = "w";
-        }
-        else {
-            fenSplit[1] = "b";
-        }
-
+        fenSplit[1] = vschess.cca(fenArray[position]) < 97 ? "w" : "b";
         node.fen = fenSplit.join(" ");
     }
     
@@ -1484,14 +1456,17 @@ vschess.turnMove = function(move){
 	return move.join("");
 };
 
-// 旋转节点 ICCS 着法
-vschess.roundMove = function(move){
+// 颠倒节点 ICCS 着法
+vschess.flipMove = function(move){
 	move = move.split("");
-	move[0] = vschess.fcc(202 - vschess.cca(move[0]));
-	move[2] = vschess.fcc(202 - vschess.cca(move[2]));
 	move[1] = 9 - move[1];
 	move[3] = 9 - move[3];
 	return move.join("");
+};
+
+// 旋转节点 ICCS 着法
+vschess.roundMove = function(move){
+	return vschess.flipMove(vschess.turnMove(move));
 };
 
 // 翻转 WXF 着法，不可用于特殊兵
@@ -1663,8 +1638,8 @@ vschess.fcc = function(code){
 };
 
 // String.charCodeAt 别名
-vschess.cca = function(word){
-	return word.charCodeAt(0);
+vschess.cca = function(word, index){
+	return word.charCodeAt(index || 0);
 };
 
 // 左右填充
@@ -1820,7 +1795,13 @@ vschess.textBoard = function(fen, options) {
 
 // 字符串清除标签
 vschess.stripTags = function(str){
-	return $('<div>' + str + '</div>').text();
+	var result = [];
+
+	for (var i = 0; i < str.length; ++i) {
+		str[i] === "<" ? i = str.indexOf(">", i) : result.push(str[i]);
+	}
+
+	return result.join("");
 };
 
 // 时间格式统一
@@ -4822,7 +4803,7 @@ vschess.binaryToNode_XQF = function(buffer) {
     };
 
     // 生成节点树
-    var node = { fen: fen, comment: "", next: [], defaultIndex: 0 };
+    var node = { fen: fen, comment: null, next: [], defaultIndex: 0 };
     var parent = node, changeNode = [];
 
     for (var pos = 0; pos < decode.length;) {
@@ -4844,6 +4825,7 @@ vschess.binaryToNode_XQF = function(buffer) {
             nextOffset = commentLen + 8;
         }
 
+        // 根节点注释
         if (!pos) {
             node.comment = comment;
             pos += nextOffset;
@@ -4864,16 +4846,12 @@ vschess.binaryToNode_XQF = function(buffer) {
             hasChange && changeNode.push(parent);
             parent = step;
         }
-        else if (!hasChange) {
-            // 部分棋谱存在冗余错误数据，直接退出
-            if (changeNode.length === 0) {
-                break;
-            }
-
-            parent = changeNode.pop();
+        else {
+            hasChange || (parent = changeNode.pop());
         }
-
-        pos += nextOffset;
+            
+        // 部分棋谱存在冗余错误数据，直接退出
+        pos += parent ? nextOffset : Infinity;
     }
 
     // 增强兼容性
@@ -4881,14 +4859,7 @@ vschess.binaryToNode_XQF = function(buffer) {
         var fenArray = vschess.fenToArray(node.fen);
         var fenSplit = node.fen.split(" ");
         var position = vschess.i2b[node.next[0].move.substring(0, 2)];
-
-        if (fenArray[position].toUpperCase() === fenArray[position]) {
-            fenSplit[1] = "w";
-        }
-        else {
-            fenSplit[1] = "b";
-        }
-
+        fenSplit[1] = vschess.cca(fenArray[position]) < 97 ? "w" : "b";
         node.fen = fenSplit.join(" ");
     }
 
@@ -5057,8 +5028,7 @@ vschess.XQF_processNode = function(node, haveNextSibling, moves, key, mirror){
     // 递归处理子节点
     if (node.next) {
         for (var i = 0; i < node.next.length; ++i) {
-            var haveNextSibling = i < node.next.length - 1;
-            vschess.XQF_processNode(node.next[i], haveNextSibling, moves, key, mirror);
+            vschess.XQF_processNode(node.next[i], i < node.next.length - 1, moves, key, mirror);
         }
     }
 };
