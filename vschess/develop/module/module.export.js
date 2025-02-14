@@ -89,6 +89,9 @@ fn.createExportList = function(){
 			else if (exportFormat === "XQF") {
 				_this.localDownload(fileName + ".xqf", vs.nodeToBinary_XQF(_this.node, _this.chessInfo, _this.getTurnForMove()), { type: "application/octet-stream" });
 			}
+			else if (exportFormat === "CBR") {
+				_this.localDownload(fileName + ".cbr", vs.nodeToBinary_CBR(_this.node, _this.chessInfo, _this.getTurnForMove()), { type: "application/octet-stream" });
+			}
 			else {
 				_this.localDownload(fileName + ".txt", UTF8Text, { type: "text/plain" });
 			}
@@ -143,8 +146,8 @@ fn.setExportFormat = function(format, force){
 		this.exportGenerate.addClass("vschess-tab-body-export-current");
 		this.exportTextarea.val("请点击“生成”按钮生成棋谱。");
     }
-	else if (format === "XQF") {
-		// XQF 格式是二进制棋谱，隐藏复制按钮
+	else if (~["XQF", "CBR"].indexOf(format)) {
+		// XQF CBR 格式是二进制棋谱，隐藏复制按钮
 		this.exportCopy    .addClass("vschess-tab-body-export-current vschess-tab-body-export-only-save");
 		this.exportDownload.addClass("vschess-tab-body-export-current vschess-tab-body-export-only-save");
 		this.exportTextarea.val("请点击上面的“保存”按钮保存棋谱。");

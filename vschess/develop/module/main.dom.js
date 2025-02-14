@@ -103,6 +103,7 @@ $.extend(vschess, {
         PengFei: "鹏飞 PFC 格式",
         DhtmlXQ: "东萍 DhtmlXQ UBB 格式",
         XQF: "象棋演播室 XQF 格式",
+        CBR: "象棋桥 CBR 格式",
         DHJHtmlXQ: "广东象棋网 DHJHtmlXQ 格式",
         ChessDB: "云库指令格式",
         Text: "文本 TXT 格式",

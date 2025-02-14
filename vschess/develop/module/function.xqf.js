@@ -324,7 +324,8 @@ vs.XQF_processNode = function(node, haveNextSibling, moves, key, mirror){
         // 加密 Pf 和 Pt
         encodePf = (Pf + 24 + key.XYf) & 255;
         encodePt = (Pt + 32 + key.XYt) & 255;
-    } else {
+    }
+    else {
         // 根节点
         encodePf = 88;
         encodePt = 81;

@@ -103,7 +103,8 @@ vs.findKill = function (situation, maxDeep = Infinity) {
 
           if (hasZero) {
             parent = null;
-          } else {
+          }
+          else {
             parent.score = minScore + (minScore > 0 ? -1 : 1);
             parent = parent.parent;
           }
