@@ -15,7 +15,7 @@
  * https://github.com/ded/qwery/
  *
  * 最后修改日期：北京时间 2025年2月15日
- * Sat, 15 Feb 2025 18:47:46 +0800
+ * Sat, 15 Feb 2025 21:24:28 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.5",
 
 	// 版本时间戳
-	timestamp: "Sat, 15 Feb 2025 18:47:46 +0800",
+	timestamp: "Sat, 15 Feb 2025 21:24:28 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1817,7 +1817,7 @@ vschess.binaryToInfo = function(buffer, parseType){
 	}
 
     // 象棋桥 CBR 格式
-	if (parseType === "auto" && vschess.subhex(buffer, 0, 16) === "4343427269646765205265636f726400" || parseType === "cbr") {
+	if (parseType === "auto" && vschess.subhex(buffer, 0, 15) === "4343427269646765205265636f7264" || parseType === "cbr") {
 		return vschess.binaryToInfo_CBR(buffer);
 	}
 
@@ -1835,7 +1835,7 @@ vschess.binaryToNode = function(buffer, parseType){
 	}
 
     // 象棋桥 CBR 格式
-	if (parseType === "auto" && vschess.subhex(buffer, 0, 16) === "4343427269646765205265636f726400" || parseType === "cbr") {
+	if (parseType === "auto" && vschess.subhex(buffer, 0, 15) === "4343427269646765205265636f7264" || parseType === "cbr") {
 		return vschess.binaryToNode_CBR(buffer);
 	}
 
@@ -2069,7 +2069,7 @@ vschess.binaryToNode_CBR = function(buffer){
 
 // 解析象棋桥棋库 CBL 格式
 vschess.binaryToBook_CBL = function(buffer){
-    if (vschess.subhex(buffer, 0, 16) !== '43434272696467654c69627261727900') {
+    if (vschess.subhex(buffer, 0, 15) !== '43434272696467654c696272617279') {
         return false;
     }
 
@@ -2077,7 +2077,7 @@ vschess.binaryToBook_CBL = function(buffer){
     var splitPos = [];
 
     for (var i = 0; i < buffer.length; ++i) {
-        buffer[i] === 67 && vschess.subhex(buffer, i, 16) === "4343427269646765205265636f726400" && splitPos.push(i);
+        buffer[i] === 67 && vschess.subhex(buffer, i, 15) === "4343427269646765205265636f7264" && splitPos.push(i);
     }
 
     for (var i = 0; i < splitPos.length; ++i) {
@@ -6828,9 +6828,9 @@ vschess.nodeToBinary_XQF = function(node, chessInfo, mirror){
         var nextOffset = 4;
 
         if (step.move) {
-            var move = mirror ? vschess.turnMove(step.move) : step.move;
-            var src = vschess.i2b[move.substring(0, 2)];
-            var dst = vschess.i2b[move.substring(2, 4)];
+            var mov = mirror ? vschess.turnMove(step.move) : step.move;
+            var src = vschess.i2b[mov.substring(0, 2)];
+            var dst = vschess.i2b[mov.substring(2, 4)];
             buffer[pos    ] = src % 9 * 10 + 33 - Math.floor(src / 9);
             buffer[pos + 1] = dst % 9 * 10 + 41 - Math.floor(dst / 9);
         }

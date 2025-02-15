@@ -204,7 +204,7 @@ vs.binaryToNode_CBR = function(buffer){
 
 // 解析象棋桥棋库 CBL 格式
 vs.binaryToBook_CBL = function(buffer){
-    if (vschess.subhex(buffer, 0, 16) !== '43434272696467654c69627261727900') {
+    if (vschess.subhex(buffer, 0, 15) !== '43434272696467654c696272617279') {
         return false;
     }
 
@@ -212,7 +212,7 @@ vs.binaryToBook_CBL = function(buffer){
     var splitPos = [];
 
     for (var i = 0; i < buffer.length; ++i) {
-        buffer[i] === 67 && vs.subhex(buffer, i, 16) === "4343427269646765205265636f726400" && splitPos.push(i);
+        buffer[i] === 67 && vs.subhex(buffer, i, 15) === "4343427269646765205265636f7264" && splitPos.push(i);
     }
 
     for (var i = 0; i < splitPos.length; ++i) {

@@ -277,9 +277,9 @@ vs.nodeToBinary_XQF = function(node, chessInfo, mirror){
         var nextOffset = 4;
 
         if (step.move) {
-            var move = mirror ? vs.turnMove(step.move) : step.move;
-            var src = vs.i2b[move.substring(0, 2)];
-            var dst = vs.i2b[move.substring(2, 4)];
+            var mov = mirror ? vs.turnMove(step.move) : step.move;
+            var src = vs.i2b[mov.substring(0, 2)];
+            var dst = vs.i2b[mov.substring(2, 4)];
             buffer[pos    ] = src % 9 * 10 + 33 - Math.floor(src / 9);
             buffer[pos + 1] = dst % 9 * 10 + 41 - Math.floor(dst / 9);
         }

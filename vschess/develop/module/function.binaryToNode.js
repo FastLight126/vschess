@@ -8,7 +8,7 @@ vs.binaryToNode = function(buffer, parseType){
 	}
 
     // 象棋桥 CBR 格式
-	if (parseType === "auto" && vs.subhex(buffer, 0, 16) === "4343427269646765205265636f726400" || parseType === "cbr") {
+	if (parseType === "auto" && vs.subhex(buffer, 0, 15) === "4343427269646765205265636f7264" || parseType === "cbr") {
 		return vs.binaryToNode_CBR(buffer);
 	}
 
