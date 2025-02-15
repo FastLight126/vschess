@@ -670,12 +670,13 @@ fn.createEditOtherButton = function(){
 	this.editOpenFile.appendTo(this.editArea);
 
 	this.editOpenFile.bind("change", function(){
-		if (typeof FileReader === "function") {
+		if (vs.localRead) {
 			if (this.files.length) {
 				var file = this.files[0];
 				var ext = file.name.split(".").pop().toLowerCase();
 				var reader = new FileReader();
 				reader.readAsArrayBuffer(file);
+
 				reader.onload = function(){
 					if (!_this.confirm("确定打开该棋谱吗？当前棋谱会丢失！")) {
 						return false;
@@ -765,6 +766,7 @@ fn.bindDrag = function(){
 			var ext = file.name.split(".").pop().toLowerCase();
 			var reader = new FileReader();
 			reader.readAsArrayBuffer(file);
+
 			reader.onload = function(){
 				if (!_this.confirm("确定使用新的棋谱吗？当前棋谱会丢失！")) {
 					return false;

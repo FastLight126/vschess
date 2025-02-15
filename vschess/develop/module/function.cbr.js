@@ -235,36 +235,31 @@ vs.binaryToBook_CBL = function(buffer){
 
 // 将棋谱节点树转换为象棋桥 CBR 格式
 vs.nodeToBinary_CBR = function(node, chessInfo, mirror){
-    var buffer = [];
-    buffer[19  ] = 2;
-    buffer[2217] = 0;
+    var buffer = [67, 67, 66, 114, 105, 100, 103, 101, 32, 82, 101, 99, 111, 114, 100, 0, 0, 0, 0, 2];
+    buffer.length = 2218;
     buffer[2210] = buffer[2211] = buffer[2212] = buffer[2213] = 255;
 
-    // 填充标识头
-    for (var i = 0; i < 15; ++i) {
-        buffer[i] = "CCBridge Record".charCodeAt(i);
-    }
-
     // 填充棋局信息
-    chessInfo.title       && vs.writeStr_CBR(buffer, chessInfo.title      ,  180, 126);
-    chessInfo.event       && vs.writeStr_CBR(buffer, chessInfo.event      ,  692,  62);
-    chessInfo.round       && vs.writeStr_CBR(buffer, chessInfo.round      ,  756,  62);
-    chessInfo.group       && vs.writeStr_CBR(buffer, chessInfo.group      ,  820,  30);
-    chessInfo.table       && vs.writeStr_CBR(buffer, chessInfo.table      ,  852,  30);
-    chessInfo.date        && vs.writeStr_CBR(buffer, chessInfo.date       ,  884,  62);
-    chessInfo.place       && vs.writeStr_CBR(buffer, chessInfo.place      ,  948,  62);
-    chessInfo.red         && vs.writeStr_CBR(buffer, chessInfo.red        , 1076,  62);
-    chessInfo.redteam     && vs.writeStr_CBR(buffer, chessInfo.redteam    , 1140,  62);
-    chessInfo.redtime     && vs.writeStr_CBR(buffer, chessInfo.redtime    , 1204,  62);
-    chessInfo.redrating   && vs.writeStr_CBR(buffer, chessInfo.redrating  , 1268,  30);
-    chessInfo.black       && vs.writeStr_CBR(buffer, chessInfo.black      , 1300,  62);
-    chessInfo.blackteam   && vs.writeStr_CBR(buffer, chessInfo.blackteam  , 1364,  62);
-    chessInfo.blacktime   && vs.writeStr_CBR(buffer, chessInfo.blacktime  , 1428,  62);
-    chessInfo.blackrating && vs.writeStr_CBR(buffer, chessInfo.blackrating, 1492,  30);
-    chessInfo.judge       && vs.writeStr_CBR(buffer, chessInfo.judge      , 1524,  62);
-    chessInfo.record      && vs.writeStr_CBR(buffer, chessInfo.record     , 1588,  62);
-    chessInfo.remark      && vs.writeStr_CBR(buffer, chessInfo.remark     , 1652,  62);
-    chessInfo.author      && vs.writeStr_CBR(buffer, chessInfo.author     , 1780,  62);
+    vs.writeStr_CBR(buffer, chessInfo.title       || "",  180, 126);
+    vs.writeStr_CBR(buffer, chessInfo.event       || "",  692,  62);
+    vs.writeStr_CBR(buffer, chessInfo.round       || "",  756,  62);
+    vs.writeStr_CBR(buffer, chessInfo.group       || "",  820,  30);
+    vs.writeStr_CBR(buffer, chessInfo.table       || "",  852,  30);
+    vs.writeStr_CBR(buffer, chessInfo.date        || "",  884,  62);
+    vs.writeStr_CBR(buffer, chessInfo.place       || "",  948,  62);
+    vs.writeStr_CBR(buffer, chessInfo.red         || "", 1076,  62);
+    vs.writeStr_CBR(buffer, chessInfo.redteam     || "", 1140,  62);
+    vs.writeStr_CBR(buffer, chessInfo.redtime     || "", 1204,  62);
+    vs.writeStr_CBR(buffer, chessInfo.redrating   || "", 1268,  30);
+    vs.writeStr_CBR(buffer, chessInfo.black       || "", 1300,  62);
+    vs.writeStr_CBR(buffer, chessInfo.blackteam   || "", 1364,  62);
+    vs.writeStr_CBR(buffer, chessInfo.blacktime   || "", 1428,  62);
+    vs.writeStr_CBR(buffer, chessInfo.blackrating || "", 1492,  30);
+    vs.writeStr_CBR(buffer, chessInfo.judge       || "", 1524,  62);
+    vs.writeStr_CBR(buffer, chessInfo.record      || "", 1588,  62);
+    vs.writeStr_CBR(buffer, chessInfo.remark      || "", 1652,  62);
+    vs.writeStr_CBR(buffer, chessInfo.author      || "", 1780,  62);
+
     buffer[2076] = ["*", "1-0", "0-1", "1/2-1/2"].indexOf(chessInfo.result);
     buffer[2076] < 0 && (buffer[2076] = 0);
 
@@ -316,5 +311,14 @@ vs.nodeToBinary_CBR = function(node, chessInfo, mirror){
     };
 
     fillNode(node, false);
-    return Uint8Array.from(buffer);
+
+    if (Uint8Array) {
+        return Uint8Array.from(buffer);
+    }
+
+    for (var i = 0; i < buffer.length; ++i) {
+        buffer[i] &= 255;
+    }
+
+    return buffer;
 };

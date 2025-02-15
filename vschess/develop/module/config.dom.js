@@ -99,12 +99,13 @@ $.extend(vs.defaultOptions, {
 
 	// 云服务 API 地址
 	cloudApi: {
-		gif: "https://www.xiaxiangqi.com/api/cloud/gif",
-		startFen: "https://www.xiaxiangqi.com/api/cloud/startfen",
-		saveBook: "https://www.xiaxiangqi.com/api/cloud/savebook",
-		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save",
+		gif              : "https://www.xiaxiangqi.com/api/cloud/gif",
+		startFen         : "https://www.xiaxiangqi.com/api/cloud/startfen",
+		saveBook         : "https://www.xiaxiangqi.com/api/cloud/savebook",
+		saveBinary       : "https://www.xiaxiangqi.com/api/cloud/savebinary",
+		saveBookForShare : "https://www.xiaxiangqi.com/api/cloud/book/save",
 		saveBookForWeixin: "https://www.xiaxiangqi.com/api/cloud/book/weixincode",
-		HTMLShareJS: "https://www.xiaxiangqi.com/static/js/share.js"
+		HTMLShareJS      : "https://www.xiaxiangqi.com/static/js/share.js"
 	},
 
 	// 默认推荐起始局面列表
@@ -135,11 +136,11 @@ $.extend(vs.defaultOptions, {
     // 标签名称
     tagName: {
         comment: "棋谱注解",
-        info: "棋局信息",
-        share: "棋谱分享",
-        export: "棋谱导出",
-        edit: "棋谱导入",
-        config: "棋盘选项"
+        info   : "棋局信息",
+        share  : "棋谱分享",
+        export : "棋谱导出",
+        edit   : "棋谱导入",
+        config : "棋盘选项"
     }
 });
 

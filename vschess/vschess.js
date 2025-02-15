@@ -15,7 +15,7 @@
  * https://github.com/ded/qwery/
  *
  * 最后修改日期：北京时间 2025年2月15日
- * Sat, 15 Feb 2025 03:16:31 +0800
+ * Sat, 15 Feb 2025 18:47:46 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.5",
 
 	// 版本时间戳
-	timestamp: "Sat, 15 Feb 2025 03:16:31 +0800",
+	timestamp: "Sat, 15 Feb 2025 18:47:46 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1504,6 +1504,9 @@ $.extend(vschess, {
 	// 本地保存支持情况
 	localDownload: !!window.Blob && !!window.URL && "download" in document.createElement("a"),
 
+	// 本地文件读取支持情况
+	localRead: !!window.FileReader && !!window.Uint8Array,
+
 	// 标签列表
 	tabList: "board move comment info share export edit config".split(" "),
 
@@ -1711,12 +1714,13 @@ $.extend(vschess.defaultOptions, {
 
 	// 云服务 API 地址
 	cloudApi: {
-		gif: "https://www.xiaxiangqi.com/api/cloud/gif",
-		startFen: "https://www.xiaxiangqi.com/api/cloud/startfen",
-		saveBook: "https://www.xiaxiangqi.com/api/cloud/savebook",
-		saveBookForShare: "https://www.xiaxiangqi.com/api/cloud/book/save",
+		gif              : "https://www.xiaxiangqi.com/api/cloud/gif",
+		startFen         : "https://www.xiaxiangqi.com/api/cloud/startfen",
+		saveBook         : "https://www.xiaxiangqi.com/api/cloud/savebook",
+		saveBinary       : "https://www.xiaxiangqi.com/api/cloud/savebinary",
+		saveBookForShare : "https://www.xiaxiangqi.com/api/cloud/book/save",
 		saveBookForWeixin: "https://www.xiaxiangqi.com/api/cloud/book/weixincode",
-		HTMLShareJS: "https://www.xiaxiangqi.com/static/js/share.js"
+		HTMLShareJS      : "https://www.xiaxiangqi.com/static/js/share.js"
 	},
 
 	// 默认推荐起始局面列表
@@ -1747,11 +1751,11 @@ $.extend(vschess.defaultOptions, {
     // 标签名称
     tagName: {
         comment: "\u68cb\u8c31\u6ce8\u89e3",
-        info: "\u68cb\u5c40\u4fe1\u606f",
-        share: "\u68cb\u8c31\u5206\u4eab",
-        export: "\u68cb\u8c31\u5bfc\u51fa",
-        edit: "\u68cb\u8c31\u5bfc\u5165",
-        config: "\u68cb\u76d8\u9009\u9879"
+        info   : "\u68cb\u5c40\u4fe1\u606f",
+        share  : "\u68cb\u8c31\u5206\u4eab",
+        export : "\u68cb\u8c31\u5bfc\u51fa",
+        edit   : "\u68cb\u8c31\u5bfc\u5165",
+        config : "\u68cb\u76d8\u9009\u9879"
     }
 });
 
@@ -2082,11 +2086,11 @@ vschess.binaryToBook_CBL = function(buffer){
     }
 
     var info = {
-        name        : vschess.readStr_CBR(buffer,  64,    512),
-        from        : vschess.readStr_CBR(buffer, 576,    256),
-        creator     : vschess.readStr_CBR(buffer, 832,     64),
-        creatoremail: vschess.readStr_CBR(buffer, 896,     64),
-        createtime  : vschess.readStr_CBR(buffer, 960,     64),
+        name        : vschess.readStr_CBR(buffer,   64,   512),
+        from        : vschess.readStr_CBR(buffer,  576,   256),
+        creator     : vschess.readStr_CBR(buffer,  832,    64),
+        creatoremail: vschess.readStr_CBR(buffer,  896,    64),
+        createtime  : vschess.readStr_CBR(buffer,  960,    64),
         modifytime  : vschess.readStr_CBR(buffer, 1024,    64),
         remark      : vschess.readStr_CBR(buffer, 1088, 65536)
     };
@@ -2096,36 +2100,31 @@ vschess.binaryToBook_CBL = function(buffer){
 
 // 将棋谱节点树转换为象棋桥 CBR 格式
 vschess.nodeToBinary_CBR = function(node, chessInfo, mirror){
-    var buffer = [];
-    buffer[19] = 2;
-    buffer[2217] = 0;
+    var buffer = [67, 67, 66, 114, 105, 100, 103, 101, 32, 82, 101, 99, 111, 114, 100, 0, 0, 0, 0, 2];
+    buffer.length = 2218;
     buffer[2210] = buffer[2211] = buffer[2212] = buffer[2213] = 255;
 
-    // 填充标识头
-    for (var i = 0; i < 15; ++i) {
-        buffer[i] = "CCBridge Record".charCodeAt(i);
-    }
-
     // 填充棋局信息
-    chessInfo.title       && vschess.writeStr_CBR(buffer, chessInfo.title      ,  180, 126);
-    chessInfo.event       && vschess.writeStr_CBR(buffer, chessInfo.event      ,  692,  62);
-    chessInfo.round       && vschess.writeStr_CBR(buffer, chessInfo.round      ,  756,  62);
-    chessInfo.group       && vschess.writeStr_CBR(buffer, chessInfo.group      ,  820,  30);
-    chessInfo.table       && vschess.writeStr_CBR(buffer, chessInfo.table      ,  852,  30);
-    chessInfo.date        && vschess.writeStr_CBR(buffer, chessInfo.date       ,  884,  62);
-    chessInfo.place       && vschess.writeStr_CBR(buffer, chessInfo.place      ,  948,  62);
-    chessInfo.red         && vschess.writeStr_CBR(buffer, chessInfo.red        , 1076,  62);
-    chessInfo.redteam     && vschess.writeStr_CBR(buffer, chessInfo.redteam    , 1140,  62);
-    chessInfo.redtime     && vschess.writeStr_CBR(buffer, chessInfo.redtime    , 1204,  62);
-    chessInfo.redrating   && vschess.writeStr_CBR(buffer, chessInfo.redrating  , 1268,  30);
-    chessInfo.black       && vschess.writeStr_CBR(buffer, chessInfo.black      , 1300,  62);
-    chessInfo.blackteam   && vschess.writeStr_CBR(buffer, chessInfo.blackteam  , 1364,  62);
-    chessInfo.blacktime   && vschess.writeStr_CBR(buffer, chessInfo.blacktime  , 1428,  62);
-    chessInfo.blackrating && vschess.writeStr_CBR(buffer, chessInfo.blackrating, 1492,  30);
-    chessInfo.judge       && vschess.writeStr_CBR(buffer, chessInfo.judge      , 1524,  62);
-    chessInfo.record      && vschess.writeStr_CBR(buffer, chessInfo.record     , 1588,  62);
-    chessInfo.remark      && vschess.writeStr_CBR(buffer, chessInfo.remark     , 1652,  62);
-    chessInfo.author      && vschess.writeStr_CBR(buffer, chessInfo.author     , 1780,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.title       || "",  180, 126);
+    vschess.writeStr_CBR(buffer, chessInfo.event       || "",  692,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.round       || "",  756,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.group       || "",  820,  30);
+    vschess.writeStr_CBR(buffer, chessInfo.table       || "",  852,  30);
+    vschess.writeStr_CBR(buffer, chessInfo.date        || "",  884,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.place       || "",  948,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.red         || "", 1076,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.redteam     || "", 1140,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.redtime     || "", 1204,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.redrating   || "", 1268,  30);
+    vschess.writeStr_CBR(buffer, chessInfo.black       || "", 1300,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.blackteam   || "", 1364,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.blacktime   || "", 1428,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.blackrating || "", 1492,  30);
+    vschess.writeStr_CBR(buffer, chessInfo.judge       || "", 1524,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.record      || "", 1588,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.remark      || "", 1652,  62);
+    vschess.writeStr_CBR(buffer, chessInfo.author      || "", 1780,  62);
+
     buffer[2076] = ["*", "1-0", "0-1", "1/2-1/2"].indexOf(chessInfo.result);
     buffer[2076] < 0 && (buffer[2076] = 0);
 
@@ -2177,7 +2176,16 @@ vschess.nodeToBinary_CBR = function(node, chessInfo, mirror){
     };
 
     fillNode(node, false);
-    return Uint8Array.from(buffer);
+
+    if (Uint8Array) {
+        return Uint8Array.from(buffer);
+    }
+
+    for (var i = 0; i < buffer.length; ++i) {
+        buffer[i] &= 255;
+    }
+
+    return buffer;
 };
 
 // 从原始数据中抽取棋局信息
@@ -6762,211 +6770,111 @@ vschess.binaryToNode_XQF = function(buffer) {
     return node;
 };
 
-// 象棋演播室 XQF 格式写入头部信息的函数
-vschess.XQF_writeHeader = function(buffer, Version, KeyMask, KeyOr, KeySum, KeyXYp, KeyXYf, KeyXYt, key, node, chessInfo, mirror){
-    // 文件标识
-    buffer[0] = 88;
-    buffer[1] = 81;
-    buffer[2] = Version;
-    buffer[3] = KeyMask;
+// 将棋谱节点树转换为象棋演播室 XQF 格式
+vschess.nodeToBinary_XQF = function(node, chessInfo, mirror){
+    var buffer = [88, 81, 18];
 
-    // KeyOr值
-    buffer[8] = KeyOr[0];
-    buffer[9] = KeyOr[1];
-    buffer[10] = KeyOr[2];
-    buffer[11] = KeyOr[3];
+    // 填充棋局信息
+    var fillChessInfo = function(start, text, maxLength){
+        var GBKArray = vschess.iconv2GBK(text);
+        buffer[start] = Math.min(GBKArray.length, maxLength);
 
-    // KeySum和KeyXY值
-    buffer[12] = KeySum;
-    buffer[13] = KeyXYp;
-    buffer[14] = KeyXYf;
-    buffer[15] = KeyXYt;
+        for (var i = 0; i < GBKArray.length && i < maxLength; ++i) {
+            buffer[i + 1 + start] = GBKArray[i];
+        }
+    };
 
-    // 处理 FEN 串，生成 QiziXY 数组
+    fillChessInfo( 80, chessInfo.title     || "", 128);
+    fillChessInfo(208, chessInfo.event     || "",  64);
+    fillChessInfo(272, chessInfo.date      || "",  16);
+    fillChessInfo(288, chessInfo.place     || "",  16);
+    fillChessInfo(304, chessInfo.redname   || "",  16);
+    fillChessInfo(320, chessInfo.blackname || "",  16);
+    fillChessInfo(400, chessInfo.redtime   || "",  16);
+    fillChessInfo(416, chessInfo.blacktime || "",  16);
+    fillChessInfo(464, chessInfo.remark    || "",  16);
+    fillChessInfo(480, chessInfo.author    || "",  16);
+
+    buffer[51] = ["*", "1-0", "0-1", "1/2-1/2"].indexOf(chessInfo.result);
+    buffer[51] < 0 && (buffer[2076] = 0);
+
+    // 填充 Fen 串
+    buffer[50] = node.fen.split(" ")[1] === "b" ? 1 : 0;
     var fenArray = vschess.fenToArray(mirror ? vschess.turnFen(node.fen) : node.fen);
     var fenPiece = "RNBAKABNRCCPPPPPrnbakabnrccppppp".split("");
     var piecePositions = {};
 
     for (var i = 0; i < fenArray.length; i++) {
-        var piece = fenArray[i];
-        var index = fenPiece.indexOf(piece);
+        var index = fenPiece.indexOf(fenArray[i]);
 
-        if (~index) {
-            var x = i % 9;
-            var y = 9 - Math.floor(i / 9);
-            var XY = x * 10 + y;
-            piecePositions[index] = XY;
-            fenPiece[index] = "x";
-        }
-    }
-
-    // 写入 QiziXY 数组
-    for (var i = 0; i < 32; i++) {
-        var piecePos = piecePositions[(i + 1) % 32];
-
-        if (typeof piecePos === "undefined") {
-            piecePos = 90 + vschess.rand(0, 154);
+        if (!~index) {
+            continue;
         }
 
-        buffer[16 + i] = piecePos;
+        piecePositions[index] = i % 9 * 10 + 9 - Math.floor(i / 9);
+        fenPiece[index] = "x";
     }
 
-    // 设置 WhoPlay
-    buffer[50] = node.fen.split(" ")[1] === "b" ? 1 : 0;
-
-    // 设置 GameResult
-    switch (chessInfo.result) {
-        case "1-0": buffer[51] = 1; break;
-        case "0-1": buffer[51] = 2; break;
-        case "1/2-1/2": buffer[51] = 3; break;
-        default: buffer[51] = 0; break;
+    for (var i = 0; i < 32; ++i) {
+        var piecePos = piecePositions[i + 1 & 31];
+        buffer[i + 16] = typeof piecePos === "undefined" ? 90 : piecePos;
     }
 
-    var fillText = function(start, text, maxLength){
-	    var GBKArray = new Uint8Array(vschess.iconv2GBK(text));
-        buffer[start] = Math.min(GBKArray.length, maxLength) & 255;
+    // 填充节点树
+    var pos = 1024;
 
-        for (var i = 0; i < GBKArray.length && i < maxLength; ++i) {
-            buffer[start + 1 + i] = GBKArray[i];
+    var fillNode = function(step, hasSibling){
+        var sig = hasSibling << 6 | !!step.next.length << 7;
+        var nextOffset = 4;
+
+        if (step.move) {
+            var move = mirror ? vschess.turnMove(step.move) : step.move;
+            var src = vschess.i2b[move.substring(0, 2)];
+            var dst = vschess.i2b[move.substring(2, 4)];
+            buffer[pos    ] = src % 9 * 10 + 33 - Math.floor(src / 9);
+            buffer[pos + 1] = dst % 9 * 10 + 41 - Math.floor(dst / 9);
+        }
+        else {
+            buffer[pos    ] = 88;
+            buffer[pos + 1] = 81;
+        }
+
+        if (step.comment) {
+            sig |= 32;
+            var comment = vschess.iconv2GBK(step.comment);
+            var len = comment.length + 767;
+            nextOffset = comment.length + 8;
+
+            for (var i = 4; i < 8; ++i) {
+                buffer[pos + i] = len % 256;
+                len = Math.floor(len / 256);
+            }
+
+            for (var i = 0; i < comment.length; ++i) {
+                buffer[pos + i + 8] = comment[i];
+            }
+        }
+
+        buffer[pos + 2] = sig;
+        buffer[pos + 3] = 0;
+        pos += nextOffset;
+
+        for (var i = 0; i < step.next.length; ++i) {
+            fillNode(step.next[i], i < step.next.length - 1);
         }
     };
 
-    fillText( 80, chessInfo.title     || "", 128);
-    fillText(208, chessInfo.event     || "",  64);
-    fillText(272, chessInfo.date      || "",  16);
-    fillText(288, chessInfo.place     || "",  16);
-    fillText(304, chessInfo.redname   || "",  16);
-    fillText(320, chessInfo.blackname || "",  16);
-    fillText(400, chessInfo.redtime   || "",  16);
-    fillText(416, chessInfo.blacktime || "",  16);
-    fillText(464, chessInfo.remark    || "",  16);
-    fillText(480, chessInfo.author    || "",  16);
-};
+    fillNode(node, false);
 
-// 象棋演播室 XQF 格式处理节点的函数
-vschess.XQF_processNode = function(node, haveNextSibling, moves, key, mirror){
-    // 处理当前节点
-    var moveData = [];
-    var flag = 0;
-    var encodePf, encodePt;
-
-    if (node.move) {
-        // 处理着法
-        var move = mirror ? vschess.turnMove(node.move) : node.move;
-        var from = vschess.i2b[move.substring(0, 2)];
-        var to = vschess.i2b[move.substring(2, 4)];
-
-        var Xf = from % 9;
-        var Yf = 9 - Math.floor(from / 9);
-        var Xt = to % 9;
-        var Yt = 9 - Math.floor(to / 9);
-
-        var Pf = Xf * 10 + Yf;
-        var Pt = Xt * 10 + Yt;
-
-        // 加密 Pf 和 Pt
-        encodePf = (Pf + 24 + key.XYf) & 255;
-        encodePt = (Pt + 32 + key.XYt) & 255;
-    }
-    else {
-        // 根节点
-        encodePf = 88;
-        encodePt = 81;
+    if (Uint8Array) {
+        return Uint8Array.from(buffer);
     }
 
-    // 设置标志位
-    var hasComment = node.comment && node.comment.length > 0;
-
-    if (node.next && node.next.length > 0) {
-        flag |= 128; // 有后续着法
+    for (var i = 0; i < buffer.length; ++i) {
+        buffer[i] &= 255;
     }
 
-    if (haveNextSibling) {
-        flag |= 64; // 有变着
-    }
-
-    if (hasComment) {
-        flag |= 32; // 有注释
-    }
-
-    // 组装着法数据
-    moveData.push(encodePf);
-    moveData.push(encodePt);
-    moveData.push(flag);
-    moveData.push(0); // 保留字节
-
-    if (hasComment) {
-        // 处理注释
-        var commentBytes = vschess.iconv2GBK(node.comment);
-        var commentLen = commentBytes.length + key.RMK;
-
-        // 添加注释长度
-        moveData.push(commentLen       & 255);
-        moveData.push(commentLen >>  8 & 255);
-        moveData.push(commentLen >> 16 & 255);
-        moveData.push(commentLen >> 24 & 255);
-
-        // 添加注释内容
-        for (var i = 0; i < commentBytes.length; ++i) {
-            moveData.push(commentBytes[i]);
-        }
-    }
-
-    // 加密着法数据
-    var pos = moves.length + 1024;
-
-    for (var i = 0; i < moveData.length; ++i) {
-        var keyByte = key.F32[pos % 32];
-        var b = (moveData[i] + keyByte) & 255;
-        moves.push(b);
-        ++pos;
-    }
-
-    // 递归处理子节点
-    if (node.next) {
-        for (var i = 0; i < node.next.length; ++i) {
-            vschess.XQF_processNode(node.next[i], i < node.next.length - 1, moves, key, mirror);
-        }
-    }
-};
-
-// 将棋谱节点树转换为象棋演播室 XQF 格式
-vschess.nodeToBinary_XQF = function(node, chessInfo, mirror){
-    // 设置版本号和密钥相关参数
-    var Version = 18;
-    var KeyMask = vschess.rand(1, 255);
-    var KeyOr = [vschess.rand(0, 255), vschess.rand(0, 255), vschess.rand(0, 255)];
-    KeyOr[3] = 256 - KeyOr[0] - KeyOr[1] - KeyOr[2] & 255;
-
-    var KeySum = 0;
-    var KeyXYp = 0;
-    var KeyXYf = 0;
-    var KeyXYt = 0;
-
-    // 计算密钥
-    var key = vschess.XQF_Key({
-        KeySum: KeySum,
-        KeyXYp: KeyXYp,
-        KeyXYf: KeyXYf,
-        KeyXYt: KeyXYt,
-        KeyMask: KeyMask,
-        KeyOr: KeyOr
-    });
-
-    // 头部信息
-    var buffer = new Uint8Array(1024);
-    buffer.fill(0, 0, 1024);
-    vschess.XQF_writeHeader(buffer, Version, KeyMask, KeyOr, KeySum, KeyXYp, KeyXYf, KeyXYt, key, node, chessInfo, mirror);
-
-    // 处理节点树
-    var moves = [];
-    vschess.XQF_processNode(node, false, moves, key, mirror);
-
-    // 最终棋谱
-    var finalBuffer = new Uint8Array(1024 + moves.length);
-    finalBuffer.set(buffer, 0);
-    finalBuffer.set(moves, 1024);
-    return finalBuffer;
+    return buffer;
 };
 
 // Zobrist 编码表
@@ -8345,12 +8253,13 @@ vschess.load.prototype.createEditOtherButton = function(){
 	this.editOpenFile.appendTo(this.editArea);
 
 	this.editOpenFile.bind("change", function(){
-		if (typeof FileReader === "function") {
+		if (vschess.localRead) {
 			if (this.files.length) {
 				var file = this.files[0];
 				var ext = file.name.split(".").pop().toLowerCase();
 				var reader = new FileReader();
 				reader.readAsArrayBuffer(file);
+
 				reader.onload = function(){
 					if (!_this.confirm("\u786e\u5b9a\u6253\u5f00\u8be5\u68cb\u8c31\u5417\uff1f\u5f53\u524d\u68cb\u8c31\u4f1a\u4e22\u5931\uff01")) {
 						return false;
@@ -8440,6 +8349,7 @@ vschess.load.prototype.bindDrag = function(){
 			var ext = file.name.split(".").pop().toLowerCase();
 			var reader = new FileReader();
 			reader.readAsArrayBuffer(file);
+
 			reader.onload = function(){
 				if (!_this.confirm("\u786e\u5b9a\u4f7f\u7528\u65b0\u7684\u68cb\u8c31\u5417\uff1f\u5f53\u524d\u68cb\u8c31\u4f1a\u4e22\u5931\uff01")) {
 					return false;

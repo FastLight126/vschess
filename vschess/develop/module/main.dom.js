@@ -20,6 +20,9 @@ $.extend(vschess, {
 	// 本地保存支持情况
 	localDownload: !!window.Blob && !!window.URL && "download" in document.createElement("a"),
 
+	// 本地文件读取支持情况
+	localRead: !!window.FileReader && !!window.Uint8Array,
+
 	// 标签列表
 	tabList: "board move comment info share export edit config".split(" "),
 
