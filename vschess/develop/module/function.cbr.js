@@ -193,7 +193,6 @@ vs.binaryToNode_CBR = function(buffer){
     if (node.next.length) {
         var fenArray = vs.fenToArray(node.fen);
         var fenSplit = node.fen.split(" ");
-        console.log(node);
         var position = vs.i2b[node.next[0].move.substring(0, 2)];
         fenSplit[1] = vs.cca(fenArray[position]) < 97 ? "w" : "b";
         node.fen = fenSplit.join(" ");
