@@ -143,15 +143,17 @@ vs.binaryToNode_CBR = function(buffer){
         var sig = buffer[pos    ] & 255;
         var src = buffer[pos + 2] & 255;
         var dst = buffer[pos + 3] & 255;
-
+        
         // 额外的结束条件
         if (sig > 7 || src === dst && typeof node.comment === "string") {
             break;
         }
 
-        var comment = "";
+        var comment    = "";
         var commentLen = 0;
         var nextOffset = 4;
+        var hasNext    = sig % 2 === 0;
+        var hasChange  = sig & 2;
 
         // 注释提取
         if (sig & 4) {
@@ -166,7 +168,7 @@ vs.binaryToNode_CBR = function(buffer){
         // 根节点注释
         if (src === dst) {
             node.comment = comment;
-            pos += nextOffset;
+            pos += hasNext ? nextOffset : Infinity;
             continue;
         }
 
@@ -174,9 +176,6 @@ vs.binaryToNode_CBR = function(buffer){
         move = ver === 1 ? vs.flipMove(vs.fcc(src / 16 + 97) + src % 16 + vs.fcc(dst / 16 + 97) + dst % 16) : vs.b2i[src] + vs.b2i[dst];
         var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
         parent.next.push(step);
-
-        var hasNext   = sig % 2 === 0;
-        var hasChange = sig & 2;
 
         if (hasNext) {
             hasChange && changeNode.push(parent);
@@ -194,6 +193,7 @@ vs.binaryToNode_CBR = function(buffer){
     if (node.next.length) {
         var fenArray = vs.fenToArray(node.fen);
         var fenSplit = node.fen.split(" ");
+        console.log(node);
         var position = vs.i2b[node.next[0].move.substring(0, 2)];
         fenSplit[1] = vs.cca(fenArray[position]) < 97 ? "w" : "b";
         node.fen = fenSplit.join(" ");

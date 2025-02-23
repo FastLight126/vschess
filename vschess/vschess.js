@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2025年2月15日
- * Sat, 15 Feb 2025 21:24:28 +0800
+ * 最后修改日期：北京时间 2025年2月23日
+ * Sun, 23 Feb 2025 21:02:47 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.5",
 
 	// 版本时间戳
-	timestamp: "Sat, 15 Feb 2025 21:24:28 +0800",
+	timestamp: "Sun, 23 Feb 2025 21:02:47 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -2008,15 +2008,17 @@ vschess.binaryToNode_CBR = function(buffer){
         var sig = buffer[pos    ] & 255;
         var src = buffer[pos + 2] & 255;
         var dst = buffer[pos + 3] & 255;
-
+        
         // 额外的结束条件
         if (sig > 7 || src === dst && typeof node.comment === "string") {
             break;
         }
 
-        var comment = "";
+        var comment    = "";
         var commentLen = 0;
         var nextOffset = 4;
+        var hasNext    = sig % 2 === 0;
+        var hasChange  = sig & 2;
 
         // 注释提取
         if (sig & 4) {
@@ -2031,7 +2033,7 @@ vschess.binaryToNode_CBR = function(buffer){
         // 根节点注释
         if (src === dst) {
             node.comment = comment;
-            pos += nextOffset;
+            pos += hasNext ? nextOffset : Infinity;
             continue;
         }
 
@@ -2039,9 +2041,6 @@ vschess.binaryToNode_CBR = function(buffer){
         move = ver === 1 ? vschess.flipMove(vschess.fcc(src / 16 + 97) + src % 16 + vschess.fcc(dst / 16 + 97) + dst % 16) : vschess.b2i[src] + vschess.b2i[dst];
         var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
         parent.next.push(step);
-
-        var hasNext   = sig % 2 === 0;
-        var hasChange = sig & 2;
 
         if (hasNext) {
             hasChange && changeNode.push(parent);
@@ -2059,6 +2058,7 @@ vschess.binaryToNode_CBR = function(buffer){
     if (node.next.length) {
         var fenArray = vschess.fenToArray(node.fen);
         var fenSplit = node.fen.split(" ");
+        console.log(node);
         var position = vschess.i2b[node.next[0].move.substring(0, 2)];
         fenSplit[1] = vschess.cca(fenArray[position]) < 97 ? "w" : "b";
         node.fen = fenSplit.join(" ");
@@ -6711,9 +6711,11 @@ vschess.binaryToNode_XQF = function(buffer) {
     var parent = node, changeNode = [];
 
     for (var pos = 0; pos < decode.length;) {
-        var comment = "";
+        var comment    = "";
         var commentLen = 0;
         var nextOffset = 4;
+        var hasNext    = decode[pos + 2] & (XQF_Header.Version > 10 ? 128 : 240);
+        var hasChange  = decode[pos + 2] & (XQF_Header.Version > 10 ?  64 :  15);
 
         // 注释提取
         if (XQF_Header.Version > 10) {
@@ -6732,7 +6734,7 @@ vschess.binaryToNode_XQF = function(buffer) {
         // 根节点注释
         if (!pos) {
             node.comment = comment;
-            pos += nextOffset;
+            pos += hasNext ? nextOffset : Infinity;
             continue;
         }
 
@@ -6742,9 +6744,6 @@ vschess.binaryToNode_XQF = function(buffer) {
         var move = vschess.fcc(Pf / 10 + 97) + Pf % 10 + vschess.fcc(Pt / 10 + 97) + Pt % 10;
         var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
         parent.next.push(step);
-
-        var hasNext   = decode[pos + 2] & (XQF_Header.Version > 10 ? 128 : 240);
-        var hasChange = decode[pos + 2] & (XQF_Header.Version > 10 ?  64 :  15);
 
         if (hasNext) {
             hasChange && changeNode.push(parent);

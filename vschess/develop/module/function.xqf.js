@@ -160,9 +160,11 @@ vs.binaryToNode_XQF = function(buffer) {
     var parent = node, changeNode = [];
 
     for (var pos = 0; pos < decode.length;) {
-        var comment = "";
+        var comment    = "";
         var commentLen = 0;
         var nextOffset = 4;
+        var hasNext    = decode[pos + 2] & (XQF_Header.Version > 10 ? 128 : 240);
+        var hasChange  = decode[pos + 2] & (XQF_Header.Version > 10 ?  64 :  15);
 
         // 注释提取
         if (XQF_Header.Version > 10) {
@@ -181,7 +183,7 @@ vs.binaryToNode_XQF = function(buffer) {
         // 根节点注释
         if (!pos) {
             node.comment = comment;
-            pos += nextOffset;
+            pos += hasNext ? nextOffset : Infinity;
             continue;
         }
 
@@ -191,9 +193,6 @@ vs.binaryToNode_XQF = function(buffer) {
         var move = vs.fcc(Pf / 10 + 97) + Pf % 10 + vs.fcc(Pt / 10 + 97) + Pt % 10;
         var step = { move: move, comment: comment, next: [], defaultIndex: 0 };
         parent.next.push(step);
-
-        var hasNext   = decode[pos + 2] & (XQF_Header.Version > 10 ? 128 : 240);
-        var hasChange = decode[pos + 2] & (XQF_Header.Version > 10 ?  64 :  15);
 
         if (hasNext) {
             hasChange && changeNode.push(parent);
