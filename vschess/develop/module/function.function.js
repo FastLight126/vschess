@@ -509,7 +509,7 @@ vs.subhex = function(hex, start, length){
 // 检查数据中是否存在非打印字符
 vs.checkNonPrintable = function(array){
 	for (var i = 0; i < array.length; ++i) {
-		if (array[i] < 32 || array[i] === 127) {
+		if (array[i] < 32 && !~[9, 10, 13].indexOf(array[i]) || array[i] === 127) {
 			return true;
 		}
 	}

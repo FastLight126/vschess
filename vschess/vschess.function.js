@@ -1,5 +1,5 @@
 /*
- * 微思象棋函数库 V2.6.5
+ * 微思象棋函数库 V2.6.6
  * https://www.xiaxiangqi.com/
  *
  * Copyright @ 2009-2025 Margin.Top 版权所有
@@ -11,17 +11,17 @@
  * 鸣谢列表敬请移步 GitHub 项目主页，排名不分先后
  * https://github.com/FastLight126/vschess
  *
- * 最后修改日期：北京时间 2025年2月23日
- * Sun, 23 Feb 2025 21:02:47 +0800
+ * 最后修改日期：北京时间 2025年2月24日
+ * Mon, 24 Feb 2025 23:52:17 +0800
  */
 
 // 主程序
 var vschess = {
 	// 当前版本号
-	version: "2.6.5",
+	version: "2.6.6",
 
 	// 版本时间戳
-	timestamp: "Sun, 23 Feb 2025 21:02:47 +0800",
+	timestamp: "Mon, 24 Feb 2025 23:52:17 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -587,7 +587,6 @@ vschess.binaryToNode_CBR = function(buffer){
     if (node.next.length) {
         var fenArray = vschess.fenToArray(node.fen);
         var fenSplit = node.fen.split(" ");
-        console.log(node);
         var position = vschess.i2b[node.next[0].move.substring(0, 2)];
         fenSplit[1] = vschess.cca(fenArray[position]) < 97 ? "w" : "b";
         node.fen = fenSplit.join(" ");
@@ -1946,7 +1945,8 @@ vschess.subhex = function(hex, start, length){
 // 检查数据中是否存在非打印字符
 vschess.checkNonPrintable = function(array){
 	for (var i = 0; i < array.length; ++i) {
-		if (array[i] < 32 || array[i] === 127) {
+		if (array[i] < 32 && !~[9, 10, 13].indexOf(array[i]) || array[i] === 127) {
+			console.log(array[i]);
 			return true;
 		}
 	}
