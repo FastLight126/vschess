@@ -14,8 +14,8 @@
  * 选择器引擎选用 Qwery
  * https://github.com/ded/qwery/
  *
- * 最后修改日期：北京时间 2025年2月24日
- * Mon, 24 Feb 2025 23:52:17 +0800
+ * 最后修改日期：北京时间 2025年2月25日
+ * Tue, 25 Feb 2025 14:40:42 +0800
  */
 
 (function(){
@@ -1178,7 +1178,7 @@ var vschess = {
 	version: "2.6.6",
 
 	// 版本时间戳
-	timestamp: "Mon, 24 Feb 2025 23:52:17 +0800",
+	timestamp: "Tue, 25 Feb 2025 14:40:42 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -3417,7 +3417,6 @@ vschess.subhex = function(hex, start, length){
 vschess.checkNonPrintable = function(array){
 	for (var i = 0; i < array.length; ++i) {
 		if (array[i] < 32 && !~[9, 10, 13].indexOf(array[i]) || array[i] === 127) {
-			console.log(array[i]);
 			return true;
 		}
 	}
@@ -3502,44 +3501,63 @@ vschess.GBK2UTF8 = function(array){
 
 // ArrayBuffer 转换为 UTF-8 字符串
 vschess.UTF8 = function(array){
-	var result = [];
-
-	for (var i = 0; i < array.length; ++i) {
-		if (array[i] < 16) {
-			result.push("%0", array[i].toString(16));
-		}
-		else {
-			result.push("%" , array[i].toString(16));
-		}
+	if (window.TextDecoder && window.Uint8Array) {
+		return new TextDecoder("utf-8").decode(new Uint8Array(array));
 	}
 
-	try {
-		return decodeURIComponent(result.join(""));
-	}
-	catch (e) {
-		return ""; 
-	}
+	var str = [];
+
+    for (var i = 0; i < array.length; ++i) {
+        if (array[i] < 128) {
+            str.push(vschess.fcc(array[i]));
+        }
+		else if (array[i] < 192) {
+		}
+        else if (array[i] < 224) {
+            if (i + 1 >= array.length) break;
+            str.push(vschess.fcc((array[i] & 31) << 6 | array[i + 1] & 63));
+            ++i;
+        }
+        else if (array[i] < 240) {
+            if (i + 2 >= array.length) break;
+            str.push(vschess.fcc((array[i] & 15) << 12 | (array[i + 1] & 63) << 6 | array[i + 2] & 63));
+            i += 2;
+        }
+        else if (array[i] < 248) {
+            if (i + 3 >= array.length) break;
+            var codePoint = (array[i] & 7) << 18 | (array[i + 1] & 63) << 12 | (array[i + 2] & 63) << 6 | array[i + 3] & 63;
+
+            if (codePoint > 65536) {
+				codePoint -= 65536;
+				str.pusn(vschess.fcc(55296 + (codePoint >> 10)) + vschess.fcc(56320 + (codePoint & 0x3FF)));
+            }
+            else {
+				str.pusn(vschess.fcc(codePoint));
+            }
+
+            i += 3;
+        }
+    }
+
+    return str.join("");
 };
 
 // 检测是否为 UTF-8 编码
 vschess.detectUTF8 = function(array){
-	for (var i = 0; i < array.length; ) {
-		var k = array[i];
-
-		if (k < 128 || k === 255) {
-			++i;
+	for (var i = 0; i < array.length; ++i) {
+		if (array[i] < 128 || array[i] === 255) {
+			continue;
 		}
-		else {
-			var length = k.toString(2).indexOf("0");
 
-			for (var j = 1; j < length; ++j) {
-				if (array[i + j] >> 6 !== 2) {
-					return false;
-				}
+		var length = array[i] >> 4 === 15 ? 4 : array[i].toString(2).indexOf("0");
+
+		for (var j = 1; j < length; ++j) {
+			if (array[i + j] >> 6 !== 2) {
+				return false;
 			}
-
-			i += length;
 		}
+
+		i += length - 1;
 	}
 
 	return true;

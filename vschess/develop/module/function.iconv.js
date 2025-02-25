@@ -75,44 +75,63 @@ vs.GBK2UTF8 = function(array){
 
 // ArrayBuffer 转换为 UTF-8 字符串
 vs.UTF8 = function(array){
-	var result = [];
-
-	for (var i = 0; i < array.length; ++i) {
-		if (array[i] < 16) {
-			result.push("%0", array[i].toString(16));
-		}
-		else {
-			result.push("%" , array[i].toString(16));
-		}
+	if (window.TextDecoder && window.Uint8Array) {
+		return new TextDecoder("utf-8").decode(new Uint8Array(array));
 	}
 
-	try {
-		return decodeURIComponent(result.join(""));
-	}
-	catch (e) {
-		return ""; 
-	}
+	var str = [];
+
+    for (var i = 0; i < array.length; ++i) {
+        if (array[i] < 128) {
+            str.push(vs.fcc(array[i]));
+        }
+		else if (array[i] < 192) {
+		}
+        else if (array[i] < 224) {
+            if (i + 1 >= array.length) break;
+            str.push(vs.fcc((array[i] & 31) << 6 | array[i + 1] & 63));
+            ++i;
+        }
+        else if (array[i] < 240) {
+            if (i + 2 >= array.length) break;
+            str.push(vs.fcc((array[i] & 15) << 12 | (array[i + 1] & 63) << 6 | array[i + 2] & 63));
+            i += 2;
+        }
+        else if (array[i] < 248) {
+            if (i + 3 >= array.length) break;
+            var codePoint = (array[i] & 7) << 18 | (array[i + 1] & 63) << 12 | (array[i + 2] & 63) << 6 | array[i + 3] & 63;
+
+            if (codePoint > 65536) {
+				codePoint -= 65536;
+				str.push(vs.fcc(55296 + (codePoint >> 10)) + vs.fcc(56320 + (codePoint & 0x3FF)));
+            }
+            else {
+				str.push(vs.fcc(codePoint));
+            }
+
+            i += 3;
+        }
+    }
+
+    return str.join("");
 };
 
 // 检测是否为 UTF-8 编码
 vs.detectUTF8 = function(array){
-	for (var i = 0; i < array.length; ) {
-		var k = array[i];
-
-		if (k < 128 || k === 255) {
-			++i;
+	for (var i = 0; i < array.length; ++i) {
+		if (array[i] < 128 || array[i] === 255) {
+			continue;
 		}
-		else {
-			var length = k.toString(2).indexOf("0");
 
-			for (var j = 1; j < length; ++j) {
-				if (array[i + j] >> 6 !== 2) {
-					return false;
-				}
+		var length = array[i] >= 240 ? 4 : array[i].toString(2).indexOf("0");
+
+		for (var j = 1; j < length; ++j) {
+			if (array[i + j] >> 6 !== 2) {
+				return false;
 			}
-
-			i += length;
 		}
+
+		i += length - 1;
 	}
 
 	return true;
