@@ -222,7 +222,7 @@ vs.ICCS2Node = function(move, fen){
 
 // ICCS 着法转换为节点 ICCS（无 Fen 串）
 vs.ICCS2Node_NoFen = function(move){
-	return RegExp.ICCS.test(move) ? move.replace("-", "").toLowerCase() : "none";
+	return vs.RegExp().ICCS.test(move) ? move.replace("-", "").toLowerCase() : "none";
 };
 
 // 着法列表转换为节点 ICCS 列表，列表第一个元素为起始局面 Fen 串

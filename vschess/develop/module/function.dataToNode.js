@@ -283,6 +283,24 @@ vs.dataToNode_PGN = function(chessData){
 		stepList = stepListM;
 	}
 
+	// 纠正上下颠倒的棋谱
+	var moveListNS = [], move;
+
+	for (var i = 0; i < moveList.length; ++i) {
+		move = vs.ICCS2Node_NoFen(moveList[i]);
+		move = vs.roundMove(move);
+		move = vs.Node2ICCS_NoFen(move);
+		moveListNS.push(move);
+	}
+
+	var fenChangeNS = vs.roundFen(startFen);
+	var stepListNS = vs.stepList2nodeList(moveListNS, fenChangeNS);
+
+	if (stepListNS.length > stepList.length) {
+		startFen = fenChangeNS;
+		stepList = stepListNS;
+	}
+
 	function makeBranch(list, target, b, i){
 		var step = list.shift();
 		var next = { move: step, comment: commentListByStep[i] || "", next: [], defaultIndex: 0 };

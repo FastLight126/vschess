@@ -11,8 +11,8 @@
  * 鸣谢列表敬请移步 GitHub 项目主页，排名不分先后
  * https://github.com/FastLight126/vschess
  *
- * 最后修改日期：北京时间 2025年8月3日
- * Sun, 03 Aug 2025 14:31:29 +0800
+ * 最后修改日期：北京时间 2025年10月24日
+ * Fri, 24 Oct 2025 02:44:02 +0800
  */
 
 // 主程序
@@ -21,7 +21,7 @@ var vschess = {
 	version: "2.6.7",
 
 	// 版本时间戳
-	timestamp: "Sun, 03 Aug 2025 14:31:29 +0800",
+	timestamp: "Fri, 24 Oct 2025 02:44:02 +0800",
 
 	// 默认局面，使用 16x16 方式存储数据，虽然浪费空间，但是便于运算，效率较高
 	// situation[0] 表示的是当前走棋方，1 为红方，2 为黑方
@@ -1149,6 +1149,24 @@ vschess.dataToNode_PGN = function(chessData){
 	if (stepListM.length > stepList.length) {
 		startFen = fenChangePlayer;
 		stepList = stepListM;
+	}
+
+	// 纠正上下颠倒的棋谱
+	var moveListNS = [], move;
+
+	for (var i = 0; i < moveList.length; ++i) {
+		move = vschess.ICCS2Node_NoFen(moveList[i]);
+		move = vschess.roundMove(move);
+		move = vschess.Node2ICCS_NoFen(move);
+		moveListNS.push(move);
+	}
+
+	var fenChangeNS = vschess.roundFen(startFen);
+	var stepListNS = vschess.stepList2nodeList(moveListNS, fenChangeNS);
+
+	if (stepListNS.length > stepList.length) {
+		startFen = fenChangeNS;
+		stepList = stepListNS;
 	}
 
 	function makeBranch(list, target, b, i){
@@ -3091,7 +3109,7 @@ vschess.ICCS2Node = function(move, fen){
 
 // ICCS 着法转换为节点 ICCS（无 Fen 串）
 vschess.ICCS2Node_NoFen = function(move){
-	return RegExp.ICCS.test(move) ? move.replace("-", "").toLowerCase() : "none";
+	return vschess.RegExp().ICCS.test(move) ? move.replace("-", "").toLowerCase() : "none";
 };
 
 // 着法列表转换为节点 ICCS 列表，列表第一个元素为起始局面 Fen 串
